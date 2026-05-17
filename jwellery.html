@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jewellery Collection | Shivaay Paridhan</title>
+  <meta name="description" content="Explore handcrafted traditional jewellery at Shivaay Paridhan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <style>
+.products-section { padding: 0 0 100px; background: var(--off-white); }
+.products-wrap { padding: 60px 0 0; }
+.products-wrap h1 { font-family: var(--font-heading); font-size: 1.8rem; color: var(--black); margin-bottom: 32px; }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media(max-width:900px) { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+@media(max-width:480px) { .product-grid { grid-template-columns: 1fr 1fr; gap: 12px; } }
+  </style>
+</head>
+<body>
+
+<header class="navbar solid" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"><span class="logo-text">Shivaay Paridhan</span></a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="products.html" class="nav-link active" onclick="closeMenu()">Shop</a>
+      <a href="about.html" class="nav-link" onclick="closeMenu()">About</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+        <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+      <a href="cart.html" class="nav-cta" onclick="closeMenu()">Cart 🛒</a>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">Handcrafted Beauty</p>
+  <h1 class="page-hero-title">Jewellery Collection</h1>
+  <p class="page-hero-sub">Exquisite traditional jewellery crafted by master artisans.</p>
+  <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><a href="products.html">Shop</a><span>›</span><span>Jewellery</span></div>
+</div>
+
+<main>
+  <section class="products-section">
+    <div class="container">
+      <div class="products-wrap">
+        <div class="product-grid">
+          <!-- Products will load dynamically from localStorage -->
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-top"><div class="container"><div class="footer-grid">
+    <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating Indian weaving with premium handcrafted sarees.</p></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
+  </div></div></div>
+  <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
+</footer>
+
+<script>
+const categoryPage = 'jewellery';
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
+function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');document.getElementById('hamburger').classList.toggle('active');}
+function closeMenu(){document.getElementById('nav-links').classList.remove('open');document.getElementById('hamburger').classList.remove('active');}
+</script>
+<script src="script.js"></script>
+</body>
+</html>

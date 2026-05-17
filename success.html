@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Success | Shivaay Paridhan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <style>
+.success-section { padding: 0 0 100px; background: var(--off-white); }
+.success-wrap { max-width: 600px; margin: 0 auto; padding: 60px 0 0; }
+.success-card {
+  background: var(--white); border-radius: var(--radius); padding: 48px 40px;
+  box-shadow: var(--shadow-card); text-align: center;
+}
+.success-icon { font-size: 4rem; margin-bottom: 20px; animation: successPop 0.6s ease; }
+@keyframes successPop { 0%{transform:scale(0);} 60%{transform:scale(1.2);} 100%{transform:scale(1);} }
+.success-card h1 { font-family: var(--font-heading); font-size: 1.8rem; color: var(--black); margin-bottom: 12px; }
+.success-message { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 28px; }
+.order-details {
+  background: var(--off-white); border-radius: var(--radius-sm); padding: 20px 24px;
+  margin-bottom: 32px; text-align: left;
+}
+.order-id { font-size: 0.95rem; color: var(--black); margin-bottom: 10px; }
+.order-id strong { color: var(--gold-dark); }
+.order-info p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; }
+.success-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 13px 28px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; font-family: var(--font-body); }
+.btn-secondary { background: var(--dark3); color: var(--white); }
+.btn-secondary:hover { background: var(--black); }
+  </style>
+</head>
+<body>
+
+<header class="navbar solid" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"><span class="logo-text">Shivaay Paridhan</span></a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="products.html" class="nav-link" onclick="closeMenu()">Shop</a>
+      <a href="about.html" class="nav-link" onclick="closeMenu()">About</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <a href="login.html" class="nav-link" onclick="closeMenu()">Login</a>
+      <a href="cart.html" class="nav-cta" onclick="closeMenu()">Cart 🛒</a>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">Thank You</p>
+  <h1 class="page-hero-title">Order Confirmed</h1>
+  <p class="page-hero-sub">Your saree is on its way to you!</p>
+  <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Order Success</span></div>
+</div>
+
+<main>
+  <section class="success-section">
+    <div class="container">
+      <div class="success-wrap">
+        <div class="success-card">
+          <div class="success-icon">✅</div>
+          <h1>Order Placed Successfully!</h1>
+          <p class="success-message">Thank you for choosing Shivaay Paridhan. Your order has been confirmed and will be delivered soon.</p>
+          <div class="order-details">
+            <div class="order-id"><strong>Order ID:</strong> <span id="order-id">#SP2026-XXXXXX</span></div>
+            <div class="order-info"><p>You will receive an email confirmation shortly with your order details and tracking information.</p></div>
+          </div>
+          <div class="success-actions">
+            <a href="index.html" class="btn-primary">Continue Shopping</a>
+            <a href="cart.html" class="btn btn-secondary">View Cart</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-top"><div class="container"><div class="footer-grid">
+    <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating Indian weaving with premium handcrafted sarees.</p></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
+  </div></div></div>
+  <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
+function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');document.getElementById('hamburger').classList.toggle('active');}
+function closeMenu(){document.getElementById('nav-links').classList.remove('open');document.getElementById('hamburger').classList.remove('active');}
+</script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us | Shivaay Paridhan</title>
+<meta name="description" content="The story behind Shivaay Paridhan — a legacy of handcrafted sarees rooted in Indian heritage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="main.css">
+<style>
+.story-section{padding:100px 0;background:var(--off-white);}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.story-image-wrap{position:relative;}
+.story-img{width:100%;border-radius:var(--radius);box-shadow:var(--shadow);}
+.story-accent{position:absolute;bottom:-24px;right:-24px;width:180px;height:180px;border-radius:var(--radius);background:var(--gold);z-index:-1;opacity:0.3;}
+.story-accent2{position:absolute;top:-16px;left:-16px;width:100px;height:100px;border-radius:50%;border:2px solid var(--gold);z-index:-1;opacity:0.4;}
+.story-badge{position:absolute;top:24px;left:-20px;background:var(--black);color:var(--white);padding:16px 20px;border-radius:var(--radius);text-align:center;box-shadow:var(--shadow);}
+.story-badge-num{font-family:var(--font-heading);font-size:2rem;color:var(--gold);line-height:1;display:block;}
+.story-badge-text{font-size:0.72rem;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-top:2px;}
+.story-text .section-eyebrow{text-align:left;}
+.story-title{font-family:var(--font-heading);font-size:clamp(1.8rem,3.5vw,2.6rem);color:var(--black);margin-bottom:24px;line-height:1.25;}
+.story-body{color:var(--text-muted);line-height:1.85;font-size:0.95rem;margin-bottom:18px;}
+.story-signature{font-family:var(--font-heading);font-style:italic;font-size:1.4rem;color:var(--gold);margin-top:28px;}
+.story-sig-name{font-size:0.82rem;color:var(--text-muted);margin-top:4px;}
+.stats-bar{background:var(--black);padding:48px 0;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center;}
+.stat-item{padding:20px;border-right:1px solid rgba(255,255,255,0.1);}
+.stat-item:last-child{border-right:none;}
+.stat-number{font-family:var(--font-heading);font-size:2.4rem;color:var(--gold);font-weight:700;line-height:1;}
+.stat-label2{font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;}
+.mission-section{padding:100px 0;background:var(--white);}
+.mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:20px;}
+.mv-card{border-radius:var(--radius);padding:44px 40px;position:relative;overflow:hidden;}
+.mv-card-mission{background:var(--black);}
+.mv-card-vision{background:var(--off-white);border:1.5px solid rgba(201,168,76,0.2);}
+.mv-icon{font-size:2.4rem;margin-bottom:20px;display:block;}
+.mv-card-title{font-family:var(--font-heading);font-size:1.5rem;margin-bottom:16px;}
+.mv-card-mission .mv-card-title{color:var(--gold);}
+.mv-card-vision .mv-card-title{color:var(--black);}
+.mv-card-text{line-height:1.8;font-size:0.92rem;}
+.mv-card-mission .mv-card-text{color:rgba(255,255,255,0.6);}
+.mv-card-vision .mv-card-text{color:var(--text-muted);}
+.mv-card-glow{position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(201,168,76,0.08);filter:blur(30px);}
+.values-section{padding:100px 0;background:var(--off-white);}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.value-card{background:var(--white);border-radius:var(--radius);padding:36px 28px;text-align:center;box-shadow:var(--shadow-card);transition:var(--transition);}
+.value-card:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,0.12);}
+.value-card:hover .value-icon{transform:scale(1.15);}
+.value-icon{font-size:2.6rem;margin-bottom:18px;display:block;transition:var(--transition);}
+.value-card h3{font-family:var(--font-heading);font-size:1.15rem;color:var(--black);margin-bottom:12px;}
+.value-card p{font-size:0.88rem;color:var(--text-muted);line-height:1.7;}
+.artisan-section{padding:100px 0;background:var(--black);}
+.artisan-section .section-title{color:var(--white);}
+.artisan-section .section-sub{color:rgba(255,255,255,0.5);}
+.artisan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.artisan-card{background:var(--dark2);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(201,168,76,0.1);transition:var(--transition);}
+.artisan-card:hover{border-color:rgba(201,168,76,0.4);transform:translateY(-4px);}
+.artisan-img{width:100%;aspect-ratio:1;object-fit:cover;opacity:0.85;}
+.artisan-info{padding:20px;}
+.artisan-name{font-family:var(--font-heading);color:var(--white);font-size:1.05rem;margin-bottom:4px;}
+.artisan-role{font-size:0.8rem;color:var(--gold);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.artisan-city{font-size:0.82rem;color:rgba(255,255,255,0.4);}
+.about-cta{padding:80px 0;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-top:1px solid rgba(201,168,76,0.15);}
+.about-cta-inner{text-align:center;}
+.about-cta-inner h2{font-family:var(--font-heading);font-size:clamp(1.8rem,4vw,2.8rem);color:var(--black);margin-bottom:16px;}
+.about-cta-inner p{color:var(--text-muted);margin-bottom:32px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.7;}
+.about-cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+@media(max-width:900px){
+  .story-grid,.mv-grid{grid-template-columns:1fr;}
+  .story-badge{left:auto;right:16px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .values-grid{grid-template-columns:1fr 1fr;}
+  .artisan-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .values-grid{grid-template-columns:1fr;}
+  .artisan-grid{grid-template-columns:1fr;}
+  .story-accent,.story-accent2{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="navbar solid" id="navbar">
+  <div class="nav-container">
+    <!-- LEFT: Hamburger (Mobile) -->
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
+    <a href="index.html" class="nav-logo">
+      <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+      <span class="logo-text">Shivaay Paridhan</span>
+    </a>
+
+    <!-- CENTER: Main Navigation Menu (Desktop Only) -->
+    <nav class="nav-menu" id="nav-menu">
+      <a href="index.html" class="nav-menu-link">Home</a>
+      <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
+      <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
+      <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
+      <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
+      <a href="products.html" class="nav-menu-link">Collections</a>
+      <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
+    </nav>
+
+    <!-- RIGHT: Search & Cart Icons -->
+    <div class="nav-actions">
+      <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-count" id="cart-count" style="display: none;">0</span>
+      </a>
+    </div>
+
+    <!-- MOBILE: Side Menu (Hamburger) -->
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
+      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
+      <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
+      <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
+      <a href="products.html" class="nav-link" onclick="closeMenu()">Collections</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <hr class="nav-divider">
+      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+    </nav>
+  </div>
+
+  <!-- SEARCH BAR (Mobile Overlay) -->
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search for sarees, jewellery..." class="search-input">
+      <button onclick="closeSearch()" class="search-close-btn">✕</button>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">Our Story</p>
+  <h1 class="page-hero-title">Woven with Tradition</h1>
+  <p class="page-hero-sub">A brand born from love for Indian craftsmanship — celebrating every woman's grace.</p>
+  <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>About Us</span></div>
+</div>
+
+<main>
+
+<section class="story-section">
+  <div class="container">
+    <div class="story-grid">
+      <div class="story-image-wrap fade-up">
+        <div class="story-accent"></div>
+        <div class="story-accent2"></div>
+        <img src="images/hero_model.png" alt="Shivaay Paridhan Story" class="story-img">
+        <div class="story-badge">
+          <span class="story-badge-num">10+</span>
+          <p class="story-badge-text">Years of Legacy</p>
+        </div>
+      </div>
+      <div class="story-text fade-up">
+        <p class="section-eyebrow">Our Story</p>
+        <h2 class="story-title">From the Looms of Varanasi to Your Wardrobe</h2>
+        <p class="story-body">Shivaay Paridhan was born in 2026 from a deep love for India's rich weaving heritage. Founded in the lanes of Varanasi — the spiritual home of Banarasi silk — our journey began with a simple belief: every Indian woman deserves to wear art.</p>
+        <p class="story-body">What started as a small curated collection has grown into a trusted brand, serving thousands of women across India. We work directly with master weavers, ensuring that every saree carries the warmth of human hands and the spirit of generations of craftsmanship.</p>
+        <p class="story-body">We don't just sell sarees — we tell stories. Each thread, each motif, each border is a chapter of India's living textile tradition.</p>
+        <p class="story-signature">— Founder, Shivaay Paridhan</p>
+        <p class="story-sig-name">Shalini Ojha</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item fade-up"><span class="stat-number">500+</span><p class="stat-label2">Unique Designs</p></div>
+      <div class="stat-item fade-up"><span class="stat-number">10K+</span><p class="stat-label2">Happy Customers</p></div>
+      <div class="stat-item fade-up"><span class="stat-number">200+</span><p class="stat-label2">Artisan Partners</p></div>
+      <div class="stat-item fade-up"><span class="stat-number">10+</span><p class="stat-label2">Years of Excellence</p></div>
+    </div>
+  </div>
+</div>
+
+<section class="mission-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-eyebrow">Purpose</span>
+      <h2 class="section-title">Mission & Vision</h2>
+      <p class="section-sub">Everything we do is driven by a commitment to Indian artistry and the women we serve.</p>
+    </div>
+    <div class="mv-grid">
+      <div class="mv-card mv-card-mission fade-up">
+        <span class="mv-icon">🎯</span>
+        <h3 class="mv-card-title">Our Mission</h3>
+        <p class="mv-card-text">To make authentic, handcrafted Indian sarees accessible to every woman — bridging the gap between traditional weavers and modern shoppers, while ensuring fair wages and sustainable practices across our supply chain.</p>
+        <div class="mv-card-glow"></div>
+      </div>
+      <div class="mv-card mv-card-vision fade-up">
+        <span class="mv-icon">🌟</span>
+        <h3 class="mv-card-title">Our Vision</h3>
+        <p class="mv-card-text">To become India's most loved ethnic wear destination — a brand synonymous with trust, elegance, and cultural pride. We envision a world where handwoven Indian textiles are celebrated globally as the luxury they truly are.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="values-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-eyebrow">What We Stand For</span>
+      <h2 class="section-title">Our Core Values</h2>
+    </div>
+    <div class="values-grid">
+      <div class="value-card fade-up"><span class="value-icon">🧵</span><h3>Artisan First</h3><p>We partner directly with weavers across Varanasi, Kanchipuram, and Surat — ensuring fair trade and celebrating their mastery.</p></div>
+      <div class="value-card fade-up"><span class="value-icon">✨</span><h3>Uncompromised Quality</h3><p>Every saree passes a rigorous quality check. We use only Grade-A silk, natural dyes, and pure zari — no shortcuts, ever.</p></div>
+      <div class="value-card fade-up"><span class="value-icon">🌿</span><h3>Sustainable Practice</h3><p>From eco-friendly packaging to natural dyeing methods, we're committed to leaving a lighter footprint on our planet.</p></div>
+      <div class="value-card fade-up"><span class="value-icon">💛</span><h3>Customer Love</h3><p>Every customer interaction is an opportunity to delight. Our support team is always a call or message away.</p></div>
+      <div class="value-card fade-up"><span class="value-icon">🏛️</span><h3>Cultural Pride</h3><p>We celebrate India's heritage textile arts — keeping alive traditions that have been passed down for over 3,000 years.</p></div>
+      <div class="value-card fade-up"><span class="value-icon">🤝</span><h3>Trust & Transparency</h3><p>Honest pricing, authentic products, and clear policies. No hidden charges, no fake discounts — just pure value.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="artisan-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-eyebrow">The Makers</span>
+      <h2 class="section-title">Our Artisan Partners</h2>
+      <p class="section-sub">The real magic comes from the hands of these gifted weavers who pour decades of skill into every thread.</p>
+    </div>
+    <div class="artisan-grid">
+      <div class="artisan-card fade-up"><img src="images/saree1.png" alt="Artisan Ramesh" class="artisan-img"><div class="artisan-info"><h3 class="artisan-name">Ramesh Kumar</h3><p class="artisan-role">Master Weaver</p><p class="artisan-city">📍 Varanasi, UP — Banarasi Silk specialist, 28 years of experience</p></div></div>
+      <div class="artisan-card fade-up"><img src="images/saree3.png" alt="Artisan Lakshmi" class="artisan-img"><div class="artisan-info"><h3 class="artisan-name">Lakshmi Devi</h3><p class="artisan-role">Kanjivaram Artisan</p><p class="artisan-city">📍 Kanchipuram, TN — Temple border motif specialist, 35 years</p></div></div>
+      <div class="artisan-card fade-up"><img src="images/saree2.png" alt="Artisan Firoz" class="artisan-img"><div class="artisan-info"><h3 class="artisan-name">Firoz Sheikh</h3><p class="artisan-role">Zari Embroidery Expert</p><p class="artisan-city">📍 Surat, Gujarat — Gold zari craftsmanship, 22 years</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="about-cta">
+  <div class="container">
+    <div class="about-cta-inner">
+      <h2>Ready to Wear a Masterpiece?</h2>
+      <p>Explore our curated collection of handwoven sarees — each one a piece of living heritage, made just for you.</p>
+      <div class="about-cta-btns">
+        <a href="products.html" class="btn-primary">Shop Collection →</a>
+        <a href="contact.html" class="btn-ghost" style="border-color:var(--gold);color:var(--gold);">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-top"><div class="container"><div class="footer-grid">
+    <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating Indian weaving with premium handcrafted sarees.</p><div class="social-links"><a href="#" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="#" class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></div></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
+  </div></div></div>
+  <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
+</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

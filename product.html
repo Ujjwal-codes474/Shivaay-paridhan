@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crimson Zari Saree | Shivaay Paridhan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="offer-timer.css">
+<style>
+.product-detail-section{padding:80px 0 100px;}
+.product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.product-gallery{position:sticky;top:90px;}
+.main-image-wrap{border-radius:var(--radius);overflow:hidden;aspect-ratio:3/4;background:#f5f0e8;margin-bottom:16px;}
+.main-image-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;}
+.main-image-wrap:hover img{transform:scale(1.04);}
+.thumb-row{display:flex;gap:12px;}
+.thumb{width:80px;height:80px;border-radius:10px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:var(--transition);flex-shrink:0;}
+.thumb:hover,.thumb.active{border-color:var(--gold);}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.product-info{padding-top:8px;}
+.product-info .card-category{font-size:0.78rem;color:var(--gold);font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.product-title{font-family:var(--font-heading);font-size:clamp(1.8rem,3vw,2.5rem);color:var(--black);margin-bottom:12px;line-height:1.2;}
+.product-rating{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.product-stars{color:var(--gold);font-size:1rem;}
+.rating-count{font-size:0.85rem;color:var(--text-muted);}
+.product-price-row{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #eee;}
+.product-price{font-size:2rem;font-weight:700;color:var(--black);}
+.product-old-price{font-size:1.1rem;color:var(--text-muted);text-decoration:line-through;}
+.product-discount{background:rgba(201,168,76,0.15);color:var(--gold-dark);padding:4px 12px;border-radius:50px;font-size:0.8rem;font-weight:600;}
+.product-desc{color:var(--text-muted);line-height:1.8;font-size:0.93rem;margin-bottom:28px;}
+.selector-label{font-size:0.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--black);margin-bottom:12px;display:flex;justify-content:space-between;}
+.selector-label span{color:var(--gold);text-transform:none;letter-spacing:0;}
+.color-options{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.color-swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:var(--transition);position:relative;}
+.color-swatch:hover,.color-swatch.active{border-color:var(--gold);transform:scale(1.1);}
+.size-options{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+.size-btn{padding:9px 20px;border:1.5px solid #ddd;border-radius:8px;font-family:var(--font-body);font-size:0.85rem;cursor:pointer;transition:var(--transition);background:transparent;color:var(--black);}
+.size-btn:hover,.size-btn.active{border-color:var(--gold);background:rgba(201,168,76,0.1);color:var(--black);}
+.qty-row{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.qty-label{font-size:0.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--black);}
+.qty-control{display:flex;align-items:center;gap:0;border:1.5px solid #ddd;border-radius:10px;overflow:hidden;}
+.qty-btn{width:40px;height:40px;background:var(--off-white);border:none;cursor:pointer;font-size:1.2rem;font-weight:600;transition:var(--transition);}
+.qty-btn:hover{background:var(--gold);color:var(--black);}
+.qty-num{width:48px;text-align:center;font-size:0.95rem;font-weight:600;border:none;outline:none;font-family:var(--font-body);}
+.action-btns{display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap;}
+.action-btns .btn-primary,.action-btns .btn-ghost{flex:1;min-width:140px;}
+.product-features{background:var(--off-white);border-radius:var(--radius);padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.feature-item{display:flex;align-items:center;gap:10px;font-size:0.85rem;color:var(--text-muted);}
+.feature-icon{font-size:1.1rem;}
+.related-section{padding:80px 0;background:var(--off-white);}
+.related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+
+/* Accordion Styles */
+.accordion-section{padding:60px 0;background:#fff;}
+.accordion-container{max-width:800px;margin:0 auto;}
+.accordion-item{border:1px solid #eee;border-radius:12px;margin-bottom:12px;overflow:hidden;}
+.accordion-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:#fafafa;cursor:pointer;transition:background 0.3s;}
+.accordion-header:hover{background:#f5f5f5;}
+.accordion-header h3{margin:0;font-size:1rem;font-weight:600;color:var(--black);}
+.accordion-icon{font-size:1.2rem;transition:transform 0.3s;}
+.accordion-item.active .accordion-icon{transform:rotate(180deg);}
+.accordion-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease-out;padding:0 24px;}
+.accordion-item.active .accordion-content{max-height:500px;padding:0 24px 24px;}
+.accordion-content p,.accordion-content ul{margin:0;line-height:1.7;color:var(--text-muted);}
+.accordion-content ul{padding-left:20px;}
+.accordion-content li{margin-bottom:8px;}
+.spec-table{width:100%;border-collapse:collapse;}
+.spec-table td{padding:12px 0;border-bottom:1px solid #eee;}
+.spec-table td:first-child{font-weight:500;color:var(--black);width:40%;}
+
+/* Reviews Styles */
+.reviews-section{padding:60px 0;background:var(--off-white);}
+.reviews-container{max-width:800px;margin:0 auto;}
+.reviews-list{margin-bottom:40px;}
+.review-item{background:#fff;padding:20px 24px;border-radius:12px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.review-header{display:flex;justify-content:space-between;margin-bottom:8px;}
+.reviewer-name{font-weight:600;color:var(--black);}
+.review-date{font-size:0.85rem;color:var(--text-muted);}
+.review-rating{color:var(--gold);margin-bottom:8px;}
+.review-comment{color:var(--text-muted);line-height:1.6;margin:0;}
+.no-reviews{text-align:center;color:var(--text-muted);padding:40px;}
+.review-form{background:#fff;padding:24px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.review-form h3{margin:0 0 20px;font-size:1.1rem;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;margin-bottom:6px;font-size:0.9rem;font-weight:500;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:0.9rem;}
+.form-group textarea{min-height:100px;resize:vertical;}
+.btn-submit{background:var(--gold);color:var(--black);border:none;padding:14px 32px;border-radius:50px;font-weight:600;cursor:pointer;transition:var(--transition);}
+.btn-submit:hover{opacity:0.9;transform:translateY(-2px);}
+
+@media(max-width:900px){
+  .product-detail-grid{grid-template-columns:1fr;gap:32px;}
+  .product-gallery{position:static;}
+  .related-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:480px){
+  .related-grid{grid-template-columns:1fr 1fr;gap:12px;}
+  .thumb{width:60px;height:60px;}
+  .accordion-header{padding:14px 16px;}
+  .accordion-content,.accordion-item.active .accordion-content{padding:0 16px 16px;}
+}
+</style>
+</head>
+<body>
+
+<header class="navbar solid" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"><span class="logo-text">Shivaay Paridhan</span></a>
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="products.html" class="nav-link active" onclick="closeMenu()">Shop</a>
+      <a href="about.html" class="nav-link" onclick="closeMenu()">About</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+        <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+      <a href="cart.html" class="nav-cta" onclick="closeMenu()">Cart 🛒</a>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div style="height:70px;background:var(--black);"></div>
+<div style="background:var(--black);padding:12px 0;">
+  <div class="container"><div class="breadcrumb" style="justify-content:flex-start;margin:0;">
+    <a href="index.html">Home</a><span>›</span><a href="products.html">Shop</a><span>›</span><span>Crimson Zari Saree</span>
+  </div></div>
+</div>
+
+<main>
+<section class="product-detail-section">
+  <div class="container">
+    <div class="product-detail-grid">
+      <div class="product-gallery">
+        <div class="main-image-wrap" id="main-img-wrap"><img src="images/saree1.png" alt="Crimson Zari Saree" id="main-img"></div>
+        <div class="thumb-row">
+          <div class="thumb active" onclick="setImg('images/saree1.png',this)"><img src="images/saree1.png" alt="View 1"></div>
+          <div class="thumb" onclick="setImg('images/saree2.png',this)"><img src="images/saree2.png" alt="View 2"></div>
+          <div class="thumb" onclick="setImg('images/saree3.png',this)"><img src="images/saree3.png" alt="View 3"></div>
+          <div class="thumb" onclick="setImg('images/saree4.png',this)"><img src="images/saree4.png" alt="View 4"></div>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="card-category">Banarasi Silk</span>
+        <h1 class="product-title">Crimson Zari Saree</h1>
+        <div class="product-rating"><span class="product-stars">★★★★★</span><span class="rating-count">4.9 (128 reviews)</span></div>
+        <div class="product-price-row"><span class="product-price">₹4,299</span><span class="product-old-price">₹5,999</span><span class="product-discount">28% OFF</span></div>
+
+        <!-- Premium Offer Countdown Banner (injected by script.js) -->
+        <div id="product-offer-banner"></div>
+
+        <p class="product-desc">An exquisite Banarasi silk saree woven by master artisans in Varanasi. Featuring intricate gold zari embroidery and a rich crimson base, this saree is perfect for weddings, festivals, and grand celebrations. Comes with a matching blouse piece.</p>
+        
+        <!-- Selection options will be injected here by script.js -->
+        
+        <div class="qty-row">
+          <span class="qty-label">Quantity</span>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <input class="qty-num" type="text" id="qty" value="1" readonly>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <div class="action-btns">
+          <button class="btn-primary" onclick="addToCartFromDetail()">🛒 Add to Cart</button>
+          <button class="btn btn-whatsapp" onclick="orderOnWhatsAppFromDetail()" style="background:var(--gold);color:var(--black);">Buy via WhatsApp</button>
+          <button class="btn-ghost" onclick="buyNowFromDetail()" style="border-color:var(--gold);color:var(--gold);background:transparent;cursor:pointer;">Buy Now →</button>
+        </div>
+        <div class="review-access-btns" style="display: flex; gap: 10px; margin-bottom: 24px;">
+          <button class="btn-ghost" onclick="scrollToReviews()" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 8px; cursor: pointer;">View Reviews</button>
+          <button class="btn-ghost" onclick="focusReviewForm()" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 8px; cursor: pointer;">Write Review</button>
+        </div>
+        <div class="pincode-check" style="margin-bottom: 28px; padding: 20px; background: #f9f9f9; border-radius: 12px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px;">Check Delivery</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="pincode-input" placeholder="Enter Pincode" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            <button onclick="checkPincode()" style="padding: 10px 20px; background: var(--black); color: white; border: none; border-radius: 8px; cursor: pointer;">Check</button>
+          </div>
+          <div id="pincode-result" style="margin-top: 10px; font-size: 0.8rem; color: #666;"></div>
+        </div>
+        <div class="product-features">
+          <div class="feature-item"><span class="feature-icon">🚚</span><span>Free shipping above ₹2,000</span></div>
+          <div class="feature-item"><span class="feature-icon">🔄</span><span>7-day easy returns</span></div>
+          <div class="feature-item"><span class="feature-icon">🧵</span><span>100% pure Banarasi silk</span></div>
+          <div class="feature-item"><span class="feature-icon">📦</span><span>Premium gift packaging</span></div>
+          <div class="feature-item"><span class="feature-icon">🏅</span><span>Certified handwoven</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Accordion Section -->
+<section class="accordion-section">
+  <div class="container">
+    <div class="section-header"><span class="section-eyebrow">Details</span><h2 class="section-title">Product Information</h2></div>
+    <div class="accordion-container">
+      <div class="accordion-item active" data-accordion="description">
+        <div class="accordion-header">
+          <h3>📄 Description</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <p>Loading description...</p>
+        </div>
+      </div>
+      <div class="accordion-item" data-accordion="specification">
+        <div class="accordion-header">
+          <h3>📋 Specifications</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <p>Loading specifications...</p>
+        </div>
+      </div>
+      <div class="accordion-item" data-accordion="care">
+        <div class="accordion-header">
+          <h3>🧺 Product Care</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <p>Loading care instructions...</p>
+        </div>
+      </div>
+      <div class="accordion-item" data-accordion="shipping">
+        <div class="accordion-header">
+          <h3>🚚 Shipping & Returns</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <p>Loading shipping info...</p>
+        </div>
+      </div>
+      <div class="accordion-item" data-accordion="more">
+        <div class="accordion-header">
+          <h3>ℹ️ More Info</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <p>Each saree is handcrafted by skilled artisans in Varanasi. Minor variations in color and pattern are natural and add to the uniqueness of each piece. Certificate of authenticity included.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews Section -->
+<section id="reviews-section" class="reviews-section">
+  <div class="container">
+    <div class="reviews-container">
+      <div class="section-header"><span class="section-eyebrow">Testimonials</span><h2 class="section-title">Customer Reviews</h2></div>
+      
+      <div id="reviews-list" class="reviews-list">
+        <p class="no-reviews">Loading reviews...</p>
+      </div>
+      
+      <div id="review-form-container" class="review-form">
+        <h3>Write a Review</h3>
+        <div class="form-group">
+          <label for="review-name">Your Name</label>
+          <input type="text" id="review-name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+          <label for="review-rating">Rating</label>
+          <select id="review-rating" required>
+            <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+            <option value="4">⭐⭐⭐⭐ (Good)</option>
+            <option value="3">⭐⭐⭐ (Average)</option>
+            <option value="2">⭐⭐ (Poor)</option>
+            <option value="1">⭐ (Terrible)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="review-comment">Your Review</label>
+          <textarea id="review-comment" placeholder="Share your experience with this product..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="review-image-file" style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--gold); font-weight: 600;">
+            <span>📷 Upload Photo</span>
+            <input type="file" id="review-image-file" accept="image/*" style="display: none;" onchange="this.previousElementSibling.textContent = '✅ ' + this.files[0].name">
+          </label>
+        </div>
+        <button class="btn-submit" onclick="submitReview()">Submit Review</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="related-section">
+  <div class="container">
+    <div class="section-header"><span class="section-eyebrow">You May Also Like</span><h2 class="section-title">Related Sarees</h2></div>
+    <div class="related-grid" id="related-products">
+      <!-- Related products loaded dynamically -->
+    </div>
+  </div>
+</section>
+</main>
+
+
+<!-- Global Policy Strip -->
+<div class="global-policy-strip">
+  <div class="container">
+    <div class="policy-items">
+      <div class="policy-item">
+        <span class="policy-icon">🚚</span>
+        <div>
+          <h4>Global Delivery</h4>
+          <p>3–5 business days</p>
+        </div>
+      </div>
+      <div class="policy-item">
+        <span class="policy-icon">🔄</span>
+        <div>
+          <h4>Easy Exchange</h4>
+          <p>Available within 48 hours</p>
+        </div>
+      </div>
+      <div class="policy-item">
+        <span class="policy-icon">💬</span>
+        <div>
+          <h4>24/7 Support</h4>
+          <p>Via WhatsApp</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-top"><div class="container"><div class="footer-grid">
+    <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating the art of Indian weaving with premium handcrafted sarees.</p></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
+  </div></div></div>
+  <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
+function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');document.getElementById('hamburger').classList.toggle('active');}
+function closeMenu(){document.getElementById('nav-links').classList.remove('open');document.getElementById('hamburger').classList.remove('active');}
+function setImg(src,el){document.getElementById('main-img').src=src;document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function selectColor(el,name){document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('color-name').textContent=name;}
+function selectSize(el){document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function changeQty(d){const q=document.getElementById('qty');q.value=Math.max(1,parseInt(q.value)+d);}
+
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');}),{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach((el,i)=>{el.style.transitionDelay=i*0.1+'s';obs.observe(el);});
+</script>
+<script src="script.js"></script>
+</body>
+</html>

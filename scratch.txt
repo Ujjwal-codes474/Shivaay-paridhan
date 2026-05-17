@@ -1,0 +1,162 @@
+  <!-- ══════════ FEATURED COLLECTION — PRODUCT MARQUEE ══════════ -->
+  <section class="product-marquee" id="collection">
+    <div class="section-header">
+      <p class="section-eyebrow">Our Sarees</p>
+      <h2 class="section-title">Featured Collection</h2>
+      <p class="section-sub">Each saree is a masterpiece — woven with love, tradition, and the finest silk threads.</p>
+    </div>
+    <div class="product-marquee-track-wrap">
+      <div class="product-marquee-track">
+        <!-- Set 1 -->
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree1.png" alt="Crimson Silk Saree" class="card-img" loading="lazy">
+            <span class="card-badge">Bestseller</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Banarasi Silk</p>
+            <h3 class="card-name">Crimson Zari Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹4,299</span>
+              <span class="card-old-price">₹5,999</span>
+              <div class="card-stars">★★★★★</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree2.png" alt="Blush Pink Saree" class="card-img" loading="lazy">
+            <span class="card-badge new-badge">New</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Banarasi Silk</p>
+            <h3 class="card-name">Blush Bridal Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹6,499</span>
+              <span class="card-old-price">₹8,000</span>
+              <div class="card-stars">★★★★★</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree3.png" alt="Emerald Kanjivaram Saree" class="card-img" loading="lazy">
+          </div>
+          <div class="card-info">
+            <p class="card-category">Kanjivaram Silk</p>
+            <h3 class="card-name">Emerald Temple Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹7,999</span>
+              <span class="card-old-price">₹10,500</span>
+              <div class="card-stars">★★★★☆</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree4.png" alt="Ivory Bridal Saree" class="card-img" loading="lazy">
+            <span class="card-badge">Bridal</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Pure Silk</p>
+            <h3 class="card-name">Ivory Bridal Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹12,999</span>
+              <span class="card-old-price">₹16,000</span>
+              <div class="card-stars">★★★★★</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree5.png" alt="Navy Sequin Saree" class="card-img" loading="lazy">
+            <span class="card-badge new-badge">New</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Chiffon</p>
+            <h3 class="card-name">Navy Sequin Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹3,199</span>
+              <span class="card-old-price">₹4,500</span>
+              <div class="card-stars">★★★★☆</div>
+            </div>
+          </div>
+        </a>
+        <!-- Set 2 (duplicate for seamless loop) -->
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree1.png" alt="Crimson Silk Saree" class="card-img" loading="lazy">
+            <span class="card-badge">Bestseller</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Banarasi Silk</p>
+            <h3 class="card-name">Crimson Zari Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹4,299</span>
+              <span class="card-old-price">₹5,999</span>
+              <div class="card-stars">★★★★★</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree2.png" alt="Blush Pink Saree" class="card-img" loading="lazy">
+            <span class="card-badge new-badge">New</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Banarasi Silk</p>
+            <h3 class="card-name">Blush Bridal Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹6,499</span>
+              <span class="card-old-price">₹8,000</span>
+              <div class="card-stars">★★★★★</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree3.png" alt="Emerald Kanjivaram Saree" class="card-img" loading="lazy">
+          </div>
+          <div class="card-info">
+            <p class="card-category">Kanjivaram Silk</p>
+            <h3 class="card-name">Emerald Temple Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹7,999</span>
+              <span class="card-old-price">₹10,500</span>
+              <div class="card-stars">★★★★☆</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree4.png" alt="Ivory Bridal Saree" class="card-img" loading="lazy">
+            <span class="card-badge">Bridal</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Pure Silk</p>
+            <h3 class="card-name">Ivory Bridal Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹12,999</span>
+              <span class="card-old-price">₹16,000</span>
+              <div class="card-stars">★★★★★</div>
+            </div>
+          </div>
+        </a>
+        <a href="products.html" class="product-card" style="text-decoration:none">
+          <div class="card-image-wrap">
+            <img src="images/saree5.png" alt="Navy Sequin Saree" class="card-img" loading="lazy">
+            <span class="card-badge new-badge">New</span>
+          </div>
+          <div class="card-info">
+            <p class="card-category">Chiffon</p>
+            <h3 class="card-name">Navy Sequin Saree</h3>
+            <div class="card-footer">
+              <span class="card-price">₹3,199</span>
+              <span class="card-old-price">₹4,500</span>
+              <div class="card-stars">★★★★☆</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>

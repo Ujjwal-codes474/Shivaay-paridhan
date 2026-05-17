@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Collection | Shivaay Paridhan</title>
+  <meta name="description" content="Explore premium handcrafted sarees — Banarasi, Kanjivaram, Chiffon & Bridal collections at Shivaay Paridhan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="offer-timer.css">
+  <style>
+/* ══════════ SHOP PAGE ══════════ */
+.shop-page-section { padding: 0 0 100px; background: var(--off-white); }
+.shop-layout {
+  display: grid; grid-template-columns: 260px 1fr; gap: 36px;
+  padding: 60px 0 0;
+}
+
+/* Filter Sidebar */
+.filter-panel {
+  background: var(--white); border-radius: var(--radius); padding: 28px;
+  box-shadow: var(--shadow-card); height: fit-content; position: sticky; top: 90px;
+}
+.filter-title {
+  font-family: var(--font-heading); font-size: 1.15rem; color: var(--black);
+  margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid #eee;
+}
+.filter-section { margin-bottom: 28px; }
+.filter-section:last-child { margin-bottom: 0; }
+.filter-section .filter-title {
+  font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 14px; padding-bottom: 0; border-bottom: none;
+}
+.filter-select {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #eee; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.88rem; outline: none; cursor: pointer;
+  background: var(--white); color: var(--black); transition: var(--transition);
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+.filter-select:focus { border-color: var(--gold); }
+.filter-options { display: flex; flex-direction: column; gap: 8px; }
+.filter-btn {
+  padding: 9px 18px; border: 1.5px solid #eee; border-radius: 50px;
+  font-family: var(--font-body); font-size: 0.85rem; cursor: pointer;
+  transition: var(--transition); background: transparent; color: var(--text-muted);
+  text-align: left;
+}
+.filter-btn:hover { border-color: var(--gold); color: var(--black); }
+.filter-btn.active {
+  border-color: var(--gold); background: rgba(201,168,76,0.1); color: var(--black); font-weight: 500;
+}
+.subcategory-filters { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding-left: 8px; }
+.subcategory-btn {
+  padding: 7px 14px; border: 1px solid #eee; border-radius: 50px;
+  font-family: var(--font-body); font-size: 0.8rem; cursor: pointer;
+  transition: var(--transition); background: transparent; color: var(--text-muted);
+}
+.subcategory-btn:hover, .subcategory-btn.active { border-color: var(--gold); color: var(--gold-dark); background: rgba(201,168,76,0.08); }
+.clear-filters {
+  width: 100%; padding: 11px; background: var(--black); color: var(--white);
+  border: none; border-radius: 50px; font-family: var(--font-body);
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.clear-filters:hover { background: var(--gold); color: var(--black); }
+
+/* Shop Main Area */
+
+.shop-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+}
+.shop-header h1, #shop-title {
+  font-family: var(--font-heading); font-size: 1.6rem; color: var(--black);
+}
+.results-count { font-size: 0.88rem; color: var(--text-muted); }
+
+/* Products Grid */
+.products-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+}
+
+/* No Results */
+.no-results {
+  text-align: center; padding: 80px 20px; background: var(--white);
+  border-radius: var(--radius); box-shadow: var(--shadow-card);
+}
+.no-results-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.4; }
+.no-results h3 {
+  font-family: var(--font-heading); font-size: 1.4rem; color: var(--black); margin-bottom: 10px;
+}
+.no-results p { color: var(--text-muted); font-size: 0.92rem; }
+
+/* Mobile Filter Toggle */
+.filter-toggle-btn {
+  display: none; align-items: center; gap: 8px; padding: 11px 24px;
+  background: var(--black); color: var(--white); border: none; border-radius: 50px;
+  font-family: var(--font-body); font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; margin-bottom: 20px; transition: var(--transition);
+}
+.filter-toggle-btn:hover { background: var(--gold); color: var(--black); }
+.filter-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 499;
+}
+.filter-overlay.show { display: block; }
+
+/* ══════════ RESPONSIVE ══════════ */
+@media (max-width: 1024px) {
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .shop-layout { grid-template-columns: 1fr; }
+  .filter-panel {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 500;
+    border-radius: 24px 24px 0 0; transform: translateY(100%);
+    transition: var(--transition); max-height: 85vh; overflow-y: auto;
+  }
+  .filter-panel.open { transform: translateY(0); }
+  .filter-toggle-btn { display: flex; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}
+@media (max-width: 480px) {
+  .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card-info { padding: 14px; }
+  .card-name { font-size: 0.95rem; }
+}
+  </style>
+</head>
+<body class="products-page">
+
+<!-- ══════════ NAVBAR ══════════ -->
+<header class="navbar solid" id="navbar">
+  <div class="nav-container">
+    <!-- LEFT: Hamburger (Mobile) -->
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
+    <a href="index.html" class="nav-logo">
+      <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+      <span class="logo-text">Shivaay Paridhan</span>
+    </a>
+
+    <!-- CENTER: Main Navigation Menu (Desktop Only) -->
+    <nav class="nav-menu" id="nav-menu">
+      <a href="index.html" class="nav-menu-link">Home</a>
+      <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
+      <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
+      <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
+      <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
+      <a href="products.html" class="nav-menu-link active">Collections</a>
+      <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
+    </nav>
+
+    <!-- RIGHT: Search & Cart Icons -->
+    <div class="nav-actions">
+      <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-count" id="cart-count" style="display: none;">0</span>
+      </a>
+    </div>
+
+    <!-- MOBILE: Side Menu (Hamburger) -->
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
+      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
+      <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
+      <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
+      <a href="products.html" class="nav-link active" onclick="closeMenu()">Collections</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <hr class="nav-divider">
+      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+    </nav>
+  </div>
+
+  <!-- SEARCH BAR (Mobile Overlay) -->
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search for sarees, jewellery..." class="search-input">
+      <button onclick="closeSearch()" class="search-close-btn">✕</button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ PAGE HERO ══════════ -->
+<div class="page-hero">
+  <p class="page-hero-eyebrow">Shivaay Paridhan</p>
+  <h1 class="page-hero-title">Our Collection</h1>
+  <p class="page-hero-sub">Explore premium sarees crafted with elegance — handpicked for every occasion.</p>
+  <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Shop</span></div>
+</div>
+
+<!-- ══════════ MARQUEE ══════════ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span>Banarasi Silk</span><span class="dot">✦</span>
+    <span>Kanjivaram</span><span class="dot">✦</span>
+    <span>Chiffon Elegance</span><span class="dot">✦</span>
+    <span>Bridal Collection</span><span class="dot">✦</span>
+    <span>Festive Wear</span><span class="dot">✦</span>
+    <span>Handwoven Art</span><span class="dot">✦</span>
+    <span>Banarasi Silk</span><span class="dot">✦</span>
+    <span>Kanjivaram</span><span class="dot">✦</span>
+    <span>Chiffon Elegance</span><span class="dot">✦</span>
+    <span>Bridal Collection</span><span class="dot">✦</span>
+    <span>Festive Wear</span><span class="dot">✦</span>
+    <span>Handwoven Art</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- ══════════ SHOP SECTION ══════════ -->
+<main>
+  <section class="shop-page-section">
+    <div class="container">
+      <button class="filter-toggle-btn" onclick="toggleFilter()">⚙ Filters</button>
+      <div class="filter-overlay" id="filter-overlay" onclick="toggleFilter()"></div>
+
+      <div class="shop-layout">
+        <!-- Filter Sidebar -->
+        <aside class="filter-panel" id="filter-panel">
+          <h2 class="filter-title">Filter Products</h2>
+
+          <!-- Price Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Price Range</div>
+            <select id="price-filter" class="filter-select" onchange="applyFilters()">
+              <option value="">All Prices</option>
+              <option value="1000">Under ₹1,000</option>
+              <option value="1500">Under ₹1,500</option>
+              <option value="2000">Under ₹2,000</option>
+              <option value="2500">Under ₹2,500</option>
+              <option value="5000">Under ₹5,000</option>
+              <option value="10000">Under ₹10,000</option>
+            </select>
+          </div>
+
+          <!-- Category Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Categories</div>
+            <div class="filter-options">
+              <button class="filter-btn active" data-category="all" onclick="setCategoryFilter('all')">All Products</button>
+              <button class="filter-btn" data-category="clothing" onclick="setCategoryFilter('clothing')">Clothing</button>
+              <button class="filter-btn" data-category="jewellery" onclick="setCategoryFilter('jewellery')">Jewellery</button>
+            </div>
+
+            <!-- Subcategory Filters -->
+            <div id="subcategory-filters" class="subcategory-filters" style="display: none;">
+              <button class="subcategory-btn" data-type="all" onclick="setSubcategoryFilter('all')">All Types</button>
+              <button class="subcategory-btn" data-type="silk" onclick="setSubcategoryFilter('silk')">Silk</button>
+              <button class="subcategory-btn" data-type="cotton" onclick="setSubcategoryFilter('cotton')">Cotton</button>
+              <button class="subcategory-btn" data-type="banarasi" onclick="setSubcategoryFilter('banarasi')">Banarasi</button>
+              <button class="subcategory-btn" data-type="handloom" onclick="setSubcategoryFilter('handloom')">Handloom</button>
+              <button class="subcategory-btn" data-type="ajrakh" onclick="setSubcategoryFilter('ajrakh')">Ajrakh</button>
+            </div>
+          </div>
+
+          <!-- Clear Filters -->
+          <div class="filter-section">
+            <button class="clear-filters" onclick="clearAllFilters()">Clear All Filters</button>
+          </div>
+        </aside>
+
+        <!-- Products Grid Area -->
+        <div class="shop-main">
+          <div class="shop-header">
+            <h1 id="shop-title">All Products</h1>
+            <span id="results-count" class="results-count">Loading...</span>
+          </div>
+          <div id="product-container" class="products-grid">
+            <!-- Products will be loaded here dynamically -->
+          </div>
+          <div id="no-results" class="no-results" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <h3>No products found</h3>
+            <p>Try adjusting your filters or search criteria</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <a href="index.html" class="footer-logo">
+            <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+            Shivaay Paridhan
+          </a>
+          <p class="footer-tagline">Elegance in Every Drape</p>
+          <p class="footer-desc">Celebrating the art of Indian weaving with premium handcrafted sarees for the modern woman.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="WhatsApp">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Quick Links</h4>
+          <ul class="footer-links-list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Shop All</a></li>
+            <li><a href="clothing.html">Sarees</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Collections</h4>
+          <ul class="footer-links-list">
+            <li><a href="products.html">Banarasi Silk</a></li>
+            <li><a href="products.html">Kanjivaram</a></li>
+            <li><a href="products.html">Chiffon Sarees</a></li>
+            <li><a href="products.html">Bridal Collection</a></li>
+            <li><a href="products.html">Festive Wear</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Contact Us</h4>
+          <ul class="footer-contact-list">
+            <li><span class="contact-icon">📍</span><span>Varanasi, Uttar Pradesh, India</span></li>
+            <li><span class="contact-icon">📞</span><a href="tel:+918539865430">+91 85398 65430</a></li>
+            <li><span class="contact-icon">✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <p>© 2026 Shivaay Paridhan. All rights reserved. Crafted with ❤️ for every Indian woman.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Redundant scripts removed -->
+<script src="script.js"></script>
+</body>
+</html>

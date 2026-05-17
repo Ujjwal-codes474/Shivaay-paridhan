@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Shivaay Paridhan</title>
+  <meta name="description" content="Login or create an account at Shivaay Paridhan — India's finest ethnic fashion.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <style>
+/* ══════════ AUTH PAGE STYLES ══════════ */
+.auth-section { padding: 0 0 100px; background: var(--off-white); }
+.auth-wrap { max-width: 480px; margin: 0 auto; padding: 60px 0 0; }
+
+/* ── Tabs ── */
+.auth-tabs { display: flex; gap: 0; margin-bottom: 0; border-radius: var(--radius) var(--radius) 0 0; overflow: hidden; }
+.tab-btn {
+  flex: 1; padding: 14px; border: none; background: var(--dark3); color: rgba(255,255,255,0.6);
+  font-family: var(--font-body); font-size: 0.92rem; font-weight: 600; cursor: pointer;
+  transition: var(--transition); letter-spacing: 0.5px;
+}
+.tab-btn.active { background: var(--white); color: var(--black); }
+.tab-btn:hover:not(.active) { color: var(--gold); }
+
+/* ── Card ── */
+.auth-card {
+  background: var(--white); border-radius: 0 0 var(--radius) var(--radius);
+  padding: 40px 36px; box-shadow: var(--shadow-card);
+  position: relative; overflow: hidden;
+}
+.auth-card h1 { font-family: var(--font-heading); font-size: 1.6rem; color: var(--black); margin-bottom: 8px; }
+.auth-card > p, .auth-card .auth-subtitle { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 28px; }
+
+/* ── Form Groups ── */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--black); margin-bottom: 8px; letter-spacing: 0.3px; }
+.form-group input {
+  width: 100%; padding: 12px 16px; border: 1.5px solid #eee; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.9rem; transition: var(--transition);
+  outline: none; background: var(--white); color: var(--black);
+}
+.form-group input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
+.form-group input.input-error { border-color: #e74c3c; box-shadow: 0 0 0 3px rgba(231,76,60,0.1); }
+.form-group input.input-success { border-color: #2ecc71; box-shadow: 0 0 0 3px rgba(46,204,113,0.1); }
+
+/* ── Password Input Wrapper ── */
+.password-input-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.password-input-wrap input { padding-right: 48px; }
+.toggle-password {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--text-muted);
+  transition: var(--transition); padding: 4px; line-height: 1;
+}
+.toggle-password:hover { color: var(--gold); }
+
+/* ── Password Strength Rules ── */
+.password-rules { margin-top: 10px; padding: 12px 14px; background: #f8f8f8; border-radius: var(--radius-sm); }
+.password-rules p { font-size: 0.75rem; font-weight: 600; color: var(--black); margin-bottom: 6px; letter-spacing: 0.3px; }
+.rule-item {
+  display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-muted);
+  padding: 3px 0; transition: color 0.2s ease;
+}
+.rule-item .rule-icon { font-size: 0.7rem; flex-shrink: 0; width: 16px; text-align: center; transition: all 0.2s ease; }
+.rule-item.valid { color: #2ecc71; }
+.rule-item.valid .rule-icon { color: #2ecc71; }
+.rule-item.invalid { color: #e74c3c; }
+.rule-item.invalid .rule-icon { color: #e74c3c; }
+
+/* ── Strength Meter ── */
+.strength-meter { height: 4px; background: #eee; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.strength-meter-fill { height: 100%; width: 0; border-radius: 2px; transition: width 0.3s ease, background 0.3s ease; }
+.strength-label { font-size: 0.72rem; margin-top: 4px; font-weight: 600; letter-spacing: 0.3px; }
+
+/* ── Buttons ── */
+.auth-submit {
+  width: 100%; margin-top: 24px; position: relative; overflow: hidden;
+  min-height: 48px; display: flex; align-items: center; justify-content: center;
+}
+.auth-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.auth-submit .btn-text { transition: opacity 0.2s; }
+.auth-submit .btn-loader {
+  position: absolute; display: none;
+}
+.auth-submit.loading .btn-text { opacity: 0; }
+.auth-submit.loading .btn-loader { display: block; }
+
+/* Spinner */
+.spinner {
+  width: 22px; height: 22px; border: 3px solid rgba(0,0,0,0.15);
+  border-top-color: var(--black); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Alert Messages ── */
+.auth-alert {
+  padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 20px;
+  font-size: 0.82rem; font-weight: 500; display: none; align-items: center; gap: 10px;
+  animation: alertSlide 0.3s ease;
+}
+.auth-alert.show { display: flex; }
+.auth-alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.auth-alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.auth-alert.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+@keyframes alertSlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Links ── */
+.auth-note { text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 0.82rem; line-height: 1.6; }
+.auth-link { color: var(--gold); font-weight: 600; cursor: pointer; transition: var(--transition); text-decoration: none; }
+.auth-link:hover { color: var(--gold-dark); text-decoration: underline; }
+.forgot-link { display: inline-block; margin-top: 4px; font-size: 0.8rem; color: var(--gold); font-weight: 500; cursor: pointer; }
+.forgot-link:hover { color: var(--gold-dark); text-decoration: underline; }
+
+/* ── Forms Visibility ── */
+.auth-form { display: none; }
+.auth-form.active { display: block; animation: formFade 0.35s ease; }
+@keyframes formFade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── OTP Input ── */
+.otp-input-group {
+  display: flex; gap: 10px; justify-content: center; margin: 20px 0;
+}
+.otp-digit {
+  width: 48px; height: 56px; text-align: center; font-size: 1.4rem; font-weight: 700;
+  font-family: var(--font-body); border: 2px solid #eee; border-radius: var(--radius-sm);
+  transition: var(--transition); outline: none; color: var(--black);
+  background: var(--white);
+}
+.otp-digit:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+.otp-digit.filled { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+
+/* ── Resend OTP ── */
+.resend-wrap { text-align: center; margin-top: 16px; }
+.resend-btn {
+  background: none; border: none; font-family: var(--font-body); font-size: 0.82rem;
+  color: var(--gold); font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.resend-btn:disabled { color: var(--text-muted); cursor: not-allowed; }
+.resend-btn:not(:disabled):hover { color: var(--gold-dark); text-decoration: underline; }
+.resend-timer { font-size: 0.78rem; color: var(--text-muted); margin-left: 4px; }
+
+/* ── Steps Indicator ── */
+.steps-indicator { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 28px; }
+.step-dot {
+  width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; background: #eee; color: var(--text-muted);
+  transition: var(--transition);
+}
+.step-dot.active { background: var(--gold); color: var(--black); box-shadow: 0 2px 12px rgba(201,168,76,0.4); }
+.step-dot.completed { background: #2ecc71; color: var(--white); }
+.step-line { width: 48px; height: 2px; background: #eee; transition: var(--transition); }
+.step-line.active { background: var(--gold); }
+.step-line.completed { background: #2ecc71; }
+
+/* ── Back Button ── */
+.back-to-login {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-muted);
+  cursor: pointer; transition: var(--transition); margin-bottom: 20px; background: none; border: none;
+  font-family: var(--font-body); padding: 0;
+}
+.back-to-login:hover { color: var(--gold); }
+
+/* ── Success Animation ── */
+.success-checkmark { text-align: center; margin: 20px 0; }
+.success-checkmark .check-icon {
+  width: 64px; height: 64px; border-radius: 50%; background: #2ecc71; color: white;
+  font-size: 1.8rem; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* ── Responsive ── */
+@media (max-width: 540px) {
+  .auth-wrap { padding: 32px 0 0; }
+  .auth-card { padding: 28px 20px; }
+  .otp-digit { width: 42px; height: 50px; font-size: 1.2rem; }
+  .otp-input-group { gap: 8px; }
+}
+  </style>
+</head>
+<body>
+
+<header class="navbar solid" id="navbar">
+  <div class="nav-container">
+    <!-- LEFT: Hamburger (Mobile) -->
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
+    <a href="index.html" class="nav-logo">
+      <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+      <span class="logo-text">Shivaay Paridhan</span>
+    </a>
+
+    <!-- CENTER: Main Navigation Menu (Desktop Only) -->
+    <nav class="nav-menu" id="nav-menu">
+      <a href="index.html" class="nav-menu-link">Home</a>
+      <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
+      <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
+      <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
+      <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
+      <a href="products.html" class="nav-menu-link">Collections</a>
+      <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
+    </nav>
+
+    <!-- RIGHT: Search & Cart Icons -->
+    <div class="nav-actions">
+      <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+      <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-count" id="cart-count" style="display: none;">0</span>
+      </a>
+    </div>
+
+    <!-- MOBILE: Side Menu (Hamburger) -->
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
+      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
+      <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
+      <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
+      <a href="products.html" class="nav-link" onclick="closeMenu()">Collections</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <hr class="nav-divider">
+      <a href="login.html" class="nav-link nav-login-btn active" onclick="closeMenu()">Login</a>
+      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+    </nav>
+  </div>
+
+  <!-- SEARCH BAR (Mobile Overlay) -->
+  <div class="search-overlay" id="search-overlay">
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search for sarees, jewellery..." class="search-input">
+      <button onclick="closeSearch()" class="search-close-btn">✕</button>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <p class="page-hero-eyebrow">Welcome Back</p>
+  <h1 class="page-hero-title">Your Account</h1>
+  <p class="page-hero-sub">Login or create an account to manage your orders.</p>
+  <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Login</span></div>
+</div>
+
+<main>
+  <section class="auth-section">
+    <div class="container">
+      <div class="auth-wrap">
+        <div class="auth-tabs" id="auth-tabs">
+          <button class="tab-btn active" id="tab-login" onclick="showLogin()">Login</button>
+          <button class="tab-btn" id="tab-register" onclick="showRegister()">Register</button>
+        </div>
+        <div class="auth-card">
+          <!-- Alert Message -->
+          <div class="auth-alert" id="auth-alert"><span class="alert-icon"></span><span class="alert-msg"></span></div>
+
+          <!-- ════════ LOGIN FORM ════════ -->
+          <form id="login-form" class="auth-form active" novalidate>
+            <h1>Login</h1>
+            <p class="auth-subtitle">Access your account to continue shopping</p>
+            <div class="form-group">
+              <label for="login-email">Email Address</label>
+              <input type="email" id="login-email" name="email" placeholder="your@email.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <div class="password-input-wrap">
+                <input type="password" id="login-password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('login-password', this)" aria-label="Toggle password visibility">👁️</button>
+              </div>
+              <span class="forgot-link" onclick="showForgotPassword()">Forgot Password?</span>
+            </div>
+            <button type="submit" class="btn-primary auth-submit" id="login-submit">
+              <span class="btn-text">Login</span>
+              <span class="btn-loader"><span class="spinner"></span></span>
+            </button>
+            <p class="auth-note">Don't have an account? <span class="auth-link" onclick="showRegister()">Register here</span></p>
+          </form>
+
+          <!-- ════════ REGISTER FORM ════════ -->
+          <form id="register-form" class="auth-form" novalidate>
+            <h1>Register</h1>
+            <p class="auth-subtitle">Create your account to start shopping</p>
+            <div class="form-group">
+              <label for="register-name">Full Name</label>
+              <input type="text" id="register-name" name="name" placeholder="Enter your full name" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="register-email">Email Address</label>
+              <input type="email" id="register-email" name="email" placeholder="your@email.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="register-phone">Phone Number</label>
+              <input type="tel" id="register-phone" name="phone" placeholder="+91 XXXXX XXXXX" required autocomplete="tel">
+            </div>
+            <div class="form-group">
+              <label for="register-password">Password</label>
+              <div class="password-input-wrap">
+                <input type="password" id="register-password" name="password" placeholder="Create a password" required autocomplete="new-password">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('register-password', this)" aria-label="Toggle password visibility">👁️</button>
+              </div>
+              <!-- Password Hint -->
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">Minimum 4 characters required</p>
+
+            </div>
+            <div class="form-group">
+              <label for="register-confirm-password">Confirm Password</label>
+              <div class="password-input-wrap">
+                <input type="password" id="register-confirm-password" name="confirmPassword" placeholder="Re-enter your password" required autocomplete="new-password">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('register-confirm-password', this)" aria-label="Toggle password visibility">👁️</button>
+              </div>
+              <div class="rule-item" id="confirm-match-rule" style="margin-top: 6px;"><span class="rule-icon">○</span> Passwords match</div>
+            </div>
+            <button type="submit" class="btn-primary auth-submit" id="register-submit" disabled>
+              <span class="btn-text">Create Account</span>
+              <span class="btn-loader"><span class="spinner"></span></span>
+            </button>
+            <p class="auth-note">Already have an account? <span class="auth-link" onclick="showLogin()">Login here</span></p>
+          </form>
+
+          <!-- ════════ FORGOT PASSWORD FLOW ════════ -->
+          <div id="forgot-password-flow" class="auth-form">
+            <button class="back-to-login" onclick="showLogin()">← Back to Login</button>
+
+            <!-- Step Indicators -->
+            <div class="steps-indicator" id="steps-indicator">
+              <div class="step-dot active" id="step-dot-1">1</div>
+              <div class="step-line" id="step-line-1"></div>
+              <div class="step-dot" id="step-dot-2">2</div>
+              <div class="step-line" id="step-line-2"></div>
+              <div class="step-dot" id="step-dot-3">3</div>
+            </div>
+
+            <!-- STEP 1: Enter Email/Mobile -->
+            <div id="forgot-step-1" class="forgot-step active">
+              <h1>Forgot Password</h1>
+              <p class="auth-subtitle">Enter your registered email or mobile number to receive a verification code.</p>
+              <div class="form-group">
+                <label for="forgot-identifier">Email or Mobile Number</label>
+                <input type="text" id="forgot-identifier" placeholder="your@email.com or +91 XXXXX XXXXX" required>
+              </div>
+              <button type="button" class="btn-primary auth-submit" id="forgot-send-btn" onclick="handleForgotPassword()">
+                <span class="btn-text">Send OTP</span>
+                <span class="btn-loader"><span class="spinner"></span></span>
+              </button>
+            </div>
+
+            <!-- STEP 2: Enter OTP -->
+            <div id="forgot-step-2" class="forgot-step" style="display:none;">
+              <h1>Verify OTP</h1>
+              <p class="auth-subtitle">Enter the 6-digit code sent to <strong id="masked-email"></strong></p>
+              <div class="otp-input-group" id="otp-input-group">
+                <input type="text" class="otp-digit" maxlength="1" data-index="0" inputmode="numeric" autocomplete="one-time-code">
+                <input type="text" class="otp-digit" maxlength="1" data-index="1" inputmode="numeric">
+                <input type="text" class="otp-digit" maxlength="1" data-index="2" inputmode="numeric">
+                <input type="text" class="otp-digit" maxlength="1" data-index="3" inputmode="numeric">
+                <input type="text" class="otp-digit" maxlength="1" data-index="4" inputmode="numeric">
+                <input type="text" class="otp-digit" maxlength="1" data-index="5" inputmode="numeric">
+              </div>
+              <button type="button" class="btn-primary auth-submit" id="verify-otp-btn" onclick="handleVerifyOtp()">
+                <span class="btn-text">Verify OTP</span>
+                <span class="btn-loader"><span class="spinner"></span></span>
+              </button>
+              <div class="resend-wrap">
+                <button type="button" class="resend-btn" id="resend-btn" onclick="handleResendOtp()" disabled>Resend OTP</button>
+                <span class="resend-timer" id="resend-timer"></span>
+              </div>
+            </div>
+
+            <!-- STEP 3: Reset Password -->
+            <div id="forgot-step-3" class="forgot-step" style="display:none;">
+              <h1>Reset Password</h1>
+              <p class="auth-subtitle">Create a new strong password for your account.</p>
+              <div class="form-group">
+                <label for="reset-password">New Password</label>
+                <div class="password-input-wrap">
+                  <input type="password" id="reset-password" placeholder="Enter new password" required autocomplete="new-password">
+                  <button type="button" class="toggle-password" onclick="togglePasswordVisibility('reset-password', this)" aria-label="Toggle password visibility">👁️</button>
+                </div>
+
+              </div>
+              <div class="form-group">
+                <label for="reset-confirm-password">Confirm New Password</label>
+                <div class="password-input-wrap">
+                  <input type="password" id="reset-confirm-password" placeholder="Re-enter new password" required autocomplete="new-password">
+                  <button type="button" class="toggle-password" onclick="togglePasswordVisibility('reset-confirm-password', this)" aria-label="Toggle password visibility">👁️</button>
+                </div>
+                <div class="rule-item" id="reset-confirm-match-rule" style="margin-top: 6px;"><span class="rule-icon">○</span> Passwords match</div>
+              </div>
+              <button type="button" class="btn-primary auth-submit" id="reset-password-btn" onclick="handleResetPassword()" disabled>
+                <span class="btn-text">Reset Password</span>
+                <span class="btn-loader"><span class="spinner"></span></span>
+              </button>
+            </div>
+
+            <!-- SUCCESS SCREEN -->
+            <div id="forgot-step-success" class="forgot-step" style="display:none;">
+              <div class="success-checkmark">
+                <div class="check-icon">✓</div>
+                <h1 style="font-size:1.3rem; margin-bottom:8px;">Password Reset Successful!</h1>
+                <p class="auth-subtitle" style="margin-bottom:24px;">Your password has been updated. You can now login with your new password.</p>
+              </div>
+              <button type="button" class="btn-primary auth-submit" onclick="showLogin()">
+                <span class="btn-text">Back to Login</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-top"><div class="container"><div class="footer-grid">
+    <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating Indian weaving with premium handcrafted sarees.</p></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
+  </div></div></div>
+  <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
+</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

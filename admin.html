@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Shivaay Paridhan</title>
+  <meta name="description" content="Shivaay Paridhan Admin Dashboard - Manage products, orders, and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="offer-timer.css">
+  <link rel="stylesheet" href="coupons.css">
+  <style>
+    /* ============ ADMIN LAYOUT ============ */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 70px);
+    }
+
+    .admin-sidebar {
+      background: var(--black);
+      padding: 32px 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-header {
+      padding: 0 24px 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-header h2 {
+      font-family: var(--font-heading);
+      color: var(--gold);
+      font-size: 1.2rem;
+    }
+
+    .sidebar-nav {
+      padding: 20px 0;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .sidebar-link:hover {
+      color: var(--white);
+      background: rgba(201, 168, 76, 0.08);
+    }
+
+    .sidebar-link.active {
+      color: var(--gold);
+      background: rgba(201, 168, 76, 0.1);
+      border-right: 3px solid var(--gold);
+    }
+
+    .sidebar-icon {
+      font-size: 1.1rem;
+    }
+
+    .sidebar-footer {
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: auto;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--dark3);
+      color: var(--white);
+      border: none;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    .admin-content {
+      padding: 32px;
+      background: var(--off-white);
+      overflow-y: auto;
+    }
+
+    /* ============ ADMIN SECTIONS ============ */
+    .admin-section {
+      display: none;
+    }
+
+    .admin-section.active {
+      display: block;
+    }
+
+    .admin-section .section-header {
+      margin-bottom: 28px;
+    }
+
+    .admin-section .section-header h1 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: var(--black);
+    }
+
+    /* ============ DASHBOARD STATS ============ */
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(201, 168, 76, 0.1);
+      border-radius: var(--radius-sm);
+    }
+
+    .stat-info h3 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .stat-info p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ============ RECENT ORDERS ============ */
+    .recent-order-row {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr 1fr 1fr;
+      align-items: center;
+      gap: 0;
+      padding: 14px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .recent-order-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .order-id {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .order-amount {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .order-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .status-pending_whatsapp {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .status-confirmed {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .status-shipped {
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+
+    .status-delivered {
+      background: #dcfce3;
+      color: #15803d;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* ============ ADMIN FORM CONTAINER ============ */
+    .admin-form-container {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      margin-bottom: 28px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .admin-form-container h2 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--black);
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(201, 168, 76, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-form-container h2::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: var(--gold);
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* ============ PRODUCT FORM ============ */
+    .product-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .form-group label .optional {
+      font-weight: 400;
+      text-transform: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      outline: none;
+      background: #fafafa;
+      color: var(--black);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.1);
+      background: var(--white);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #bbb;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+
+    .form-group-full {
+      grid-column: 1/-1;
+    }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .form-section-divider {
+      grid-column: 1/-1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 8px 0 4px;
+    }
+
+    .form-section-divider span {
+      background: linear-gradient(135deg, rgba(201, 168, 76, 0.12), rgba(201, 168, 76, 0.04));
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      border-radius: 50px;
+      padding: 7px 18px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .form-section-divider::before,
+    .form-section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201, 168, 76, 0.2);
+    }
+
+
+    /* ============ IMAGE UPLOAD AREA ============ */
+    .image-upload-area {
+      border: 2px dashed #d4d4d4;
+      border-radius: 14px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-upload-area:hover {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, #fdf8ef 0%, #faf5e8 100%);
+    }
+
+    .image-upload-area.drag-over {
+      border-color: var(--gold);
+      background: rgba(201, 168, 76, 0.08);
+      transform: scale(1.01);
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    .upload-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .upload-text strong {
+      color: var(--gold);
+      cursor: pointer;
+    }
+
+    .upload-subtext {
+      font-size: 0.78rem;
+      color: #bbb;
+    }
+
+    .image-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* ============ IMAGE PREVIEW GRID ============ */
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .preview-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      background: #f5f5f5;
+      border: 2px solid #eee;
+      transition: all 0.3s ease;
+      animation: fadeInScale 0.3s ease forwards;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .preview-item:hover {
+      border-color: var(--gold);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-item .remove-preview {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      background: rgba(220, 53, 69, 0.9);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      line-height: 1;
+    }
+
+    .preview-item:hover .remove-preview {
+      opacity: 1;
+    }
+
+    .preview-item .preview-badge {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .image-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(201, 168, 76, 0.1);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      color: var(--gold);
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    /* ============ FORM SUBMIT BUTTON ============ */
+    .submit-btn-wrap {
+      grid-column: 1/-1;
+      margin-top: 8px;
+    }
+
+    .admin-submit-btn {
+      width: 100%;
+      padding: 15px 32px;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a843 100%);
+      color: var(--black);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(201, 168, 76, 0.35);
+    }
+
+    .admin-submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .admin-submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .admin-submit-btn .btn-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(0, 0, 0, 0.15);
+      border-top-color: var(--black);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    .admin-submit-btn.loading .btn-spinner {
+      display: block;
+    }
+
+    .admin-submit-btn.loading .btn-text {
+      opacity: 0.6;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ============ SUCCESS MESSAGE ============ */
+    .form-success-msg {
+      display: none;
+      grid-column: 1/-1;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border: 1px solid #a5d6a7;
+      border-radius: 12px;
+      color: #2e7d32;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-align: center;
+      animation: slideDown 0.4s ease;
+    }
+
+    .form-success-msg.show {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ============ SECTION DIVIDER ============ */
+    .form-section-divider {
+      grid-column: 1/-1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 8px 0;
+    }
+
+    .form-section-divider span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .form-section-divider::before,
+    .form-section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #eee;
+    }
+
+    /* ============ ADMIN PRODUCT CARDS ============ */
+    .admin-products-preview {
+      margin-top: 32px;
+    }
+
+    .admin-products-preview h2 {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      color: var(--black);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .admin-product-card {
+      position: relative;
+    }
+
+    .admin-product-card .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .admin-product-card:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .admin-product-card .delete-btn:hover {
+      background: #dc3545;
+      transform: scale(1.1);
+    }
+
+    .admin-product-card .card-stock {
+      font-size: 0.78rem;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .admin-product-card .card-stock.in-stock {
+      color: #2e7d32;
+    }
+
+    .admin-product-card .card-stock.out-of-stock {
+      color: #dc3545;
+    }
+
+    /* ============ POLICIES & DISCOUNTS ============ */
+    .discount-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .current-discount {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      margin-top: 20px;
+    }
+
+    .current-discount h2 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-family: var(--font-body);
+    }
+
+    .btn-secondary {
+      background: var(--dark3);
+      color: var(--white);
+    }
+
+    .btn-secondary:hover {
+      background: var(--black);
+    }
+
+    /* ============ RESPONSIVE ============ */
+    @media(max-width:900px) {
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-sidebar {
+        display: flex;
+        overflow-x: auto;
+        padding: 0;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .sidebar-header {
+        display: none;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        padding: 0;
+        gap: 0;
+      }
+
+      .sidebar-link {
+        padding: 14px 18px;
+        white-space: nowrap;
+        border-right: none;
+      }
+
+      .sidebar-link.active {
+        border-right: none;
+        border-bottom: 3px solid var(--gold);
+      }
+
+      .sidebar-footer {
+        display: none;
+      }
+
+      .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .product-form,
+      .discount-form {
+        grid-template-columns: 1fr;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .image-preview-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media(max-width:480px) {
+      .dashboard-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .image-preview-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .admin-content {
+        padding: 16px;
+      }
+
+      .admin-form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar solid" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"><span
+          class="logo-text">Shivaay Paridhan</span></a>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+        <a href="products.html" class="nav-link" onclick="closeMenu()">Shop</a>
+        <a href="about.html" class="nav-link" onclick="closeMenu()">About</a>
+        <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+        <a href="login.html" class="nav-link" onclick="closeMenu()">Login</a>
+        <a href="cart.html" class="nav-cta" onclick="closeMenu()">Cart 🛒</a>
+      </nav>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()"
+        aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div style="height:64px;background:var(--black);"></div>
+
+  <main>
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="sidebar-header">
+          <h2>Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="sidebar-link active" data-section="dashboard"><span
+              class="sidebar-icon">📊</span>Dashboard</a>
+          <a href="#" class="sidebar-link" data-section="users"><span class="sidebar-icon">👥</span>Users</a>
+          <a href="#" class="sidebar-link" data-section="orders"><span class="sidebar-icon">📦</span>Orders</a>
+          <a href="#" class="sidebar-link" data-section="products"><span class="sidebar-icon">🛍️</span>Products</a>
+          <a href="#" class="sidebar-link" data-section="coupons"><span class="sidebar-icon">🏷️</span>Coupons</a>
+          <a href="#" class="sidebar-link" data-section="discounts"><span class="sidebar-icon">💰</span>Discounts</a>
+        </nav>
+        <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">Logout</button></div>
+      </aside>
+
+      <div class="admin-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="admin-section active">
+          <div class="section-header">
+            <h1>Dashboard Overview</h1>
+          </div>
+          <div class="dashboard-stats">
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-info">
+                <h3 id="total-users">0</h3>
+                <p>Total Users</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📦</div>
+              <div class="stat-info">
+                <h3 id="total-orders">0</h3>
+                <p>Total Orders</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🛍️</div>
+              <div class="stat-info">
+                <h3 id="total-products">0</h3>
+                <p>Products</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-info">
+                <h3 id="total-revenue">₹0</h3>
+                <p>Revenue</p>
+              </div>
+            </div>
+          </div>
+          <!-- Recent Orders -->
+          <div
+            style="background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-card);margin-top:8px;">
+            <h2
+              style="font-family:var(--font-heading);font-size:1.1rem;color:var(--black);margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+              📋 Recent Orders</h2>
+            <div
+              style="display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr;gap:0;font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);padding:0 0 12px;border-bottom:1px solid #eee;margin-bottom:8px;">
+              <span>Order ID</span><span>Customer</span><span>Amount</span><span>Status</span>
+            </div>
+            <div id="recent-orders-list" style="font-size:0.88rem;"></div>
+          </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users-section" class="admin-section">
+          <div class="section-header">
+            <h1>Users Management</h1>
+          </div>
+          <div class="users-list">
+            <div id="users-container"></div>
+          </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="orders-section" class="admin-section">
+          <div class="section-header">
+            <h1>Orders Management</h1>
+          </div>
+          <div class="orders-list">
+            <div id="orders-container"></div>
+          </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products-section" class="admin-section">
+          <div class="section-header">
+            <h1>Product Management</h1>
+          </div>
+          <div class="admin-form-container">
+            <h2>Add New Product</h2>
+            <form id="product-form" class="product-form" enctype="multipart/form-data">
+
+              <!-- Basic Info -->
+              <div class="form-group">
+                <label for="product-name">Product Name</label>
+                <input type="text" id="product-name" name="product-name" placeholder="e.g. Royal Banarasi Silk Saree"
+                  required>
+              </div>
+
+              <div class="form-group">
+                <label for="product-category">Category</label>
+                <select id="product-category" name="product-category" required>
+                  <option value="">Select Category</option>
+                  <option value="saree">Saree</option>
+                  <option value="jewellery">Jewellery</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="product-old-price">Original Price (₹)</label>
+                <input type="number" id="product-old-price" name="product-old-price" placeholder="e.g. 4999" min="0"
+                  step="1" required>
+                <p class="form-hint">The base price before any discount.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="product-discount">Discount (%)</label>
+                <input type="number" id="product-discount" name="product-discount" placeholder="e.g. 20" min="0"
+                  max="100" step="1" value="0">
+                <p class="form-hint">Enter percentage to auto-calculate final price.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="product-price">Final Discounted Price (₹)</label>
+                <input type="number" id="product-price" name="product-price" placeholder="e.g. 3999" min="0" step="1"
+                  required>
+                <p class="form-hint">Auto-calculated: Original Price - Discount %</p>
+              </div>
+
+              <div class="form-group">
+                <label for="product-material">Material</label>
+                <select id="product-material" name="product-material">
+                  <option value="">Select Material</option>
+                  <option value="Silk">Silk</option>
+                  <option value="Cotton">Cotton</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Artificial">Artificial</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="product-quantity">Stock Quantity</label>
+                <input type="number" id="product-quantity" name="product-quantity" value="1" min="0"
+                  placeholder="e.g. 50">
+              </div>
+
+              <div class="form-group">
+                <label for="product-colors">Available Colors <span class="optional">— optional</span></label>
+                <input type="text" id="product-colors" name="product-colors" placeholder="e.g. Red, Blue, Gold">
+                <p class="form-hint">Separate multiple colors with commas</p>
+              </div>
+
+              <!-- Section Divider: Images -->
+              <div class="form-section-divider"><span>Product Images</span></div>
+
+              <div class="form-group form-group-full">
+                <label>Upload Images (3–5 photos recommended)</label>
+                <div class="image-upload-area" id="image-upload-area">
+                  <input type="file" id="product-images" name="images" accept="image/*" multiple>
+                  <div class="upload-icon">📸</div>
+                  <p class="upload-text"><strong>Click to upload</strong> or drag and drop</p>
+                  <p class="upload-subtext">JPG, PNG, WebP — Max 5MB each — Up to 5 images</p>
+                </div>
+                <div id="image-preview-grid" class="image-preview-grid"></div>
+                <div id="image-count-info"></div>
+              </div>
+
+              <!-- Section Divider: Text Details -->
+              <div class="form-section-divider"><span>Product Details</span></div>
+
+              <div class="form-group form-group-full">
+                <label for="product-description">Description</label>
+                <textarea id="product-description" name="product-description"
+                  placeholder="Write a compelling product description..." rows="3"></textarea>
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="product-specifications">Specifications</label>
+                <textarea id="product-specifications" name="product-specifications"
+                  placeholder="Material: Pure Silk&#10;Length: 6.3 meters&#10;Blouse Piece: Included"
+                  rows="3"></textarea>
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="product-care">Product Care</label>
+                <textarea id="product-care" name="product-care"
+                  placeholder="Dry clean recommended&#10;Store in muslin cloth&#10;Avoid direct sunlight"
+                  rows="3"></textarea>
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="product-moreinfo">More Info <span class="optional">— optional</span></label>
+                <textarea id="product-moreinfo" name="product-moreinfo"
+                  placeholder="Handcrafted by skilled artisans. Certificate of authenticity included."
+                  rows="3"></textarea>
+              </div>
+
+              <!-- Section Divider: Offer Settings -->
+              <div class="form-section-divider"><span>🏷️ Offer Settings (Countdown Timer)</span></div>
+
+              <div class="form-group form-group-full">
+                <label for="product-offer-label">Offer Label <span class="optional">— optional</span></label>
+                <input type="text" id="product-offer-label" name="product-offer-label"
+                  placeholder="e.g. Festive Sale, Limited Time Offer, Wedding Collection Offer">
+                <p class="form-hint">Shown as a badge on the product card and detail page. Leave blank for no offer
+                  label.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="product-offer-start">Offer Start Date <span class="optional">— optional</span></label>
+                <input type="datetime-local" id="product-offer-start" name="product-offer-start">
+                <p class="form-hint">When the countdown offer begins.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="product-offer-end">Offer End Date <span class="optional">— optional</span></label>
+                <input type="datetime-local" id="product-offer-end" name="product-offer-end">
+                <p class="form-hint">Timer counts down to this date. Discount auto-expires.</p>
+              </div>
+
+              <div id="form-success" class="form-success-msg">✅ Product added successfully!</div>
+
+              <!-- Submit Button -->
+              <div class="submit-btn-wrap">
+                <button type="submit" class="admin-submit-btn" id="submit-product-btn">
+                  <span class="btn-spinner"></span>
+                  <span class="btn-text">🛍️ Add Product</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-products-preview">
+            <h2>📦 Current Products</h2>
+            <div id="admin-products-container" class="product-grid"></div>
+          </div>
+        </section>
+
+        <!-- Coupons Section -->
+        <section id="coupons-section" class="admin-section">
+          <div class="section-header">
+            <h1>Coupon Management</h1>
+          </div>
+          <div class="admin-form-container">
+            <h2 id="coupon-form-title">Create New Coupon</h2>
+            <form id="coupon-form" class="product-form">
+              <input type="hidden" id="coupon-id">
+              <div class="form-group">
+                <label for="coupon-code">Coupon Code</label>
+                <input type="text" id="coupon-code" name="code" placeholder="e.g. WELCOME10" required>
+              </div>
+              <div class="form-group">
+                <label for="coupon-type">Discount Type</label>
+                <select id="coupon-type" name="discountType" required>
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="flat">Flat Amount (₹)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="coupon-value">Discount Value</label>
+                <input type="number" id="coupon-value" name="discountValue" placeholder="e.g. 10 or 500" required>
+              </div>
+              <div class="form-group">
+                <label for="coupon-min-order">Min Order Amount (₹)</label>
+                <input type="number" id="coupon-min-order" name="minOrderAmount" value="0">
+              </div>
+              <div class="form-group">
+                <label for="coupon-expiry">Expiry Date</label>
+                <input type="date" id="coupon-expiry" name="expiryDate" required>
+              </div>
+              <div class="form-group">
+                <label for="coupon-limit">Usage Limit <span class="optional">— optional</span></label>
+                <input type="number" id="coupon-limit" name="usageLimit" placeholder="e.g. 100">
+              </div>
+              <div class="form-group">
+                <label for="coupon-status">Status</label>
+                <select id="coupon-status" name="isActive">
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
+              <div class="submit-btn-wrap">
+                <button type="submit" class="admin-submit-btn" id="save-coupon-btn">
+                  <span class="btn-spinner"></span>
+                  <span class="btn-text">🏷️ Save Coupon</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="cancel-coupon-edit" style="display:none; margin-top:10px; width:100%;">Cancel Edit</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="coupon-table-container">
+            <h2>📦 Active Coupons</h2>
+            <table class="coupon-table">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Discount</th>
+                  <th>Min Order</th>
+                  <th>Expiry</th>
+                  <th>Used</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="coupons-table-body">
+                <!-- Coupons will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Discounts Section -->
+        <section id="discounts-section" class="admin-section">
+          <div class="section-header">
+            <h1>Global Policies & Discounts</h1>
+          </div>
+          <div class="admin-form-container">
+            <h2>Global Policies</h2>
+            <form id="policy-form" class="discount-form" style="grid-template-columns: 1fr;">
+              <div class="form-group"><label for="shipping-policy">Shipping Policy</label><textarea id="shipping-policy"
+                  name="shipping-policy" rows="3"></textarea></div>
+              <div class="form-group"><label for="return-policy">Return Policy</label><textarea id="return-policy"
+                  name="return-policy" rows="3"></textarea></div>
+              <button type="submit" class="btn-primary">Update Policies</button>
+            </form>
+          </div>
+          <div class="admin-form-container">
+            <h2>Apply Global Discount</h2>
+            <form id="discount-form" class="discount-form">
+              <div class="form-group"><label for="discount-percentage">Discount Percentage (%)</label><input
+                  type="number" id="discount-percentage" name="discount-percentage" placeholder="10" min="0" max="100"
+                  step="1" required></div>
+              <div class="form-group"><label for="discount-category">Apply to Category <span class="optional">—
+                    optional</span></label>
+                <select id="discount-category" name="discount-category">
+                  <option value="">All Categories</option>
+                  <option value="saree">Saree</option>
+                  <option value="jewellery">Jewellery</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-primary">Apply Discount</button>
+              <button type="button" class="btn btn-secondary" onclick="clearDiscount()">Clear All Discounts</button>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© 2026 Shivaay Paridhan. Admin Panel — All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Price Auto-calculation Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const originalPriceInput = document.getElementById('product-old-price');
+      const discountInput = document.getElementById('product-discount');
+      const finalPriceInput = document.getElementById('product-price');
+
+      function calculateFinalPrice() {
+        const originalPrice = parseFloat(originalPriceInput.value) || 0;
+        const discount = parseFloat(discountInput.value) || 0;
+
+        if (originalPrice > 0) {
+          const discountedAmount = (originalPrice * discount) / 100;
+          const finalPrice = Math.round(originalPrice - discountedAmount);
+          finalPriceInput.value = finalPrice;
+        } else {
+          finalPriceInput.value = '';
+        }
+      }
+
+      if (originalPriceInput && discountInput && finalPriceInput) {
+        originalPriceInput.addEventListener('input', calculateFinalPrice);
+        discountInput.addEventListener('input', calculateFinalPrice);
+
+        // Also allow manual override if needed, but usually it should be auto
+        finalPriceInput.addEventListener('input', () => {
+          // Optional: reverse calculate discount if admin manually changes final price
+          const op = parseFloat(originalPriceInput.value) || 0;
+          const fp = parseFloat(finalPriceInput.value) || 0;
+          if (op > 0 && fp > 0 && fp < op) {
+            const d = ((op - fp) / op) * 100;
+            discountInput.value = Math.round(d);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

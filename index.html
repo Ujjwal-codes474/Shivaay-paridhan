@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shivaay Paridhan | Elegance in Every Drape</title>
+  <meta name="description"
+    content="Discover premium women's ethnic wear — handcrafted sarees that blend Indian tradition with modern elegance. Shop Shivaay Paridhan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="offer-timer.css">
+</head>
+
+<body>
+
+  <!-- ══════════ NAVBAR ══════════ -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+
+      <!-- Left: Logo & Mobile Toggle -->
+      <div class="nav-left">
+        <div class="nav-mobile-toggle">
+          <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+        <a href="index.html" class="nav-logo" id="nav-logo">
+          <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+          <span class="logo-text">Shivaay Paridhan</span>
+        </a>
+      </div>
+
+      <!-- Center: Saree & Jewellery -->
+      <nav class="nav-center">
+        <div class="nav-menu" id="nav-menu">
+          <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
+          <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
+        </div>
+      </nav>
+
+      <!-- Right: Icons -->
+      <div class="nav-right">
+        <div class="nav-actions">
+          <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+
+          <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="cart-count" id="cart-count">0</span>
+          </a>
+
+          <button class="nav-icon-btn menu-btn" id="menu-btn" onclick="toggleMenu()" aria-label="Open menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Side Menu Sidebar -->
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html" class="nav-link active" onclick="closeMenu()">Home</a>
+        <a href="products.html" class="nav-link" onclick="closeMenu()">Shop</a>
+        <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
+        <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+        <a href="cart.html" class="nav-link" onclick="closeMenu()">Cart</a>
+        <a href="profile.html" class="nav-link" onclick="closeMenu()">Profile</a>
+        <a href="profile.html#orders" class="nav-link" onclick="closeMenu()">Orders</a>
+        <a href="profile.html#wishlist" class="nav-link" onclick="closeMenu()">Wishlist</a>
+        <hr class="nav-divider">
+        <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+        <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+      </nav>
+    </div>
+
+    <div class="search-overlay" id="search-overlay">
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search sarees, jewellery..." class="search-input">
+        <button onclick="closeSearch()" class="search-close-btn">✕</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════ HERO SLIDER ══════════ -->
+  <section class="hero-slider" id="home">
+    <div class="doodle-bg pattern-floral"></div>
+    <div class="slider-container" id="heroSlider">
+      <!-- Slide 1 -->
+      <div class="slide active">
+        <div class="slide-bg" style="background-image: url('images/hero_model.png');">
+          <div class="gold-texture-overlay"></div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-text">
+            <p class="hero-eyebrow">New Collection 2026</p>
+            <h1 class="hero-title">Banarasi Silk<br><em>Collection</em></h1>
+            <p class="hero-subtitle">Timeless Elegance, Handwoven Luxury</p>
+            <div class="hero-actions">
+              <a href="products.html" class="btn-primary">Shop Now</a>
+              <a href="products.html" class="btn-ghost">Explore Collection</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="slide">
+        <div class="slide-bg" style="background-image: url('images/saree3.png');"></div>
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">Kanjivaram<br><em>Sarees</em></h1>
+            <p class="hero-subtitle">Crafted for Royal Occasions</p>
+            <div class="hero-actions">
+              <a href="products.html" class="btn-primary">Shop Now</a>
+              <a href="products.html" class="btn-ghost">Explore Collection</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="slide">
+        <div class="slide-bg" style="background-image: url('images/saree4.png');"></div>
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">Wedding<br><em>Collection</em></h1>
+            <p class="hero-subtitle">Celebrate Tradition in Style</p>
+            <div class="hero-actions">
+              <a href="products.html" class="btn-primary">Shop Now</a>
+              <a href="products.html" class="btn-ghost">Explore Collection</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slider Controls -->
+    <button class="slider-btn prev-btn" id="prevSlide" aria-label="Previous slide">❮</button>
+    <button class="slider-btn next-btn" id="nextSlide" aria-label="Next slide">❯</button>
+
+    <div class="slider-dots" id="sliderDots">
+      <span class="dot active" data-index="0"></span>
+      <span class="dot" data-index="1"></span>
+      <span class="dot" data-index="2"></span>
+    </div>
+    <div class="doodle-corner top-left pattern-mandala"></div>
+    <div class="doodle-corner bottom-right pattern-handloom"></div>
+  </section>
+
+  <!-- ══════════ MARQUEE STRIP ══════════ -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span>Banarasi Silk</span><span class="dot">✦</span>
+      <span>Kanjivaram</span><span class="dot">✦</span>
+      <span>Chiffon Elegance</span><span class="dot">✦</span>
+      <span>Bridal Collection</span><span class="dot">✦</span>
+      <span>Festive Wear</span><span class="dot">✦</span>
+      <span>Handwoven Art</span><span class="dot">✦</span>
+      <span>Banarasi Silk</span><span class="dot">✦</span>
+      <span>Kanjivaram</span><span class="dot">✦</span>
+      <span>Chiffon Elegance</span><span class="dot">✦</span>
+      <span>Bridal Collection</span><span class="dot">✦</span>
+      <span>Festive Wear</span><span class="dot">✦</span>
+      <span>Handwoven Art</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- ══════════ FRESH ARRIVALS — HORIZONTAL SCROLL ══════════ -->
+  <section class="fresh-arrivals" id="collection">
+    <div class="doodle-bg pattern-floral"></div>
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Fresh Arrivals</p>
+        <h2 class="section-title">Latest Masterpieces</h2>
+        <p class="section-sub">Discover our newest additions, crafted with precision and love.</p>
+      </div>
+
+      <div class="horizontal-scroll-wrapper">
+        <button class="scroll-btn prev-btn" aria-label="Scroll left" onclick="scrollCarousel(-1)">❮</button>
+        <div class="horizontal-scroll-container" id="freshArrivalsScroll">
+          <!-- Card 1 -->
+          <a href="product.html" class="product-card" style="text-decoration:none">
+            <div class="card-image-wrap">
+              <img loading="lazy" src="images/saree1.png" alt="Crimson Silk Saree" class="card-img" loading="lazy">
+              <span class="card-badge">Bestseller</span>
+              <div class="card-overlay">
+                <button class="card-btn" onclick="event.preventDefault(); addToCart(1, this)">Add to Cart</button>
+              </div>
+            </div>
+            <div class="card-info">
+              <p class="card-category">Banarasi Silk</p>
+              <h3 class="card-name">Crimson Zari Saree</h3>
+              <div class="card-footer">
+                <span class="card-price">₹4,299</span>
+                <span class="card-old-price">₹5,999</span>
+                <span class="card-discount">28% OFF</span>
+              </div>
+            </div>
+          </a>
+          <!-- Card 2 -->
+          <a href="product.html" class="product-card" style="text-decoration:none">
+            <div class="card-image-wrap">
+              <img loading="lazy" src="images/saree2.png" alt="Blush Pink Saree" class="card-img" loading="lazy">
+              <span class="card-badge new-badge">New</span>
+              <div class="card-overlay">
+                <button class="card-btn" onclick="event.preventDefault(); addToCart(2, this)">Add to Cart</button>
+              </div>
+            </div>
+            <div class="card-info">
+              <p class="card-category">Banarasi Silk</p>
+              <h3 class="card-name">Blush Bridal Saree</h3>
+              <div class="card-footer">
+                <span class="card-price">₹6,499</span>
+                <span class="card-old-price">₹8,000</span>
+                <span class="card-discount">18% OFF</span>
+              </div>
+            </div>
+          </a>
+          <!-- Card 3 -->
+          <a href="product.html" class="product-card" style="text-decoration:none">
+            <div class="card-image-wrap">
+              <img loading="lazy" src="images/saree3.png" alt="Emerald Kanjivaram Saree" class="card-img"
+                loading="lazy">
+              <div class="card-overlay">
+                <button class="card-btn" onclick="event.preventDefault(); addToCart(3, this)">Add to Cart</button>
+              </div>
+            </div>
+            <div class="card-info">
+              <p class="card-category">Kanjivaram Silk</p>
+              <h3 class="card-name">Emerald Temple Saree</h3>
+              <div class="card-footer">
+                <span class="card-price">₹7,999</span>
+                <span class="card-old-price">₹10,500</span>
+                <span class="card-discount">23% OFF</span>
+              </div>
+            </div>
+          </a>
+          <!-- Card 4 -->
+          <a href="product.html" class="product-card" style="text-decoration:none">
+            <div class="card-image-wrap">
+              <img loading="lazy" src="images/saree4.png" alt="Ivory Bridal Saree" class="card-img" loading="lazy">
+              <span class="card-badge">Bridal</span>
+              <div class="card-overlay">
+                <button class="card-btn" onclick="event.preventDefault(); addToCart(4, this)">Add to Cart</button>
+              </div>
+            </div>
+            <div class="card-info">
+              <p class="card-category">Pure Silk</p>
+              <h3 class="card-name">Ivory Bridal Saree</h3>
+              <div class="card-footer">
+                <span class="card-price">₹12,999</span>
+                <span class="card-old-price">₹16,000</span>
+                <span class="card-discount">18% OFF</span>
+              </div>
+            </div>
+          </a>
+          <!-- Card 5 -->
+          <a href="product.html" class="product-card" style="text-decoration:none">
+            <div class="card-image-wrap">
+              <img loading="lazy" src="images/saree5.png" alt="Navy Sequin Saree" class="card-img" loading="lazy">
+              <span class="card-badge new-badge">New</span>
+              <div class="card-overlay">
+                <button class="card-btn" onclick="event.preventDefault(); addToCart(5, this)">Add to Cart</button>
+              </div>
+            </div>
+            <div class="card-info">
+              <p class="card-category">Chiffon</p>
+              <h3 class="card-name">Navy Sequin Saree</h3>
+              <div class="card-footer">
+                <span class="card-price">₹3,199</span>
+                <span class="card-old-price">₹4,500</span>
+                <span class="card-discount">28% OFF</span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <button class="scroll-btn next-btn" aria-label="Scroll right" onclick="scrollCarousel(1)">❯</button>
+      </div>
+    </div>
+    <div class="doodle-divider"></div>
+  </section>
+
+  <!-- ══════════ WHY CHOOSE US ══════════ -->
+  <section class="why-section" id="about">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Why Us</p>
+        <h2 class="section-title">The Shivaay Difference</h2>
+        <p class="section-sub">We don't just sell sarees — we deliver an experience rooted in artistry and trust.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">🧵</div>
+          <h3>100% Authentic Handwoven</h3>
+          <p>Every saree is sourced directly from master weavers across Varanasi, Kanchipuram, and Surat.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">✨</div>
+          <h3>Premium Quality Silk</h3>
+          <p>We use only Grade-A pure silk and natural dyes that maintain their richness wash after wash.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🚚</div>
+          <h3>Free Shipping Across India</h3>
+          <p>Enjoy complimentary shipping on all orders above ₹2,000, with safe & insured packaging.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🔄</div>
+          <h3>Easy 7-Day Returns</h3>
+          <p>Not in love with it? Our hassle-free return policy ensures your complete satisfaction every time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ TESTIMONIALS ══════════ -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Reviews</p>
+        <h2 class="section-title">What Our Customers Say</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"The Kanjivaram saree I ordered was absolutely stunning. The fabric quality exceeded my
+            expectations. Got so many compliments at the wedding!"</p>
+          <div class="testi-author">
+            <div class="testi-avatar">P</div>
+            <div>
+              <p class="testi-name">Priya Sharma</p>
+              <p class="testi-location">Delhi</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card featured-testi">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"I've ordered from many saree brands online, but Shivaay Paridhan is truly in a league
+            of their own. The packaging was luxurious, and the saree was exactly as described. My bridal saree was a
+            dream!"</p>
+          <div class="testi-author">
+            <div class="testi-avatar">A</div>
+            <div>
+              <p class="testi-name">Ananya Mehta</p>
+              <p class="testi-location">Mumbai — Bride 2025</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testi-stars">★★★★★</div>
+          <p class="testi-text">"Ordered for Navratri and the delivery was super fast! The colors were so vibrant and
+            true to the photos. Will definitely order again."</p>
+          <div class="testi-author">
+            <div class="testi-avatar">S</div>
+            <div>
+              <p class="testi-name">Sunita Patel</p>
+              <p class="testi-location">Ahmedabad</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ GALLERY / INSTAGRAM ══════════ -->
+  <section class="gallery-section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">@shivaayparidhaan</p>
+        <h2 class="section-title">Follow Our Story</h2>
+        <p class="section-sub">Tag us in your saree moments for a chance to be featured.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item" style="background: linear-gradient(135deg,#c41e3a,#8b1a2c)">
+          <img loading="lazy" src="images/saree1.png" alt="Gallery 1" loading="lazy">
+          <div class="gallery-overlay"><span>📸</span></div>
+        </div>
+        <div class="gallery-item" style="background: linear-gradient(135deg,#f4a7b9,#d4818e)">
+          <img loading="lazy" src="images/saree2.png" alt="Gallery 2" loading="lazy">
+          <div class="gallery-overlay"><span>📸</span></div>
+        </div>
+        <div class="gallery-item" style="background: linear-gradient(135deg,#1a5c38,#0d3321)">
+          <img loading="lazy" src="images/saree3.png" alt="Gallery 3" loading="lazy">
+          <div class="gallery-overlay"><span>📸</span></div>
+        </div>
+        <div class="gallery-item" style="background: linear-gradient(135deg,#f5f0e8,#d4c4a0)">
+          <img loading="lazy" src="images/saree4.png" alt="Gallery 4" loading="lazy">
+          <div class="gallery-overlay"><span>📸</span></div>
+        </div>
+        <div class="gallery-item" style="background: linear-gradient(135deg,#1a2c5c,#0d1a3d)">
+          <img loading="lazy" src="images/saree5.png" alt="Gallery 5" loading="lazy">
+          <div class="gallery-overlay"><span>📸</span></div>
+        </div>
+        <div class="gallery-item insta-cta-card">
+          <a href="https://instagram.com" target="_blank" rel="noopener" class="insta-cta-link">
+            <span class="insta-icon">📷</span>
+            <p>Follow on Instagram</p>
+            <p class="insta-handle">@shivaayparidhaan</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ FOOTER ══════════ -->
+
+  <!-- Global Policy Strip -->
+  <div class="global-policy-strip">
+    <div class="container">
+      <div class="policy-items">
+        <div class="policy-item">
+          <span class="policy-icon">🚚</span>
+          <div>
+            <h4>Global Delivery</h4>
+            <p>3–5 business days</p>
+          </div>
+        </div>
+        <div class="policy-item">
+          <span class="policy-icon">🔄</span>
+          <div>
+            <h4>Easy Exchange</h4>
+            <p>Available within 3 days</p>
+          </div>
+        </div>
+        <div class="policy-item">
+          <span class="policy-icon">💬</span>
+          <div>
+            <h4>24/7 Support</h4>
+            <p>Via WhatsApp</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer" id="contact">
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand-col">
+            <a href="index.html" class="footer-logo">
+              <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan
+            </a>
+            <p class="footer-tagline">Elegance in Every Drape</p>
+            <p class="footer-desc">Celebrating the art of Indian weaving with premium handcrafted sarees for the modern
+              woman.</p>
+            <div class="social-links">
+              <a href="#" class="social-link" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="2" width="20" height="20" rx="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+              <a href="#" class="social-link" aria-label="WhatsApp">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">Quick Links</h4>
+            <ul class="footer-links-list">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="products.html">Shop All</a></li>
+              <li><a href="clothing.html">Sarees</a></li>
+              <li><a href="about.html">About Us</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="cart.html">Cart</a></li>
+              <li><a href="login.html">Login</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">Collections</h4>
+            <ul class="footer-links-list">
+              <li><a href="products.html">Banarasi Silk</a></li>
+              <li><a href="products.html">Kanjivaram</a></li>
+              <li><a href="products.html">Chiffon Sarees</a></li>
+              <li><a href="products.html">Bridal Collection</a></li>
+              <li><a href="products.html">Festive Wear</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="footer-col-title">Contact Us</h4>
+            <ul class="footer-contact-list">
+              <li>
+                <span class="contact-icon">📍</span>
+                <span>Jamshedpur, Jharkhand, India</span>
+              </li>
+              <li>
+                <span class="contact-icon">📞</span>
+                <a href="tel:+918539865430">+91 85398 65430</a>
+              </li>
+              <li>
+                <span class="contact-icon">✉️</span>
+                <a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© 2026 Shivaay Paridhan. All rights reserved. Crafted with ❤️ for every Indian woman.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Global scripts -->
+  <script src="script.js"></script>
+</body>
+
+</html>
