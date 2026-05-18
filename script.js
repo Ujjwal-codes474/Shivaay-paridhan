@@ -1,10 +1,5 @@
 // Backend API configuration — always points to the Express backend
-const API_BASE_URL =
-  window.location.hostname === 'localhost' ||
-  window.location.hostname === '127.0.0.1' ||
-  window.location.protocol === 'file:'
-    ? 'http://localhost:5000'
-    : 'https://YOUR_BACKEND_URL.com';
+const API_BASE_URL = 'https://shivaay-paridhan-1.onrender.com';
 const WHATSAPP_NUMBER = '918539865430';
 const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 

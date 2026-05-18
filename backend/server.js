@@ -43,18 +43,9 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Middleware — CORS: allow all localhost ports + file:// (null origin) for local dev
+// Middleware — CORS: allow requests from any origin in production and echo the origin for credentialed requests
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (file://, curl, Postman, etc.) or "null" string
-    if (!origin || origin === 'null') return callback(null, true);
-    // Allow any localhost or 127.0.0.1 origin
-    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
-      return callback(null, true);
-    }
-    console.warn(`CORS blocked request from origin: ${origin}`);
-    return callback(new Error('CORS: origin not allowed — ' + origin));
-  },
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -689,8 +680,14 @@ async function loginHandler(req, res) {
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log(`Login failed: Incorrect password for ${email}`);
-      return res.status(401).json({ message: "Invalid email or password" });
+      if (user.password === password) {
+        console.warn(`Legacy plain-text password detected for ${email}. Migrating to bcrypt hash.`);
+        user.password = await bcrypt.hash(password, 12);
+        await user.save();
+      } else {
+        console.log(`Login failed: Incorrect password for ${email}`);
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
     }
     console.log(`Login successful: ${email}`);
     res.json({
@@ -876,11 +873,20 @@ app.post("/api/coupons/validate", async (req, res) => {
 
 
 // MongoDB connection
+console.log("Connecting to MongoDB...");
 mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log("Database connected \u2705");
+  .then(async () => {
+    const db = mongoose.connection;
+    console.log("Database connected ✅", db.host, db.name);
+    try {
+      const userCount = await User.countDocuments();
+      console.log(`User count in database: ${userCount}`);
+    } catch (countError) {
+      console.warn("Could not determine user count:", countError);
+    }
+
     app.listen(PORT, () => {
-      console.log(`Server started on http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((error) => {
