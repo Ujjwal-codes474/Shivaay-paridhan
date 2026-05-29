@@ -13,6 +13,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="coupons.css">
+  <link rel="stylesheet" href="premium-redesign.css?v=4">
   <style>
     .cart-section {
       padding: 0 0 100px;
@@ -109,30 +110,17 @@
 
   <header class="navbar solid" id="navbar">
     <div class="nav-container">
-      <!-- LEFT: Hamburger (Mobile) -->
-      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+          <div class="brand-copy">
+            <span class="logo-text-primary">Shivaay</span>
+            <span class="logo-text-secondary">Paridhan</span>
+          </div>
+        </a>
+      </div>
 
-      <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
-      <a href="index.html" class="nav-logo">
-        <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
-        <span class="logo-text">Shivaay Paridhan</span>
-      </a>
-
-      <!-- CENTER: Main Navigation Menu (Desktop Only) -->
-      <nav class="nav-menu" id="nav-menu">
-        <a href="index.html" class="nav-menu-link">Home</a>
-        <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
-        <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
-        <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
-        <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
-        <a href="products.html" class="nav-menu-link">Collections</a>
-        <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
-      </nav>
-
-      <!-- RIGHT: Search & Cart Icons -->
-      <div class="nav-actions">
+      <div class="nav-right">
         <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
@@ -147,22 +135,26 @@
           </svg>
           <span class="cart-count" id="cart-count" style="display: none;">0</span>
         </a>
+        <button class="nav-icon-btn menu-btn hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-
-      <!-- MOBILE: Side Menu (Hamburger) -->
-      <nav class="nav-links" id="nav-links">
-        <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-        <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
-        <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
-        <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
-        <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
-        <a href="products.html" class="nav-link" onclick="closeMenu()">Collections</a>
-        <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
-        <hr class="nav-divider">
-        <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
-        <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
-      </nav>
     </div>
+
+    <nav class="nav-links" id="nav-links">
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="shop.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
+      <a href="shop.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
+      <a href="shop.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
+      <a href="shop.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
+      <a href="shop.html" class="nav-link" onclick="closeMenu()">Collections</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <hr class="nav-divider">
+      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+    </nav>
 
     <!-- SEARCH BAR (Mobile Overlay) -->
     <div class="search-overlay" id="search-overlay">
@@ -183,34 +175,41 @@
   <main>
     <section class="cart-section">
       <div class="container">
-        <div class="cart-wrap">
-          <div id="cart-items" class="cart-items">
-            <!-- Cart items will be populated by JavaScript -->
-          </div>
-          <div id="cart-total" class="cart-total">
-            <!-- Total will be shown here -->
+        <div class="cart-page">
+          <!-- Left: Cart items -->
+          <div>
+            <h1 style="font-family:var(--font-heading);font-size:1.6rem;color:var(--black);margin-bottom:18px;">Shopping Cart</h1>
+            <div id="cart-items" class="cart-items">
+              <!-- Cart items will be populated by JavaScript -->
+            </div>
+            <div style="margin-top:18px;display:flex;gap:12px;align-items:center;">
+              <a href="shop.html" class="btn-ghost" style="border-color:var(--gold);color:var(--gold);">Continue Shopping</a>
+              <button id="clear-cart" class="btn btn-secondary">Clear Cart</button>
+              <button id="whatsapp-cart-order" class="btn btn-whatsapp">Order on WhatsApp</button>
+            </div>
           </div>
 
-          <!-- Coupon Section -->
-          <div class="coupon-section">
-            <div class="coupon-title">
-              <span>🏷️</span> Have a Coupon Code?
+          <!-- Right: Order summary -->
+          <aside class="cart-summary" aria-label="Order summary">
+            <h3 style="margin:0 0 12px 0;font-family:var(--font-heading);">Order Summary</h3>
+            <div id="cart-total" class="cart-total">
+              <!-- Total will be shown here -->
             </div>
-            <div class="coupon-input-group">
-              <input type="text" id="coupon-input" class="coupon-input" placeholder="Enter coupon code">
-              <button id="apply-coupon-btn" class="apply-coupon-btn">Apply Coupon</button>
+
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border-light);">
+              <div style="margin-bottom:10px;">
+                <label for="coupon-input" style="font-weight:600;display:block;margin-bottom:6px;">Have a coupon?</label>
+                <div style="display:flex;gap:8px;">
+                  <input type="text" id="coupon-input" class="coupon-input form-input" placeholder="Enter coupon code">
+                  <button id="apply-coupon-btn" class="btn-primary" style="min-width:120px;">Apply</button>
+                </div>
+                <div id="coupon-message" class="coupon-message" style="margin-top:8px;"></div>
+                <div id="applied-coupon-container" style="margin-top:8px;"></div>
+              </div>
+              <button id="checkout" class="btn-primary checkout-btn" style="margin-top:12px;">Proceed to Checkout</button>
+              <button class="available-coupons-btn btn-ghost" id="show-coupons-btn" style="margin-top:12px;">View Available Coupons</button>
             </div>
-            <div id="coupon-message" class="coupon-message"></div>
-            <div id="applied-coupon-container"></div>
-            <button class="available-coupons-btn" id="show-coupons-btn">View Available Coupons</button>
-          </div>
-          <div class="cart-actions">
-            <a href="index.html" class="btn-ghost" style="border-color:var(--gold);color:var(--gold);">Continue
-              Shopping</a>
-            <button id="clear-cart" class="btn btn-secondary">Clear Cart</button>
-            <button id="whatsapp-cart-order" class="btn btn-whatsapp">Order on WhatsApp</button>
-            <button id="checkout" class="btn-primary">Proceed to Checkout</button>
-          </div>
+          </aside>
         </div>
       </div>
     </section>
@@ -226,6 +225,17 @@
           <!-- Coupons populated by JS -->
           <p style="text-align:center; color:#888;">Loading coupons...</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Mobile sticky checkout CTA -->
+    <div class="cart-mobile-cta" aria-hidden="false">
+      <div style="display:flex;align-items:center;gap:12px;width:100%;justify-content:space-between;padding:8px 12px;">
+        <div style="display:flex;flex-direction:column;">
+          <span style="font-size:0.75rem;color:var(--text-muted);">Total</span>
+          <strong id="mobile-checkout-total" style="font-size:1rem;color:var(--text-dark);">₹0</strong>
+        </div>
+        <button onclick="document.getElementById('checkout').scrollIntoView({behavior:'smooth'})" class="btn-primary" style="padding:10px 18px;">Checkout</button>
       </div>
     </div>
   </main>
@@ -251,7 +261,7 @@
             <h4 class="footer-col-title">Quick Links</h4>
             <ul class="footer-links-list">
               <li><a href="index.html">Home</a></li>
-              <li><a href="products.html">Shop All</a></li>
+              <li><a href="shop.html">Shop All</a></li>
               <li><a href="about.html">About Us</a></li>
               <li><a href="contact.html">Contact</a></li>
             </ul>
@@ -259,9 +269,9 @@
           <div>
             <h4 class="footer-col-title">Collections</h4>
             <ul class="footer-links-list">
-              <li><a href="products.html">Banarasi Silk</a></li>
-              <li><a href="products.html">Kanjivaram</a></li>
-              <li><a href="products.html">Bridal</a></li>
+              <li><a href="shop.html">Banarasi Silk</a></li>
+              <li><a href="shop.html">Kanjivaram</a></li>
+              <li><a href="shop.html">Bridal</a></li>
             </ul>
           </div>
           <div>
@@ -281,7 +291,7 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
 </body>
 
 </html>

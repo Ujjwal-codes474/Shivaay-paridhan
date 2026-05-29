@@ -455,9 +455,22 @@ function copyCouponCode(code) {
  */
 function getOfferState(product) {
   const now = new Date();
-  const endDate   = product.offerEndDate   ? new Date(product.offerEndDate)   : null;
+  let endDate   = product.offerEndDate   ? new Date(product.offerEndDate)   : null;
   const startDate = product.offerStartDate ? new Date(product.offerStartDate) : null;
   const label     = product.offerLabel || '';
+
+  const hasOfferLabel = (product.offerLabel && product.offerLabel.trim().length > 0);
+  const hasOfferDiscount = (Number(product.offerDiscount) > 0);
+  const hasRegularDiscount = (Number(product.discount) > 0);
+  
+  const isExpiredOrInvalid = !endDate || isNaN(endDate.getTime()) || (now >= endDate);
+
+  // Auto-generate 3-day timer for any product with an offer OR a regular discount
+  if ((hasOfferLabel || hasOfferDiscount || hasRegularDiscount) && isExpiredOrInvalid) {
+    endDate = new Date();
+    endDate.setDate(endDate.getDate() + 3);
+    endDate.setHours(23, 59, 59, 999);
+  }
 
   if (!endDate || isNaN(endDate.getTime())) {
     return { active: false, expired: false, notStarted: false, label, endDate: null, startDate };
@@ -480,36 +493,15 @@ function getOfferState(product) {
  * Build mini card-timer HTML (static shell — digits updated by OfferTimerEngine)
  */
 function buildCardTimerHTML(timerId, offer) {
-  const isLowStock = offer._lowStock;
   return `
-    <div id="ct-${timerId}" data-timer-type="card">
-      ${offer.label ? `<div class="card-offer-label">${escapeHtml(offer.label)}</div>` : ''}
-      <div class="card-timer-bar">
-        <span class="card-timer-label">⚡ Ends In</span>
-        <div class="card-timer-units">
-          <div class="card-timer-unit">
-            <span class="tu-num ct-days">00</span>
-            <span class="tu-label">D</span>
-          </div>
-          <span class="card-timer-sep">:</span>
-          <div class="card-timer-unit">
-            <span class="tu-num ct-hours">00</span>
-            <span class="tu-label">H</span>
-          </div>
-          <span class="card-timer-sep">:</span>
-          <div class="card-timer-unit">
-            <span class="tu-num ct-mins">00</span>
-            <span class="tu-label">M</span>
-          </div>
-          <span class="card-timer-sep">:</span>
-          <div class="card-timer-unit">
-            <span class="tu-num ct-secs">00</span>
-            <span class="tu-label">S</span>
-          </div>
-        </div>
+    <div class="card-timer-overlay" id="ct-${timerId}" data-timer-type="card">
+      <div class="card-timer-title">Sale Ends In</div>
+      <div class="card-timer-boxes">
+        <div class="ct-box"><span class="ct-num ct-days">00</span><span class="ct-label">Days</span></div>
+        <div class="ct-box"><span class="ct-num ct-hours">00</span><span class="ct-label">Hours</span></div>
+        <div class="ct-box"><span class="ct-num ct-mins">00</span><span class="ct-label">Mins</span></div>
+        <div class="ct-box"><span class="ct-num ct-secs">00</span><span class="ct-label">Secs</span></div>
       </div>
-      <div class="hurry-strip">🔥 Hurry Up! Limited Time Offer</div>
-      ${isLowStock ? `<div class="low-stock-badge" style="margin:4px 10px;">⚠️ Only a few left!</div>` : ''}
     </div>
   `;
 }
@@ -633,101 +625,187 @@ function closeSearch() {
 
 function updateCartCount() {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const cartCount = document.getElementById('cart-count');
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
   
-  if (cartCount) {
-    if (totalItems > 0) {
-      cartCount.textContent = totalItems;
-      cartCount.style.display = 'flex';
-    } else {
-      cartCount.style.display = 'none';
+  const ids = ['cart-count', 'cart-count-mobile', 'cartBadgeMobile', 'cart-count-nav'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (totalItems > 0) {
+        el.textContent = totalItems;
+        el.style.display = 'flex';
+      } else {
+        el.style.display = 'none';
+      }
     }
-  }
+  });
 }
 
 function initHeaderLayout() {
   const header = document.getElementById('navbar');
   if (!header) return;
 
+  const existingNav = header.querySelector('.nav-container, .nav-menu, .nav-links, .nav-actions, .nav-logo');
+  if (existingNav) return;
+
   header.innerHTML = `
-    <div class="nav-container">
-      <!-- Left: Logo & Mobile Toggle -->
-      <div class="nav-left">
-        <div class="nav-mobile-toggle">
-          <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+    <div class="nav-container-premium">
+      <!-- Desktop double-row layout -->
+      <div class="nav-desktop-layout">
+        <!-- ROW 1 -->
+        <div class="nav-row-one">
+          <a href="index.html" class="nav-logo">
+            <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+            <div class="logo-meta">
+              <span class="logo-text-primary">Shivaay</span>
+              <span class="logo-text-secondary">PARIDHAN</span>
+            </div>
+          </a>
+          
+          <div class="nav-search-container">
+            <input type="text" id="desktop-search-input" placeholder="Search for products, categories..." class="search-input-centered">
+            <button class="search-icon-btn-inside" onclick="triggerDesktopSearch()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="nav-desktop-actions">
+            <a href="profile.html#wishlist" class="nav-action-item">
+              <span class="nav-action-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </span>
+              <span class="nav-action-label">Wishlist</span>
+            </a>
+            
+            <a href="cart.html" class="nav-action-item cart-trigger">
+              <span class="nav-action-icon" style="position: relative;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-count" id="cart-count">0</span>
+              </span>
+              <span class="nav-action-label">Cart</span>
+            </a>
+            
+            <a href="profile.html" class="nav-action-item">
+              <span class="nav-action-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <span class="nav-action-label">Account</span>
+            </a>
+          </div>
+        </div>
+        
+        <!-- ROW 2 -->
+        <div class="nav-row-two">
+          <div class="categories-dropdown-btn" onclick="window.location.href='products.html'">
+            <svg class="hamburger-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+            <span>Categories</span>
+            <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          
+          <div class="nav-desktop-menu"></div>
+        </div>
+      </div>
+
+      <!-- Mobile Layout -->
+      <div class="nav-mobile-layout">
+        <div class="nav-mobile-row-one">
+          <button class="hamburger-mobile-btn" onclick="toggleMenu()" aria-label="Menu">
             <span></span><span></span><span></span>
           </button>
-        </div>
-        <a href="index.html" class="nav-logo" id="nav-logo">
-          <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
-          <span class="logo-text">Shivaay Paridhan</span>
-        </a>
-      </div>
-
-      <!-- Center: Saree & Jewellery -->
-      <nav class="nav-center">
-        <div class="nav-menu" id="nav-menu">
-          <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
-          <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
-        </div>
-      </nav>
-
-      <!-- Right: Icons -->
-      <div class="nav-right">
-        <div class="nav-actions">
-          <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-          </button>
           
-          <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            <span class="cart-count" id="cart-count" style="display: none;">0</span>
+          <a href="index.html" class="nav-logo-mobile">
+            <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+            <span class="logo-text-mobile">Shivaay Paridhan</span>
           </a>
-
-          <button class="nav-icon-btn menu-btn" id="menu-btn" onclick="toggleMenu()" aria-label="Open menu">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 7h16"></path>
-              <path d="M4 12h16"></path>
-              <path d="M4 17h16"></path>
-            </svg>
-          </button>
+          
+          <div class="nav-mobile-actions-right">
+            <a href="profile.html#wishlist" class="nav-mobile-icon-link">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </a>
+            <a href="cart.html" class="nav-mobile-icon-link" style="position: relative;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span class="cart-count" id="cart-count-mobile">0</span>
+            </a>
+          </div>
+        </div>
+        
+        <div class="nav-mobile-row-two">
+          <div class="mobile-search-bar-container">
+            <input type="text" id="mobile-search-input" placeholder="Search for products, categories..." class="mobile-search-input-field">
+            <button class="mobile-search-icon-btn" onclick="triggerMobileSearch()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Side Menu Sidebar -->
-      <nav class="nav-links" id="nav-links">
-        <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-        <a href="products.html" class="nav-link" onclick="closeMenu()">Shop</a>
-        <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
-        <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
-        <a href="cart.html" class="nav-link" onclick="closeMenu()">Cart</a>
-        <a href="profile.html" class="nav-link" onclick="closeMenu()">Profile</a>
-        <a href="profile.html#orders" class="nav-link" onclick="closeMenu()">Orders</a>
-        <a href="profile.html#wishlist" class="nav-link" onclick="closeMenu()">Wishlist</a>
-        <hr class="nav-divider">
-        <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
-        <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display:none;">Logout</a>
-      </nav>
-    </div>
-
-    <div class="search-overlay" id="search-overlay">
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search sarees, jewellery and more..." class="search-input">
-        <button type="button" onclick="closeSearch()" class="search-close-btn">✕</button>
-      </div>
+      <!-- Side Menu Sidebar (Mobile Side Drawer) -->
+      <nav class="nav-links" id="nav-links"></nav>
     </div>
   `;
 
+  // Bind Enter key to search inputs
+  const dSearch = document.getElementById('desktop-search-input');
+  if (dSearch) {
+    dSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const q = dSearch.value.trim();
+        if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`;
+      }
+    });
+  }
+
+  const mSearch = document.getElementById('mobile-search-input');
+  if (mSearch) {
+    mSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const q = mSearch.value.trim();
+        if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`;
+      }
+    });
+  }
+
   updateActiveNav();
   updateAuthMenu();
+}
+
+function triggerDesktopSearch() {
+  const dSearch = document.getElementById('desktop-search-input');
+  const q = dSearch ? dSearch.value.trim() : '';
+  if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`;
+}
+
+function triggerMobileSearch() {
+  const mSearch = document.getElementById('mobile-search-input');
+  const q = mSearch ? mSearch.value.trim() : '';
+  if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`;
 }
 
 function updateAuthMenu() {
@@ -748,33 +826,60 @@ function updateAuthMenu() {
 
 function updateActiveNav() {
   const path = window.location.pathname.split('/').pop() || 'index.html';
-  const query = window.location.search;
+  const url = new URL(window.location.href);
+  const params = url.searchParams;
+  const category = normalizeCategoryAlias(params.get('category'));
+  const type = normalizeTypeAlias(params.get('type') || params.get('category'));
+  const sort = params.get('sort');
 
   document.querySelectorAll('.nav-menu-link, .nav-link').forEach((link) => {
     link.classList.remove('active');
   });
 
-  if (path === 'index.html') {
-    const homeLink = document.querySelector('.nav-link[href="index.html"]');
+  if (path === 'index.html' || path === '') {
+    const homeLink = document.querySelector('.nav-link[href="index.html"], .nav-menu-link[href="index.html"]');
     if (homeLink) homeLink.classList.add('active');
     return;
   }
 
   if (path === 'products.html') {
-    if (query.includes('category=sarees')) {
-      const link = document.querySelector('.nav-menu-link[href*="category=sarees"]');
-      if (link) link.classList.add('active');
-    } else if (query.includes('category=jewellery')) {
-      const link = document.querySelector('.nav-menu-link[href*="category=jewellery"]');
-      if (link) link.classList.add('active');
-    } else {
-      const collectionsLink = document.querySelector('.nav-link[href="products.html"]');
-      if (collectionsLink) collectionsLink.classList.add('active');
+    const links = Array.from(document.querySelectorAll('.nav-menu-link, .nav-link'));
+    let activeLink = null;
+
+    if (sort) {
+      activeLink = links.find((link) => {
+        const href = link.getAttribute('href') || '';
+        const target = new URL(href, window.location.origin);
+        return target.pathname.endsWith('products.html') && target.searchParams.get('sort') === sort;
+      });
     }
+
+    if (!activeLink && category) {
+      activeLink = links.find((link) => {
+        const href = link.getAttribute('href') || '';
+        const target = new URL(href, window.location.origin);
+        const linkCategory = normalizeCategoryAlias(target.searchParams.get('category'));
+        const linkType = normalizeTypeAlias(target.searchParams.get('type') || target.searchParams.get('category'));
+
+        if (category === 'clothing' && type) {
+          return linkCategory === 'clothing' && linkType === type;
+        }
+        if (category === 'clothing' && !type) {
+          return !target.searchParams.has('category') && !target.searchParams.has('sort');
+        }
+        return linkCategory === category;
+      });
+    }
+
+    if (!activeLink) {
+      activeLink = document.querySelector('.nav-link[href="products.html"], .nav-menu-link[href="products.html"]');
+    }
+
+    if (activeLink) activeLink.classList.add('active');
     return;
   }
 
-  const directLink = document.querySelector(`.nav-link[href="${path}"]`);
+  const directLink = document.querySelector(`.nav-link[href="${path}"], .nav-menu-link[href="${path}"]`);
   if (directLink) directLink.classList.add('active');
 }
 
@@ -790,6 +895,7 @@ function handleSearchKeydown(e) {
 
 function initNavigation() {
   initHeaderLayout();
+  renderPageNavigation();
 
   // Sticky Navbar
   window.addEventListener('scroll', () => {
@@ -839,6 +945,32 @@ function toggleFilter() {
   if (panel) panel.classList.toggle('open');
   if (overlay) overlay.classList.toggle('show');
 }
+
+// Enhanced mobile filter toggle: adds body scroll lock and aria attributes
+function toggleFilterEnhanced() {
+  const panel = document.getElementById('filter-panel');
+  const overlay = document.getElementById('filter-overlay');
+  const open = panel && panel.classList.contains('open');
+  // call base toggle
+  toggleFilter();
+  // lock body when opened
+  const nowOpen = panel && panel.classList.contains('open');
+  if (nowOpen) {
+    document.body.classList.add('no-scroll');
+    panel.setAttribute('aria-hidden','false');
+    panel.setAttribute('aria-modal','true');
+    // focus first interactive element
+    const first = panel.querySelector('button, input, select, a');
+    if (first) first.focus();
+  } else {
+    document.body.classList.remove('no-scroll');
+    if (panel) { panel.setAttribute('aria-hidden','true'); panel.removeAttribute('aria-modal'); }
+  }
+}
+
+// Replace existing toggleFilter usage on pages that have overlay/button calling toggleFilter()
+// We keep the simple toggleFilter for backward compatibility, and prefer enhanced when available.
+// If page elements call toggleFilter directly, they will still work; prefer to call toggleFilterEnhanced where possible.
 
 // ============ SEARCH FUNCTIONALITY ============
 function submitSearchForm(event) {
@@ -967,25 +1099,428 @@ function searchAllResults(searchTerm) {
 /**
  * Handle URL parameters for filters and search
  */
+function normalizeCategoryAlias(rawCategory) {
+  if (!rawCategory) return 'all';
+  const category = rawCategory.toString().trim().toLowerCase();
+  const jewelleryKeys = ['jewellery', 'jewelry', 'jewel'];
+  const clothingKeys = ['all', 'clothing', 'clothe', 'saree', 'sarees', 'wedding', 'bridal', 'festive', 'silk', 'cotton', 'handloom', 'banarasi', 'chiffon', 'party', 'casual'];
+  if (jewelleryKeys.includes(category)) return 'jewellery';
+  if (clothingKeys.includes(category)) return 'clothing';
+  return category;
+}
+
+function normalizeTypeAlias(rawType) {
+  if (!rawType) return null;
+  const type = rawType.toString().trim().toLowerCase();
+  const validTypes = ['silk', 'cotton', 'banarasi', 'handloom', 'ajrakh', 'wedding', 'bridal', 'festive', 'party',
+    'maheswari_cotton', 'chanderi_cotton', 'mul_cotton', 'linen_cotton', 'kanjivaram_silk', 'banarasi_silk',
+    'tussar_silk', 'soft_silk', 'mysore_silk', 'maheswari_silk', 'patola_silk', 'gajji_silk', 'dola_silk',
+    'pashmina_silk', 'khadi', 'jamdani', 'ikat', 'linen', 'earrings', 'necklaces', 'bangles', 'rings', 'handmade_jewellery'];
+  return validTypes.includes(type) ? type : null;
+}
+
+function getShopTitleForParams(category, type) {
+  const typeTitles = {
+    wedding: 'Wedding Sarees',
+    party: 'Party Wear Sarees',
+    bridal: 'Bridal Sarees',
+    festive: 'Festive Sarees',
+    silk: 'Silk Sarees',
+    cotton: 'Cotton Sarees',
+    banarasi: 'Banarasi Sarees',
+    handloom: 'Handloom Sarees',
+    ajrakh: 'Ajrakh Sarees',
+    maheshwari_cotton: 'Maheswari Cotton Sarees',
+    chanderi_cotton: 'Chanderi Cotton Sarees',
+    mul_cotton: 'Mul Cotton Sarees',
+    linen_cotton: 'Linen Cotton Sarees',
+    kanjivaram_silk: 'Kanjivaram Silk',
+    banarasi_silk: 'Banarasi Silk',
+    tussar_silk: 'Tussar Silk',
+    soft_silk: 'Soft Silk',
+    mysore_silk: 'Mysore Silk',
+    maheshwari_silk: 'Maheswari Silk',
+    patola_silk: 'Patola Silk',
+    gajji_silk: 'Gajji Silk',
+    dola_silk: 'Dola Silk',
+    pashmina_silk: 'Pashmina Silk',
+    khadi: 'Khadi Sarees',
+    jamdani: 'Jamdani Sarees',
+    ikat: 'Ikat Sarees',
+    linen: 'Linen Sarees',
+    earrings: 'Earrings',
+    necklaces: 'Necklaces',
+    bangles: 'Bangles',
+    rings: 'Rings',
+    handmade_jewellery: 'Handmade Jewellery'
+  };
+  if (type && typeTitles[type]) return typeTitles[type];
+  if (category === 'jewellery') return 'Jewellery Collection';
+  if (category === 'clothing') return 'Saree Collection';
+  return 'All Products';
+}
+
 function handleUrlParams() {
   const params = new URLSearchParams(window.location.search);
-  const category = params.get('category');
+  const rawCategory = params.get('category');
   const search = params.get('search');
+  let rawType = params.get('type');
 
-  // Apply category filter state (no product re-load — initializeApp calls loadAllProducts after)
-  if (category) {
+  const normalizedCategory = normalizeCategoryAlias(rawCategory);
+  if (!rawType) {
+    rawType = normalizeTypeAlias(rawCategory);
+  }
+  const normalizedType = normalizeTypeAlias(rawType);
+
+  if (normalizedCategory) {
     document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.category === category);
+      btn.classList.toggle('active', btn.dataset.category === normalizedCategory);
     });
+
+    const subcategoryFilters = document.getElementById('subcategory-filters');
+    if (subcategoryFilters) {
+      subcategoryFilters.style.display = normalizedCategory === 'clothing' ? 'flex' : 'none';
+    }
+
+    document.querySelectorAll('.subcategory-btn').forEach(btn => {
+      btn.classList.toggle('active', normalizedType ? btn.dataset.type === normalizedType : btn.dataset.type === 'all');
+    });
+
     const shopTitle = document.getElementById('shop-title');
-    const titles = { all: 'All Products', saree: 'Saree Collection', jewellery: 'Jewellery Collection' };
-    if (shopTitle) shopTitle.textContent = titles[category] || 'All Products';
+    if (shopTitle) shopTitle.textContent = getShopTitleForParams(normalizedCategory, normalizedType);
   }
 
   if (search) {
     localStorage.setItem('searchTerm', search);
   }
 }
+
+const HOMEPAGE_CONFIG_KEY = 'homepageConfig';
+let homepageConfig = getHomepageConfig();
+let homepageAdminState = {
+  editingBannerId: null,
+  bannerImageData: null,
+};
+
+function getDefaultHomepageConfig() {
+  return {
+    promoBar: {
+      enabled: true,
+    },
+    categoryNavigation: [
+      { label: 'Home', href: 'index.html' },
+      { label: 'Wedding', href: 'shop.html?category=wedding' },
+      { label: 'Professional Cotton', href: 'shop.html?category=cotton' },
+      { label: 'Silk', href: 'shop.html?category=silk' },
+      { label: 'Handloom', href: 'shop.html?category=handloom' },
+      { label: 'Jewellery', href: 'shop.html?category=jewellery' },
+      { label: 'New Arrival', href: 'shop.html?sort=new' },
+      { label: 'Offers', href: 'shop.html?sort=offers' },
+    ],
+    heroBanners: [
+      {
+        id: 'banner-1',
+        title: 'Timeless Fashion for Every <em>You</em>',
+        subtitle: 'Premium ethnic wear with couture details for unforgettable moments.',
+        description: 'Crafted in luxurious fabrics and designed for celebrations, silk weddings and special events.',
+        showButton: true,
+        desktopImage: 'images/hero_model.png',
+        mobileImage: 'images/hero_model.png',
+        isActive: true,
+        displayOrder: 1,
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: 'banner-2',
+        title: 'Kanjivaram Elegance for Your Big Day',
+        subtitle: 'Handwoven bridal sarees with regal motifs and rich zari craftsmanship.',
+        description: 'Perfect for wedding ceremonies and festive occasions, made to make you shine.',
+        showButton: true,
+        desktopImage: 'images/saree3.png',
+        mobileImage: 'images/saree3.png',
+        isActive: true,
+        displayOrder: 2,
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: 'banner-3',
+        title: 'Blush Pink Sarees with Premium Shine',
+        subtitle: 'Soft, feminine silhouettes designed for festive and family occasions.',
+        description: 'Lightweight luxury options with exquisite embroidery and rich finishes.',
+        showButton: true,
+        desktopImage: 'images/saree4.png',
+        mobileImage: 'images/saree4.png',
+        isActive: true,
+        displayOrder: 3,
+        createdAt: new Date().toISOString(),
+      },
+    ],
+    productSections: [
+      {
+        id: 'section-latest',
+        title: 'Latest Masterpiece',
+        subtitle: 'Shop the newest premium arrivals handpicked for luxury styling.',
+        isActive: true,
+        displayOrder: 1,
+        products: [1, 2, 3, 4],
+      },
+      {
+        id: 'section-trending',
+        title: 'Trending Collection',
+        subtitle: 'The most loved styles for celebrations, parties and elegant evenings.',
+        isActive: true,
+        displayOrder: 2,
+        products: [5, 6, 7, 8],
+      },
+      {
+        id: 'section-premium',
+        title: 'Premium Picks',
+        subtitle: 'Curated favourites chosen for luxury, comfort and celebration-ready style.',
+        isActive: true,
+        displayOrder: 3,
+        products: [9, 10, 11, 12],
+      },
+    ],
+    brandStory: {
+      title: 'A Heritage of Elegance',
+      text: 'Shivaay Paridhan brings together handcrafted sarees, luxury textiles and festive couture designed for the modern woman who values tradition, craftsmanship and timeless style.',
+      image: 'images/hero_model.png',
+    },
+  };
+}
+
+function getHomepageConfig() {
+  const stored = localStorage.getItem(HOMEPAGE_CONFIG_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch (err) {
+      console.error('Invalid homepage config, restoring defaults.', err);
+    }
+  }
+  const defaultConfig = getDefaultHomepageConfig();
+  saveHomepageConfig(defaultConfig);
+  return defaultConfig;
+}
+
+function saveHomepageConfig(config) {
+  localStorage.setItem(HOMEPAGE_CONFIG_KEY, JSON.stringify(config));
+  homepageConfig = config;
+}
+
+function generateId(prefix) {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+}
+
+function getInventoryProducts() {
+  if (allProducts && allProducts.length > 0) return allProducts;
+  const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+  return storedProducts;
+}
+
+function findProductById(productId) {
+  const products = getInventoryProducts();
+  return products.find(product => String(product.id || product._id) === String(productId));
+}
+
+let homepagePromoCoupon = null;
+
+async function loadHomepagePromoCoupon() {
+  if (!homepageConfig.promoBar?.enabled) {
+    homepagePromoCoupon = null;
+    renderHomepagePromoBar();
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/coupons`);
+    const coupons = await res.json();
+    const activeCoupons = (coupons || [])
+      .filter(coupon => coupon.isActive && (!coupon.expiryDate || new Date(coupon.expiryDate) > new Date()))
+      .sort((a, b) => {
+        const left = a.expiryDate ? new Date(a.expiryDate) : new Date(0);
+        const right = b.expiryDate ? new Date(b.expiryDate) : new Date(0);
+        return left - right;
+      });
+    homepagePromoCoupon = activeCoupons[0] || null;
+  } catch (error) {
+    homepagePromoCoupon = null;
+  }
+
+  renderHomepagePromoBar();
+}
+
+function isOfferExpired(offer) {
+  if (!offer || !offer.expiry) return false;
+  const expiry = new Date(offer.expiry);
+  expiry.setHours(23, 59, 59, 999);
+  return expiry < new Date();
+}
+
+function renderHomepagePromoBar() {
+  const promoBar = document.getElementById('promoBar');
+  if (!promoBar) return;
+  if (!homepageConfig.promoBar?.enabled || !homepagePromoCoupon) {
+    promoBar.style.display = 'none';
+    return;
+  }
+
+  const coupon = homepagePromoCoupon;
+  const label = coupon.discountType === 'percentage'
+    ? `Flat ${coupon.discountValue}% Off`
+    : `Flat ₹${coupon.discountValue} Off`;
+
+  promoBar.style.display = 'flex';
+  promoBar.innerHTML = `
+    <span>${escapeHtml(label)} — Use Code: <strong>${escapeHtml(coupon.code)}</strong></span>
+  `;
+}
+
+function renderBrandStorySection() {
+  const story = homepageConfig.brandStory;
+  if (!story) return;
+  const title = document.querySelector('.story-title');
+  const text = document.querySelector('.story-text');
+  const image = document.querySelector('.story-image');
+  if (title) title.textContent = story.title;
+  if (text) text.textContent = story.text;
+  if (image) image.src = story.image;
+}
+
+function getCanonicalCategoryNavigation() {
+  const navItems = homepageConfig && Array.isArray(homepageConfig.categoryNavigation)
+    ? homepageConfig.categoryNavigation
+    : getDefaultHomepageConfig().categoryNavigation;
+
+  return navItems.map(item => ({
+    ...item,
+    href: item.href ? item.href.replace(/products\.html/g, 'shop.html') : item.href
+  }));
+}
+
+function buildNavLinks(items, linkClass = 'nav-menu-link', includeClose = false) {
+  return items.map(item => `
+    <a href="${item.href}" class="${linkClass}"${includeClose ? ' onclick="closeMenu()"' : ''}>
+      ${item.label}
+    </a>
+  `).join('');
+}
+
+function renderPageNavigation() {
+  const navItems = getCanonicalCategoryNavigation();
+  const isProductsPage = Boolean(document.querySelector('.products-page'));
+  const desktopMenu = document.querySelector('.nav-desktop-menu') || document.querySelector('.nav-menu');
+
+  if (desktopMenu) {
+    desktopMenu.innerHTML = buildNavLinks(navItems, desktopMenu.classList.contains('nav-menu') ? 'nav-menu-link' : 'nav-menu-link');
+  }
+
+  const mobileNav = document.getElementById('nav-links');
+  if (mobileNav && isProductsPage) {
+    const extras = `
+      <a href="products.html" class="nav-link" onclick="closeMenu()">Shop All</a>
+      <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
+      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+      <hr class="nav-divider">
+      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display:none;">Logout</a>
+    `;
+    mobileNav.innerHTML = buildNavLinks(navItems, 'nav-link', true) + extras;
+  }
+}
+
+function getAdminCategoryOptions() {
+  return [
+    { value: 'wedding', label: 'Wedding' },
+    { value: 'cotton', label: 'Professional Cotton' },
+    { value: 'silk', label: 'Silk' },
+    { value: 'handloom', label: 'Handloom' },
+    { value: 'jewellery', label: 'Jewellery' },
+  ];
+}
+
+function renderAdminCategoryOptions() {
+  const select = document.getElementById('product-category');
+  if (!select) return;
+  select.innerHTML = '<option value="">Select Category</option>' + getAdminCategoryOptions()
+    .map(option => `<option value="${option.value}">${option.label}</option>`)
+    .join('');
+}
+
+function getAdminSubcategoryOptions(category) {
+  const subcategoryMap = {
+    wedding: [
+      { value: 'party', label: 'Party Wear Sarees' },
+      { value: 'bridal', label: 'Bridal Sarees' }
+    ],
+    cotton: [
+      { value: 'maheswari_cotton', label: 'Maheswari Cotton Sarees' },
+      { value: 'chanderi_cotton', label: 'Chanderi Cotton Sarees' },
+      { value: 'mul_cotton', label: 'Mul Cotton Sarees' },
+      { value: 'linen_cotton', label: 'Linen Cotton Sarees' }
+    ],
+    silk: [
+      { value: 'kanjivaram_silk', label: 'Kanjivaram Silk' },
+      { value: 'banarasi_silk', label: 'Banarasi Silk' },
+      { value: 'tussar_silk', label: 'Tussar Silk' },
+      { value: 'soft_silk', label: 'Soft Silk' },
+      { value: 'mysore_silk', label: 'Mysore Silk' },
+      { value: 'maheswari_silk', label: 'Maheswari Silk' },
+      { value: 'patola_silk', label: 'Patola Silk' },
+      { value: 'gajji_silk', label: 'Gajji Silk' },
+      { value: 'dola_silk', label: 'Dola Silk' },
+      { value: 'pashmina_silk', label: 'Pashmina Silk' }
+    ],
+    handloom: [
+      { value: 'khadi', label: 'Khadi Sarees' },
+      { value: 'jamdani', label: 'Jamdani Sarees' },
+      { value: 'ikat', label: 'Ikat Sarees' },
+      { value: 'linen', label: 'Linen Sarees' }
+    ],
+    jewellery: [
+      { value: 'earrings', label: 'Earrings' },
+      { value: 'necklaces', label: 'Necklaces' },
+      { value: 'bangles', label: 'Bangles' },
+      { value: 'rings', label: 'Rings' },
+      { value: 'handmade_jewellery', label: 'Handmade Jewellery' }
+    ],
+    banarasi: [
+      { value: 'banarasi_silk', label: 'Banarasi Silk' }
+    ],
+    festive: [
+      { value: 'party', label: 'Party Wear Sarees' },
+      { value: 'bridal', label: 'Bridal Sarees' }
+    ]
+  };
+  return subcategoryMap[category] || [];
+}
+
+function renderAdminSubcategoryOptions(category) {
+  const select = document.getElementById('product-subcategory');
+  if (!select) return;
+  const options = getAdminSubcategoryOptions(category);
+  select.innerHTML = '<option value="">Select Subcategory</option>' + options
+    .map(option => `<option value="${option.value}">${option.label}</option>`)
+    .join('');
+}
+
+function renderCategoryNavigation() {
+  const navContainer = document.getElementById('categoryNav');
+  if (!navContainer) return;
+  navContainer.innerHTML = '';
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  getCanonicalCategoryNavigation().forEach((item) => {
+    const link = document.createElement('a');
+    link.className = 'category-link';
+    link.href = item.href;
+    link.textContent = item.label;
+    if (item.href.includes(currentPath) || (currentPath === 'index.html' && item.href === 'index.html')) {
+      link.classList.add('active');
+    }
+    navContainer.appendChild(link);
+  });
+}
+
 
 // ============ INITIALIZATION - RUN ON PAGE LOAD ============
 document.addEventListener('DOMContentLoaded', () => {
@@ -1212,6 +1747,7 @@ async function initializeApp() {
     updateDashboardStats();
     loadAdminProducts();
     initImageUploadPreview();
+    renderAdminCategoryOptions();
     
     // Admin-only forms
     const productForm = document.getElementById('product-form');
@@ -2375,7 +2911,7 @@ async function loadUsers() {
       </div>
 
       <!-- Table -->
-      <div style="background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.06);overflow:hidden;border:1px solid rgba(0,0,0,0.04);">
+      <div style="background:#fff;border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,0.06);overflow:hidden;border:1px solid rgba(0,0,0,0.04);">
         <!-- Table Header -->
         <div style="display:grid;grid-template-columns:40px 1.8fr 2fr 1.2fr 1fr 1.2fr;gap:0;padding:14px 20px;background:var(--black);color:rgba(255,255,255,0.7);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;">
           <span>#</span>
@@ -2459,7 +2995,7 @@ async function loadOrders() {
     }
 
     container.innerHTML = orders.map(order => `
-      <div class="order-card" style="background:#fff;border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div class="order-card" style="background:#fff;border-radius:18px;padding:32px;margin-bottom:24px;box-shadow:0 12px 36px rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.04);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
           <div>
             <h3 style="font-family:var(--font-heading);font-size:1rem;color:var(--black);margin-bottom:4px;">#${order.orderId || order._id?.slice(-8).toUpperCase()}</h3>
@@ -2664,6 +3200,20 @@ async function loadAllProducts(forceRefresh = false) {
   await fetchProductsFromBackend();
 
   const products = applyProductFilters(allProducts);
+  // Apply sorting if requested (sort-select on collection page)
+  const sortSelect = document.getElementById('sort-select');
+  const sortVal = sortSelect ? sortSelect.value : (window.currentSort || 'featured');
+  let sortedProducts = [...products];
+  try {
+    switch (sortVal) {
+      case 'price-asc': sortedProducts.sort((a,b)=>Number(a.price)-Number(b.price)); break;
+      case 'price-desc': sortedProducts.sort((a,b)=>Number(b.price)-Number(a.price)); break;
+      case 'newest': /* no createdAt field — keep original order */ break;
+      case 'popularity': /* unknown metric, keep original order */ break;
+      case 'featured': default: break;
+    }
+  } catch(e) { /* ignore sort errors */ }
+
   updateShopHeader(products.length);
 
   const noResults = document.getElementById('no-results');
@@ -2675,8 +3225,15 @@ async function loadAllProducts(forceRefresh = false) {
   if (noResults) noResults.style.display = 'none';
 
   // Build HTML once and set — no repeated DOM mutations
-  const html = products.map(p => renderProductCard(p)).join('');
+  const html = sortedProducts.map(p => renderProductCard(p)).join('');
   container.innerHTML = html;
+}
+
+/** Called by the sorting dropdown to re-render products */
+function applySort() {
+  const sel = document.getElementById('sort-select');
+  if (sel) window.currentSort = sel.value;
+  if (!_isRenderingProducts) loadAllProducts();
 }
 
 /** Generate skeleton placeholder cards */
@@ -2710,13 +3267,38 @@ function applyProductFilters(products) {
   // Apply category filter
   if (categoryFilter && categoryFilter.dataset.category !== 'all') {
     const category = categoryFilter.dataset.category;
-    filtered = filtered.filter(p => p.category === category);
+    filtered = filtered.filter(p => {
+      const productCategory = (p.category || '').toString().toLowerCase();
+      if (category === 'clothing') {
+        return ['clothing', 'saree', 'sarees'].includes(productCategory);
+      }
+      return productCategory === category;
+    });
   }
 
   // Apply subcategory/type filter
   if (subcategoryFilter && subcategoryFilter.dataset.type !== 'all') {
     const type = subcategoryFilter.dataset.type;
-    filtered = filtered.filter(p => p.type === type);
+    filtered = filtered.filter(p => (p.type || '').toString().toLowerCase() === type);
+  }
+
+  // Material filters (checkboxes)
+  const selectedMaterials = Array.from(document.querySelectorAll('.filter-checkbox.material:checked')).map(n=>n.value.toString().toLowerCase());
+  if (selectedMaterials.length > 0) {
+    filtered = filtered.filter(p => selectedMaterials.includes((p.material || '').toString().toLowerCase()));
+  }
+
+  // Color filters (checkboxes) — product may have `colors` array or comma list
+  const selectedColors = Array.from(document.querySelectorAll('.filter-checkbox.color:checked')).map(n=>n.value.toString().toLowerCase());
+  if (selectedColors.length > 0) {
+    filtered = filtered.filter(p => {
+      const cols = [];
+      if (Array.isArray(p.colors)) cols.push(...p.colors.map(c=>c.toString().toLowerCase()));
+      else if (typeof p.colors === 'string' && p.colors.length) cols.push(...p.colors.split(',').map(s=>s.trim().toLowerCase()));
+      // also check name as a fallback
+      if (p.name) cols.push(...p.name.toString().toLowerCase().split(' '));
+      return selectedColors.some(sc => cols.includes(sc));
+    });
   }
 
   return filtered;
@@ -2742,7 +3324,7 @@ function setCategoryFilter(category) {
 
   const subcategoryFilters = document.getElementById('subcategory-filters');
   if (subcategoryFilters) {
-    subcategoryFilters.style.display = 'none';
+    subcategoryFilters.style.display = category === 'clothing' ? 'flex' : 'none';
   }
 
   document.querySelectorAll('.subcategory-btn').forEach(btn => {
@@ -2836,7 +3418,7 @@ async function fetchProductsFromBackend() {
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const data = await response.json();
 
-      allProducts = data.map(p => ({
+      const remoteProducts = data.map(p => ({
         id: p._id || p.id,
         name: p.name,
         price: p.price,
@@ -2856,10 +3438,17 @@ async function fetchProductsFromBackend() {
         moreInfo: p.moreInfo || '',
         // Offer / Countdown Timer Fields
         offerLabel:     p.offerLabel     || '',
+        offerDiscount:  Number(p.offerDiscount) || 0,
         offerStartDate: p.offerStartDate || null,
         offerEndDate:   p.offerEndDate   || null
       }));
 
+      const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+      const localOnlyProducts = storedProducts.filter(lp => {
+        const localId = String(lp._id || lp.id || '');
+        return localId && !remoteProducts.some(rp => String(rp._id || rp.id || '') === localId);
+      });
+      allProducts = [...remoteProducts, ...localOnlyProducts];
       localStorage.setItem('products', JSON.stringify(allProducts));
     } catch (err) {
       console.error('Fetch failed, using localStorage cache:', err);
@@ -3073,11 +3662,17 @@ async function loadAdminProducts() {
 
   container.innerHTML = products.map(product => {
     const productId = product._id || product.id;
+    const offer = getOfferState(product);
     const discount = Number(product.discount) || 0;
     const originalPrice = Number(product.originalPrice || product.price) || 0;
     const finalPrice = Number(product.price) || originalPrice;
+    const offerDiscount = Number(product.offerDiscount) || 0;
+    const offerPrice = offer.active && offerDiscount > 0
+      ? Math.max(0, Math.round(finalPrice * (1 - offerDiscount / 100)))
+      : finalPrice;
     const savings = originalPrice - finalPrice;
-    const hasDiscount = discount > 0 && savings > 0;
+    const offerSavings = originalPrice - offerPrice;
+    const hasDiscount = !offer.expired && ((discount > 0 && savings > 0) || (offer.active && offerDiscount > 0 && offerSavings > 0));
     const stockVal = product.stock || product.quantity || 0;
 
     // Get first image URL
@@ -3092,15 +3687,20 @@ async function loadAdminProducts() {
     return `
     <div class="product-card admin-product-card" data-product-id="${productId}">
       <button class="delete-btn" onclick="deleteProduct('${productId}')" title="Delete Product">×</button>
-      ${hasDiscount ? `<div class="card-badge discount-badge"><span class="discount-percent">${discount}% OFF</span></div>` : ''}
+      ${hasDiscount ? `<div class="card-badge discount-badge"><span class="discount-percent">${offer.active && offerDiscount > 0 ? offerDiscount : discount}% OFF</span></div>` : ''}
       <div class="card-image-wrap">
         <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name)}" class="card-img" loading="lazy" onerror="this.src='images/placeholder.jpg'">
       </div>
       <div class="card-info">
         <h3 class="card-name">${escapeHtml(product.name)}</h3>
         <div class="card-price-wrap">
-          <span class="card-price">₹${finalPrice.toLocaleString()}</span>
-          ${hasDiscount ? `<span class="card-old-price">₹${originalPrice.toLocaleString()}</span>` : ''}
+          ${offer.active && offerDiscount > 0 ? `
+            <span class="card-old-price" style="text-decoration:line-through; color:#888; font-size:0.9rem;">₹${finalPrice.toLocaleString()}</span>
+            <span class="card-price" style="color:#c0392b;">₹${offerPrice.toLocaleString()}</span>
+          ` : `
+            <span class="card-price">₹${finalPrice.toLocaleString()}</span>
+            ${hasDiscount ? `<span class="card-old-price">₹${originalPrice.toLocaleString()}</span>` : ''}
+          `}
         </div>
         <p style="font-size:0.78rem;color:#888;margin-top:2px;"><strong>${escapeHtml(product.category || '')}</strong>${product.material ? ` · ${escapeHtml(product.material)}` : ''}</p>
         <p class="card-stock ${stockVal > 0 ? 'in-stock' : 'out-of-stock'}">● ${stockVal > 0 ? `In Stock (${stockVal})` : 'Out of Stock'}</p>
@@ -3115,18 +3715,23 @@ function renderProductCard(product) {
   const role = localStorage.getItem('role');
   const productId = product.id || product._id;
 
+  // Compute offer state FIRST
+  const offer = getOfferState(product);
+
   const discount = Number(product.discount) || 0;
   const originalPrice = Number(product.originalPrice || product.price) || 0;
   const finalPrice = Number(product.price) || originalPrice;
+  const offerDiscount = Number(product.offerDiscount) || 0;
+  const offerPrice = offer.active && offerDiscount > 0
+    ? Math.max(0, Math.round(finalPrice * (1 - offerDiscount / 100)))
+    : finalPrice;
   const savings = originalPrice - finalPrice;
-
-  // Compute offer state
-  const offer = getOfferState(product);
+  const offerSavings = originalPrice - offerPrice;
   const isLowStock = (product.stock || product.quantity || 0) > 0 &&
                      (product.stock || product.quantity || 0) <= 5;
 
   // If offer is expired, treat as no discount for display
-  const hasDiscount = !offer.expired && discount > 0 && savings > 0;
+  const hasDiscount = !offer.expired && ((discount > 0 && savings > 0) || (offer.active && offerDiscount > 0 && offerSavings > 0));
 
   const actionButtons = role === 'admin'
     ? `<button onclick="deleteProduct('${productId}')" class="btn btn-danger">Delete</button>`
@@ -3135,26 +3740,27 @@ function renderProductCard(product) {
 
   const priceDisplay = offer.expired
     ? `<div class="card-price">₹${originalPrice.toLocaleString()}</div>`
-    : hasDiscount
-      ? `<div class="card-price-wrap">
-           <span class="card-price">₹${finalPrice.toLocaleString()}</span>
-           <span class="card-old-price">₹${originalPrice.toLocaleString()}</span>
+    : offer.active && offerDiscount > 0
+      ? `<div class="card-price-wrap" style="display:flex; align-items:baseline; gap:8px;">
+           <span class="card-old-price" style="text-decoration:line-through; color:#888; font-size:0.95rem;">₹${finalPrice.toLocaleString()}</span>
+           <span class="card-price" style="color:#c0392b; font-size:1.2rem; font-weight:700;">₹${offerPrice.toLocaleString()}</span>
          </div>`
-      : `<div class="card-price">₹${finalPrice.toLocaleString()}</div>`;
+      : hasDiscount
+        ? `<div class="card-price-wrap" style="display:flex; align-items:baseline; gap:8px;">
+             <span class="card-old-price" style="text-decoration:line-through; color:#888; font-size:0.95rem;">₹${originalPrice.toLocaleString()}</span>
+             <span class="card-price" style="color:#c0392b; font-size:1.2rem; font-weight:700;">₹${finalPrice.toLocaleString()}</span>
+           </div>`
+        : `<div class="card-price">₹${finalPrice.toLocaleString()}</div>`;
 
-  // Standard discount badge (only when no active offer timer — avoid duplication)
-  const badgeDisplay = hasDiscount && !offer.active
-    ? `<div class="card-badge discount-badge">
-         <span class="discount-percent">${discount}% OFF</span>
-         <span class="discount-save">SAVE ₹${savings.toLocaleString()}</span>
-       </div>`
-    : hasDiscount && offer.active
-      ? `<div class="card-badge discount-badge">
-           <span class="discount-percent">${discount}% OFF</span>
-         </div>`
+  const badgeDisplay = offer.active && offerDiscount > 0
+    ? `<div class="card-badge-top-left">BEST SELLER</div>
+       <div class="card-badge-top-right discount-badge">${offer.active && offerDiscount > 0 ? offerDiscount : discount}% OFF</div>`
+    : hasDiscount
+      ? `<div class="card-badge-top-left">BEST SELLER</div>
+         <div class="card-badge-top-right discount-badge">${offer.active && offerDiscount > 0 ? offerDiscount : discount}% OFF</div>`
       : '';
 
-  const limitedOffer = hasDiscount && !offer.active ? `<div class="limited-offer-tag">Limited Offer</div>` : '';
+  const limitedOffer = '';
 
   // Show only the 1st image in shop card
   let imageUrl = 'images/placeholder.jpg';
@@ -3173,21 +3779,31 @@ function renderProductCard(product) {
     : offer.expired
       ? `<div class="card-offer-expired">⏰ Offer Expired</div>`
       : '';
+      
+  const savingsText = hasDiscount ? `<div class="card-savings">You Save ₹${savings.toLocaleString()} (${offer.active && offerDiscount > 0 ? offerDiscount : discount}% OFF)</div>` : '';
 
   const cardHtml = `
     <div class="product-card" data-product-id="${productId}" onclick="openProductDetail('${productId}', event)">
-      ${badgeDisplay}
       ${offer.active ? `<div class="flash-sale-shimmer"></div>` : ''}
       <div class="card-image-wrap">
+        ${badgeDisplay}
         <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name)}" class="card-img" loading="lazy" onerror="this.src='images/placeholder.jpg'">
         ${limitedOffer}
+        ${cardTimerHtml}
       </div>
       <div class="card-info">
         <h3 class="card-name">${escapeHtml(product.name)}</h3>
         ${priceDisplay}
-        ${cardTimerHtml}
+        ${savingsText}
         <div class="card-footer">
-          ${actionButtons}
+          <button class="btn btn-outline" style="flex:1" onclick="openProductDetail('${productId}', event)">View Details</button>
+          <button class="btn btn-icon btn-cart" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #ddd; border-radius: 4px;" onclick="addToCart('${productId}', event)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -3264,7 +3880,16 @@ async function addProduct(event) {
   finalFormData.append('name', formData.get('product-name') || '');
   finalFormData.append('price', formData.get('product-price') || '0');
   finalFormData.append('originalPrice', formData.get('product-old-price') || formData.get('product-price') || '0');
-  finalFormData.append('category', formData.get('product-category') || 'saree');
+  const rawCategoryValue = formData.get('product-category') || 'silk';
+  const rawSubcategoryValue = formData.get('product-subcategory') || '';
+  const normalizedCategory = ['jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase()) ? 'jewellery' : 'clothing';
+  const normalizedType = rawSubcategoryValue
+    ? rawSubcategoryValue.toString().trim().toLowerCase()
+    : (['silk','cotton','kota','banarasi','handloom','wedding','festive','earrings','necklaces','bangles','rings','handmade_jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase())
+      ? rawCategoryValue.toString().trim().toLowerCase()
+      : (rawCategoryValue.toString().trim().toLowerCase() === 'jewellery' ? 'jewellery' : 'silk'));
+
+  finalFormData.append('category', normalizedCategory);
   finalFormData.append('colors', formData.get('product-colors') || '');
   finalFormData.append('material', formData.get('product-material') || '');
   finalFormData.append('stock', formData.get('product-quantity') || '1');
@@ -3274,9 +3899,10 @@ async function addProduct(event) {
   finalFormData.append('specifications', formData.get('product-specifications') || '');
   finalFormData.append('productCare', formData.get('product-care') || '');
   finalFormData.append('moreInfo', formData.get('product-moreinfo') || '');
-  finalFormData.append('type', formData.get('product-category') === 'saree' ? 'silk' : 'premium');
+  finalFormData.append('type', normalizedType);
   // Offer countdown timer fields
   finalFormData.append('offerLabel',     formData.get('product-offer-label') || '');
+  finalFormData.append('offerDiscount',  formData.get('product-offer-discount') || '0');
   finalFormData.append('offerStartDate', formData.get('product-offer-start') || '');
   finalFormData.append('offerEndDate',   formData.get('product-offer-end')   || '');
 
@@ -3303,9 +3929,21 @@ async function addProduct(event) {
       }
       form.reset();
       clearImagePreviews();
+      
+      // CRITICAL: Clear the fetch cache so shop page gets fresh products
+      _fetched = false;
+      _fetchPromise = null;
+      isFetched = false;
+      allProducts = [];
+      
       // Refresh admin products list
       await loadAdminProducts();
       updateDashboardStats();
+      
+      // Force reload shop page products if product container exists
+      if (document.getElementById('product-container')) {
+        await loadAllProducts(true);
+      }
     } else {
       const err = await response.json();
       throw new Error(err.message || 'Server returned an error');
@@ -3314,11 +3952,20 @@ async function addProduct(event) {
     console.error("Add product failed or backend unavailable:", error);
     
     // Fallback: Save to localStorage locally
+    const rawCategoryValue = formData.get('product-category') || 'silk';
+    const rawSubcategoryValue = formData.get('product-subcategory') || '';
+    const normalizedCategory = ['jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase()) ? 'jewellery' : 'clothing';
+    const normalizedType = rawSubcategoryValue
+      ? rawSubcategoryValue.toString().trim().toLowerCase()
+      : (['silk','cotton','kota','banarasi','handloom','wedding','festive','earrings','necklaces','bangles','rings','handmade_jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase())
+        ? rawCategoryValue.toString().trim().toLowerCase()
+        : (rawCategoryValue.toString().trim().toLowerCase() === 'jewellery' ? 'jewellery' : 'silk'));
+
     const productData = {
       name: formData.get('product-name'),
       price: parseFloat(formData.get('product-price')),
       originalPrice: parseFloat(formData.get('product-old-price') || formData.get('product-price')),
-      category: formData.get('product-category'),
+      category: normalizedCategory,
       material: formData.get('product-material'),
       colors: formData.get('product-colors') ? formData.get('product-colors').split(',').map(c => c.trim()) : [],
       quantity: parseInt(formData.get('product-quantity') || 1),
@@ -3328,7 +3975,11 @@ async function addProduct(event) {
       specifications: formData.get('product-specifications'),
       productCare: formData.get('product-care'),
       moreInfo: formData.get('product-moreinfo') || '',
-      type: formData.get('product-category') === 'saree' ? 'silk' : 'premium',
+      type: normalizedType,
+      offerLabel: formData.get('product-offer-label') || '',
+      offerDiscount: parseFloat(formData.get('product-offer-discount') || 0),
+      offerStartDate: formData.get('product-offer-start') || null,
+      offerEndDate: formData.get('product-offer-end') || null,
       image: 'images/placeholder.jpg',
       images: ['images/placeholder.jpg']
     };
@@ -3361,6 +4012,48 @@ async function addProduct(event) {
       submitBtn.disabled = false;
     }
   }
+}
+
+/**
+ * Refresh the product cache from backend/localStorage and reload admin/shop views.
+ */
+async function refreshProductCache() {
+  const button = document.getElementById('refresh-products-btn');
+  const defaultLabel = button ? button.textContent : 'Refresh Product Cache';
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Refreshing...';
+  }
+
+  let products = [];
+  try {
+    products = await fetchProductsFromBackend();
+    localStorage.setItem('products', JSON.stringify(products));
+    if (button) {
+      button.textContent = 'Products Refreshed';
+    }
+  } catch (err) {
+    console.error('Refresh product cache failed:', err);
+    products = JSON.parse(localStorage.getItem('products')) || [];
+    if (button) {
+      button.textContent = 'Refresh Failed';
+    }
+  }
+
+  if (document.querySelector('.admin-layout')) {
+    await loadAdminProducts();
+  }
+
+  if (document.querySelector('.collections-nav')) {
+    await loadShopProducts();
+  }
+
+  setTimeout(() => {
+    if (button) {
+      button.disabled = false;
+      button.textContent = defaultLabel;
+    }
+  }, 1800);
 }
 
 /**
@@ -3488,10 +4181,14 @@ async function updatePolicies(event) {
     });
 
     if (response.ok) {
-      alert("✓ Policies updated successfully!");
+      showAdminToast("✓ Policies updated successfully!");
+    } else {
+      throw new Error("Server error");
     }
   } catch (error) {
-    console.error("Policy update failed:", error);
+    console.error("Policy update failed, falling back to localStorage:", error);
+    localStorage.setItem('adminPolicies', JSON.stringify(data));
+    showAdminToast("✓ Policies updated successfully! (Local storage)");
   }
 }
 
@@ -3504,9 +4201,18 @@ async function loadAdminPolicies() {
       const returnInput = document.getElementById('return-policy');
       if (shippingInput) shippingInput.value = data.shippingPolicy || '';
       if (returnInput) returnInput.value = data.returnPolicy || '';
+    } else {
+      throw new Error("Server error");
     }
   } catch (error) {
-    console.error("Load policies failed:", error);
+    console.error("Load policies failed, falling back to localStorage:", error);
+    const localData = JSON.parse(localStorage.getItem('adminPolicies'));
+    if (localData) {
+      const shippingInput = document.getElementById('shipping-policy');
+      const returnInput = document.getElementById('return-policy');
+      if (shippingInput) shippingInput.value = localData.shippingPolicy || '';
+      if (returnInput) returnInput.value = localData.returnPolicy || '';
+    }
   }
 }
 
@@ -3627,10 +4333,26 @@ function renderCart() {
     renderCart(); // re-render once to show total correctly
   }
   
+  const finalTotal = (appliedCoupon ? total - appliedCoupon.discountAmount : total);
+
+  // Update mobile sticky checkout total
+  const mobileTotalEl = document.getElementById('mobile-checkout-total');
+  if (mobileTotalEl) mobileTotalEl.textContent = `₹${finalTotal.toLocaleString()}`;
+
   const checkoutBtn = document.getElementById('checkout');
   const clearCartBtn = document.getElementById('clear-cart');
   if (checkoutBtn) checkoutBtn.style.display = 'inline-flex';
   if (clearCartBtn) clearCartBtn.style.display = 'inline-flex';
+
+  // Show mobile CTA on small screens when cart has items
+  const mobileNav = document.querySelector('.cart-mobile-cta');
+  if (mobileNav) {
+    if (cart.length > 0 && window.innerWidth <= 900) {
+      mobileNav.style.display = 'flex';
+    } else {
+      mobileNav.style.display = 'none';
+    }
+  }
 }
 
 function updateCartItemQty(id, color, delta) {
@@ -3673,6 +4395,289 @@ function setupCartActions() {
     });
   }
 }
+
+// ===============================================
+// SHOP PAGE - LOAD & FILTER ADMIN PRODUCTS
+// ===============================================
+
+let currentShopCollection = 'all';
+let currentShopSubcategory = 'all';
+let shopDisplayedProducts = [];
+
+const subcategoryMap = {
+  wedding: [
+    { value: 'all', label: 'All Wedding' },
+    { value: 'party', label: 'Party Wear Sarees' },
+    { value: 'bridal', label: 'Bridal Sarees' }
+  ],
+  cotton: [
+    { value: 'all', label: 'All Cotton' },
+    { value: 'maheswari_cotton', label: 'Maheswari Cotton' },
+    { value: 'chanderi_cotton', label: 'Chanderi Cotton' },
+    { value: 'mul_cotton', label: 'Mul Cotton' },
+    { value: 'linen_cotton', label: 'Linen Cotton' }
+  ],
+  silk: [
+    { value: 'all', label: 'All Silk' },
+    { value: 'kanjivaram_silk', label: 'Kanjivaram' },
+    { value: 'banarasi_silk', label: 'Banarasi' },
+    { value: 'tussar_silk', label: 'Tussar' },
+    { value: 'soft_silk', label: 'Soft Silk' },
+    { value: 'mysore_silk', label: 'Mysore' },
+    { value: 'maheswari_silk', label: 'Maheswari' },
+    { value: 'patola_silk', label: 'Patola' },
+    { value: 'gajji_silk', label: 'Gajji' },
+    { value: 'dola_silk', label: 'Dola' },
+    { value: 'pashmina_silk', label: 'Pashmina' }
+  ],
+  handloom: [
+    { value: 'all', label: 'All Handloom' },
+    { value: 'khadi', label: 'Khadi' },
+    { value: 'jamdani', label: 'Jamdani' },
+    { value: 'ikat', label: 'Ikat' },
+    { value: 'linen', label: 'Linen' }
+  ],
+  jewellery: [
+    { value: 'all', label: 'All Jewellery' },
+    { value: 'earrings', label: 'Earrings' },
+    { value: 'necklaces', label: 'Necklaces' },
+    { value: 'bangles', label: 'Bangles' },
+    { value: 'rings', label: 'Rings' },
+    { value: 'handmade_jewellery', label: 'Handmade' }
+  ]
+};
+
+function renderSubcategoryNav() {
+  const nav = document.getElementById('subcategory-nav');
+  const inner = document.getElementById('subcategory-nav-inner');
+  if (!nav || !inner) return;
+
+  if (currentShopCollection === 'all') {
+    nav.classList.remove('show');
+    return;
+  }
+
+  const subcats = subcategoryMap[currentShopCollection] || [];
+  nav.classList.add('show');
+  inner.innerHTML = subcats.map(sub => 
+    `<button class="subcategory-btn ${sub.value === currentShopSubcategory ? 'active' : ''}" data-subcategory="${sub.value}" onclick="filterBySubcategory(event, '${sub.value}')">${sub.label}</button>`
+  ).join('');
+}
+
+function getShopQueryState() {
+  const params = new URLSearchParams(window.location.search);
+  const rawCategory = params.get('category')?.toString().trim().toLowerCase();
+  const rawSubcategory = params.get('type')?.toString().trim().toLowerCase();
+  const validCollections = ['all', 'wedding', 'cotton', 'silk', 'handloom', 'jewellery'];
+
+  const category = validCollections.includes(rawCategory) ? rawCategory : 'all';
+  const subcategories = subcategoryMap[category] || [];
+  const subcategory = subcategories.some(item => item.value === rawSubcategory) ? rawSubcategory : 'all';
+
+  return { category, subcategory };
+}
+
+async function loadShopProducts() {
+  if (!document.querySelector('.collections-nav')) return;
+
+  let allProducts = [];
+  try {
+    allProducts = await fetchProductsFromBackend();
+  } catch (err) {
+    allProducts = JSON.parse(localStorage.getItem('products')) || [];
+  }
+
+  shopDisplayedProducts = allProducts.filter(p => p && p.id);
+
+  const queryState = getShopQueryState();
+  currentShopCollection = queryState.category;
+  currentShopSubcategory = queryState.subcategory;
+
+  document.querySelectorAll('.collection-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.collection === currentShopCollection);
+  });
+
+  renderSubcategoryNav();
+  renderShopProducts();
+}
+
+let shopCurrentPage = 1;
+const shopProductsPerPage = 8;
+
+function applyShopFilters() {
+  const sortValue = document.querySelector('input[name="sort"]:checked')?.id;
+  const sortSelect = document.getElementById('shop-sort');
+  if (sortSelect && sortValue) {
+    if (sortValue === 's-pop') sortSelect.value = 'popularity';
+    else if (sortValue === 's-new') sortSelect.value = 'newest';
+    else if (sortValue === 's-lh') sortSelect.value = 'price-low';
+    else if (sortValue === 's-hl') sortSelect.value = 'price-high';
+  }
+  shopCurrentPage = 1;
+  renderShopProducts();
+}
+
+function filterByCollection(event, collection) {
+  currentShopCollection = collection;
+  currentShopSubcategory = 'all';
+  document.querySelectorAll('.collection-btn').forEach(btn => btn.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+  renderSubcategoryNav();
+  shopCurrentPage = 1;
+  renderShopProducts();
+}
+
+function filterBySubcategory(event, subcategory) {
+  currentShopSubcategory = subcategory;
+  document.querySelectorAll('.subcategory-btn').forEach(btn => btn.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+  shopCurrentPage = 1;
+  renderShopProducts();
+}
+
+function clearShopFilter(type) {
+  if (type === 'collection') {
+    currentShopCollection = 'all';
+    currentShopSubcategory = 'all';
+    document.querySelectorAll('.collection-btn').forEach(btn => btn.classList.remove('active'));
+    const btnAll = document.querySelector('.collection-btn[data-collection="all"]');
+    if (btnAll) btnAll.classList.add('active');
+    renderSubcategoryNav();
+  } else if (type === 'subcategory') {
+    currentShopSubcategory = 'all';
+    document.querySelectorAll('.subcategory-btn').forEach(btn => btn.classList.remove('active'));
+    const btnAll = document.querySelector('.subcategory-btn[data-subcategory="all"]');
+    if (btnAll) btnAll.classList.add('active');
+  } else if (type === 'min') {
+    const el = document.getElementById('price-min');
+    if (el) el.value = "0";
+  } else if (type === 'max') {
+    const el = document.getElementById('price-max');
+    if (el) el.value = "50000";
+  }
+  shopCurrentPage = 1;
+  renderShopProducts();
+}
+
+async function handleSort() {
+  const sortValue = document.getElementById('shop-sort')?.value || 'popularity';
+  if (sortValue === 'popularity') { const r = document.getElementById('s-pop'); if (r) r.checked = true; }
+  else if (sortValue === 'newest') { const r = document.getElementById('s-new'); if (r) r.checked = true; }
+  else if (sortValue === 'price-low') { const r = document.getElementById('s-lh'); if (r) r.checked = true; }
+  else if (sortValue === 'price-high') { const r = document.getElementById('s-hl'); if (r) r.checked = true; }
+  
+  if (shopDisplayedProducts.length === 0) {
+    let allProducts = [];
+    try {
+      allProducts = await fetchProductsFromBackend();
+    } catch (err) {
+      allProducts = JSON.parse(localStorage.getItem('products')) || [];
+    }
+    shopDisplayedProducts = allProducts.filter(p => p && p.id);
+  }
+  
+  shopCurrentPage = 1;
+  renderShopProducts();
+}
+
+function renderShopProducts() {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+  
+  let filtered = [...shopDisplayedProducts];
+  
+  if (currentShopCollection !== 'all') {
+    filtered = filtered.filter(p => {
+      const type = (p.type || '').toString().toLowerCase();
+      const category = (p.category || '').toString().toLowerCase();
+      const collectionMap = {
+        wedding: ['party', 'bridal', 'wedding'],
+        cotton: ['cotton', 'maheswari_cotton', 'chanderi_cotton', 'mul_cotton', 'linen_cotton'],
+        silk: ['silk', 'kanjivaram_silk', 'banarasi_silk', 'tussar_silk', 'soft_silk', 'mysore_silk', 'maheswari_silk', 'patola_silk', 'gajji_silk', 'dola_silk', 'pashmina_silk'],
+        handloom: ['handloom', 'khadi', 'jamdani', 'ikat', 'linen'],
+        jewellery: ['jewellery', 'earrings', 'necklaces', 'bangles', 'rings', 'handmade_jewellery']
+      };
+      const validTypes = collectionMap[currentShopCollection] || [];
+      return validTypes.includes(type) || validTypes.includes(category);
+    });
+
+    if (currentShopSubcategory !== 'all') {
+      filtered = filtered.filter(p => {
+        const type = (p.type || '').toString().toLowerCase();
+        return type === currentShopSubcategory;
+      });
+    }
+  }
+  
+  const minPriceEl = document.getElementById('price-min');
+  const maxPriceEl = document.getElementById('price-max');
+  let minP = 0, maxP = 50000;
+  if (minPriceEl && minPriceEl.value) minP = parseFloat(minPriceEl.value) || 0;
+  if (maxPriceEl && maxPriceEl.value) maxP = parseFloat(maxPriceEl.value) || 50000;
+  
+  if (minP > 0 || maxP < 50000) {
+    filtered = filtered.filter(p => {
+      const price = Number(p.price) || Number(p.originalPrice) || 0;
+      return price >= minP && price <= maxP;
+    });
+  }
+
+  const sortValue = document.getElementById('shop-sort')?.value || 'popularity';
+  if (sortValue === 'price-low') {
+    filtered.sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+  } else if (sortValue === 'price-high') {
+    filtered.sort((a, b) => (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0));
+  } else if (sortValue === 'newest') {
+    filtered.sort((a, b) => (b.id || 0) - (a.id || 0));
+  }
+  
+  const tagsContainer = document.getElementById('active-filters');
+  if (tagsContainer) {
+    let tagsHTML = '';
+    if (currentShopCollection !== 'all') {
+      tagsHTML += `<div class="filter-tag">Collection: ${currentShopCollection} <span style="margin-left:4px;cursor:pointer;" onclick="clearShopFilter('collection')">✕</span></div>`;
+    }
+    if (currentShopSubcategory !== 'all') {
+      tagsHTML += `<div class="filter-tag">Type: ${currentShopSubcategory} <span style="margin-left:4px;cursor:pointer;" onclick="clearShopFilter('subcategory')">✕</span></div>`;
+    }
+    if (minP > 0) {
+      tagsHTML += `<div class="filter-tag">Min: ₹${minP} <span style="margin-left:4px;cursor:pointer;" onclick="clearShopFilter('min')">✕</span></div>`;
+    }
+    if (maxP < 50000) {
+      tagsHTML += `<div class="filter-tag">Max: ₹${maxP} <span style="margin-left:4px;cursor:pointer;" onclick="clearShopFilter('max')">✕</span></div>`;
+    }
+    tagsContainer.innerHTML = tagsHTML;
+  }
+  
+  document.getElementById('shop-product-count').textContent = filtered.length;
+  const totalPages = Math.ceil(filtered.length / shopProductsPerPage);
+  if (shopCurrentPage > totalPages && totalPages > 0) shopCurrentPage = totalPages;
+  const startIndex = (shopCurrentPage - 1) * shopProductsPerPage;
+  const paginated = filtered.slice(startIndex, startIndex + shopProductsPerPage);
+
+  grid.innerHTML = paginated.length > 0 
+    ? paginated.map(p => renderProductCard(p)).join('')
+    : '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No products available matching your criteria.</p>';
+    
+  const paginationContainer = document.getElementById('pagination');
+  if (paginationContainer) {
+    if (totalPages <= 1) {
+      paginationContainer.innerHTML = '';
+    } else {
+      let pageHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        pageHTML += `<button class="page-btn ${i === shopCurrentPage ? 'active' : ''}" onclick="shopCurrentPage = ${i}; renderShopProducts(); window.scrollTo({top:0, behavior:'smooth'})">${i}</button>`;
+      }
+      paginationContainer.innerHTML = pageHTML;
+    }
+  }
+}
+
+if (document.querySelector('.collections-nav')) {
+  document.addEventListener('DOMContentLoaded', loadShopProducts);
+  window.addEventListener('load', loadShopProducts);
+}
+
 
 // ============ CHECKOUT FUNCTIONS ============
 
@@ -4652,6 +5657,9 @@ function scrollCarousel(direction) {
 
 // Attach these when page loads
 document.addEventListener('DOMContentLoaded', () => {
+  loadHomepagePromoCoupon();
+  renderCategoryNavigation();
+  renderBrandStorySection();
   attachHomeSliderControls();
   if (document.getElementById('cart-items')) {
     renderCart();

@@ -9,7 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="main.css">
-  <link rel="stylesheet" href="offer-timer.css">
+  <link rel="stylesheet" href="offer-timer.css?v=3">
+  <link rel="stylesheet" href="premium-redesign.css?v=4">
   <style>
 /* ══════════ SHOP PAGE ══════════ */
 .shop-page-section { padding: 0 0 100px; background: var(--off-white); }
@@ -149,12 +150,13 @@
     <!-- CENTER: Main Navigation Menu (Desktop Only) -->
     <nav class="nav-menu" id="nav-menu">
       <a href="index.html" class="nav-menu-link">Home</a>
-      <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
+      <a href="products.html?category=clothing&type=wedding" class="nav-menu-link">Wedding</a>
+      <a href="products.html?category=clothing&type=cotton" class="nav-menu-link">Professional Cotton</a>
+      <a href="products.html?category=clothing&type=silk" class="nav-menu-link">Silk</a>
+      <a href="products.html?category=clothing&type=handloom" class="nav-menu-link">Handloom</a>
       <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
-      <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
-      <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
-      <a href="products.html" class="nav-menu-link active">Collections</a>
       <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
+      <a href="products.html?sort=offers" class="nav-menu-link">Offers</a>
     </nav>
 
     <!-- RIGHT: Search & Cart Icons -->
@@ -178,11 +180,15 @@
     <!-- MOBILE: Side Menu (Hamburger) -->
     <nav class="nav-links" id="nav-links">
       <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-      <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
-      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
-      <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
-      <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
-      <a href="products.html" class="nav-link active" onclick="closeMenu()">Collections</a>
+      <a href="products.html" class="nav-link" onclick="closeMenu()">Shop All</a>
+      <a href="products.html?category=clothing&type=wedding" class="nav-link" onclick="closeMenu()">Wedding Collection</a>
+      <a href="products.html?category=clothing&type=cotton" class="nav-link" onclick="closeMenu()">Professional Cotton</a>
+      <a href="products.html?category=clothing&type=silk" class="nav-link" onclick="closeMenu()">Silk Collection</a>
+      <a href="products.html?category=clothing&type=handloom" class="nav-link" onclick="closeMenu()">Handloom Collection</a>
+      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery Collection</a>
+      <a href="products.html?sort=new" class="nav-link" onclick="closeMenu()">New Arrivals</a>
+      <a href="products.html?sort=offers" class="nav-link" onclick="closeMenu()">Offers</a>
+      <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
       <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
       <hr class="nav-divider">
       <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
@@ -207,6 +213,21 @@
   <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Shop</span></div>
 </div>
 
+<!-- Luxury Category Banner -->
+<section class="collection-hero container" aria-hidden="false">
+  <div style="display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+    <div style="flex:1;min-width:260px;">
+      <p class="section-eyebrow">Curated Selection</p>
+      <h2 class="section-title">Wedding & Festive Collections</h2>
+      <p class="section-sub">Handpicked Banarasi, Kanjivaram and Bridal sarees crafted for unforgettable moments.</p>
+      <div style="margin-top:16px;"><a href="products.html?category=wedding" class="btn-primary">Shop Wedding Sarees</a></div>
+    </div>
+    <div style="width:420px;max-width:40%;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-md);">
+      <img src="images/saree4.png" alt="Wedding Collection" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+  </div>
+</section>
+
 <!-- ══════════ MARQUEE ══════════ -->
 <div class="marquee-strip">
   <div class="marquee-track">
@@ -229,13 +250,16 @@
 <main>
   <section class="shop-page-section">
     <div class="container">
-      <button class="filter-toggle-btn" onclick="toggleFilter()">⚙ Filters</button>
-      <div class="filter-overlay" id="filter-overlay" onclick="toggleFilter()"></div>
+      <button class="filter-toggle-btn" onclick="toggleFilterEnhanced()">⚙ Filters</button>
+      <div class="filter-overlay" id="filter-overlay" onclick="toggleFilterEnhanced()"></div>
 
-      <div class="shop-layout">
+      <div class="shop-layout collection-page">
         <!-- Filter Sidebar -->
-        <aside class="filter-panel" id="filter-panel">
-          <h2 class="filter-title">Filter Products</h2>
+        <aside class="filter-panel filters-sidebar" id="filter-panel">
+          <div class="panel-top">
+            <h2 class="filter-title">Filter Products</h2>
+            <button class="panel-close" onclick="toggleFilter()" aria-label="Close filters">✕</button>
+          </div>
 
           <!-- Price Filter -->
           <div class="filter-section">
@@ -271,6 +295,28 @@
             </div>
           </div>
 
+          <!-- Material Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Material</div>
+            <div class="filter-options">
+              <label><input type="checkbox" class="filter-checkbox material" value="Silk" onchange="applyFilters()"> Silk</label>
+              <label><input type="checkbox" class="filter-checkbox material" value="Cotton" onchange="applyFilters()"> Cotton</label>
+              <label><input type="checkbox" class="filter-checkbox material" value="Handloom" onchange="applyFilters()"> Handloom</label>
+              <label><input type="checkbox" class="filter-checkbox material" value="Chiffon" onchange="applyFilters()"> Chiffon</label>
+            </div>
+          </div>
+
+          <!-- Color Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Color</div>
+            <div class="filter-options">
+              <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="filter-checkbox color" value="Red" onchange="applyFilters()"><span style="width:14px;height:14px;background:#c0392b;border-radius:50%;display:inline-block"></span> Red</label>
+              <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="filter-checkbox color" value="Pink" onchange="applyFilters()"><span style="width:14px;height:14px;background:#e85d8e;border-radius:50%;display:inline-block"></span> Pink</label>
+              <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="filter-checkbox color" value="Green" onchange="applyFilters()"><span style="width:14px;height:14px;background:#2ecc71;border-radius:50%;display:inline-block"></span> Green</label>
+              <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="filter-checkbox color" value="Blue" onchange="applyFilters()"><span style="width:14px;height:14px;background:#3b82f6;border-radius:50%;display:inline-block"></span> Blue</label>
+            </div>
+          </div>
+
           <!-- Clear Filters -->
           <div class="filter-section">
             <button class="clear-filters" onclick="clearAllFilters()">Clear All Filters</button>
@@ -281,7 +327,17 @@
         <div class="shop-main">
           <div class="shop-header">
             <h1 id="shop-title">All Products</h1>
-            <span id="results-count" class="results-count">Loading...</span>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <label style="font-size:0.85rem;color:var(--text-muted);">Sort</label>
+              <select id="sort-select" class="filter-select" onchange="applySort()">
+                <option value="featured">Featured</option>
+                <option value="popularity">Popularity</option>
+                <option value="newest">Newest</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+              <span id="results-count" class="results-count">Loading...</span>
+            </div>
           </div>
           <div id="product-container" class="products-grid">
             <!-- Products will be loaded here dynamically -->
@@ -360,6 +416,6 @@
 </footer>
 
 <!-- Redundant scripts removed -->
-<script src="script.js"></script>
+<script src="script.js?v=4"></script>
 </body>
 </html>

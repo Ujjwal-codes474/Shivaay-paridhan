@@ -12,7 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="main.css">
-  <link rel="stylesheet" href="offer-timer.css">
+  <link rel="stylesheet" href="offer-timer.css?v=3">
   <link rel="stylesheet" href="coupons.css">
   <style>
     /* ============ ADMIN LAYOUT ============ */
@@ -59,6 +59,7 @@
     .sidebar-link:hover {
       color: var(--white);
       background: rgba(201, 168, 76, 0.08);
+      transform: translateX(4px);
     }
 
     .sidebar-link.active {
@@ -239,9 +240,9 @@
     /* ============ ADMIN FORM CONTAINER ============ */
     .admin-form-container {
       background: var(--white);
-      border-radius: 16px;
-      padding: 36px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      border-radius: 18px;
+      padding: 40px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
       margin-bottom: 28px;
       border: 1px solid rgba(0, 0, 0, 0.04);
     }
@@ -664,6 +665,76 @@
       gap: 10px;
     }
 
+    .admin-card-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .admin-card {
+      background: var(--white);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.06);
+    }
+
+    .admin-card-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .admin-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .admin-card .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(248,242,238,0.95);
+      color: var(--text-dark);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .admin-card button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+    }
+
+    .admin-card button:hover {
+      transform: translateY(-1px);
+    }
+
+    .admin-card .btn-sm {
+      background: rgba(201,168,76,0.12);
+      color: var(--black);
+    }
+
+    .admin-card .btn-sm.danger {
+      background: rgba(220,53,69,0.12);
+      color: #b91c1c;
+    }
+
+    .admin-card .btn-sm.primary {
+      background: rgba(34,40,49,0.08);
+      color: var(--black);
+    }
+
     .product-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -764,6 +835,29 @@
     }
 
     /* ============ RESPONSIVE ============ */
+    
+    @media(max-width:768px) {
+      .recent-orders-list, .orders-list {
+        overflow-x: auto;
+        padding-bottom: 10px;
+      }
+      .recent-order-row, .order-item, .recent-order-header {
+        min-width: 600px;
+      }
+      .users-list {
+        overflow-x: auto;
+      }
+      .user-item {
+        min-width: 500px;
+      }
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     @media(max-width:900px) {
       .admin-layout {
         grid-template-columns: 1fr;
@@ -960,6 +1054,9 @@
           </div>
           <div class="admin-form-container">
             <h2>Add New Product</h2>
+            <div style="display:flex;justify-content:flex-end;margin-bottom:18px;">
+              <button type="button" class="btn btn-secondary" id="refresh-products-btn" onclick="refreshProductCache()">Refresh Product Cache</button>
+            </div>
             <form id="product-form" class="product-form" enctype="multipart/form-data">
 
               <!-- Basic Info -->
@@ -970,12 +1067,24 @@
               </div>
 
               <div class="form-group">
-                <label for="product-category">Category</label>
+                <label for="product-category">Category / Collection</label>
                 <select id="product-category" name="product-category" required>
                   <option value="">Select Category</option>
-                  <option value="saree">Saree</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="cotton">Professional Cotton</option>
+                  <option value="kota">Kota</option>
+                  <option value="silk">Silk</option>
+                  <option value="handloom">Handloom</option>
                   <option value="jewellery">Jewellery</option>
                 </select>
+              </div>
+
+              <div class="form-group">
+                <label for="product-subcategory">Subcategory</label>
+                <select id="product-subcategory" name="product-subcategory">
+                  <option value="">Select Subcategory</option>
+                </select>
+                <p class="form-hint">Choose the specific collection type for the product.</p>
               </div>
 
               <div class="form-group">
@@ -1088,6 +1197,12 @@
                 <label for="product-offer-end">Offer End Date <span class="optional">— optional</span></label>
                 <input type="datetime-local" id="product-offer-end" name="product-offer-end">
                 <p class="form-hint">Timer counts down to this date. Discount auto-expires.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="product-offer-discount">Timed Offer Extra Discount (%) <span class="optional">— optional</span></label>
+                <input type="number" id="product-offer-discount" name="product-offer-discount" min="0" max="100" placeholder="e.g. 15">
+                <p class="form-hint">A temporary extra discount applied only while the countdown offer is active.</p>
               </div>
 
               <div id="form-success" class="form-success-msg">✅ Product added successfully!</div>
@@ -1228,7 +1343,7 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
   <script>
     // Price Auto-calculation Logic
     document.addEventListener('DOMContentLoaded', () => {

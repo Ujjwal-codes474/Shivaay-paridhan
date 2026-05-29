@@ -10,75 +10,86 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="main.css">
 <style>
-.story-section{padding:100px 0;background:var(--off-white);}
-.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
-.story-image-wrap{position:relative;}
-.story-img{width:100%;border-radius:var(--radius);box-shadow:var(--shadow);}
-.story-accent{position:absolute;bottom:-24px;right:-24px;width:180px;height:180px;border-radius:var(--radius);background:var(--gold);z-index:-1;opacity:0.3;}
-.story-accent2{position:absolute;top:-16px;left:-16px;width:100px;height:100px;border-radius:50%;border:2px solid var(--gold);z-index:-1;opacity:0.4;}
-.story-badge{position:absolute;top:24px;left:-20px;background:var(--black);color:var(--white);padding:16px 20px;border-radius:var(--radius);text-align:center;box-shadow:var(--shadow);}
-.story-badge-num{font-family:var(--font-heading);font-size:2rem;color:var(--gold);line-height:1;display:block;}
-.story-badge-text{font-size:0.72rem;color:rgba(255,255,255,0.6);letter-spacing:1px;margin-top:2px;}
-.story-text .section-eyebrow{text-align:left;}
-.story-title{font-family:var(--font-heading);font-size:clamp(1.8rem,3.5vw,2.6rem);color:var(--black);margin-bottom:24px;line-height:1.25;}
-.story-body{color:var(--text-muted);line-height:1.85;font-size:0.95rem;margin-bottom:18px;}
-.story-signature{font-family:var(--font-heading);font-style:italic;font-size:1.4rem;color:var(--gold);margin-top:28px;}
-.story-sig-name{font-size:0.82rem;color:var(--text-muted);margin-top:4px;}
-.stats-bar{background:var(--black);padding:48px 0;}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center;}
-.stat-item{padding:20px;border-right:1px solid rgba(255,255,255,0.1);}
-.stat-item:last-child{border-right:none;}
-.stat-number{font-family:var(--font-heading);font-size:2.4rem;color:var(--gold);font-weight:700;line-height:1;}
-.stat-label2{font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:6px;letter-spacing:0.5px;}
-.mission-section{padding:100px 0;background:var(--white);}
-.mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:20px;}
-.mv-card{border-radius:var(--radius);padding:44px 40px;position:relative;overflow:hidden;}
-.mv-card-mission{background:var(--black);}
-.mv-card-vision{background:var(--off-white);border:1.5px solid rgba(201,168,76,0.2);}
-.mv-icon{font-size:2.4rem;margin-bottom:20px;display:block;}
-.mv-card-title{font-family:var(--font-heading);font-size:1.5rem;margin-bottom:16px;}
-.mv-card-mission .mv-card-title{color:var(--gold);}
-.mv-card-vision .mv-card-title{color:var(--black);}
-.mv-card-text{line-height:1.8;font-size:0.92rem;}
-.mv-card-mission .mv-card-text{color:rgba(255,255,255,0.6);}
-.mv-card-vision .mv-card-text{color:var(--text-muted);}
-.mv-card-glow{position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(201,168,76,0.08);filter:blur(30px);}
-.values-section{padding:100px 0;background:var(--off-white);}
-.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
-.value-card{background:var(--white);border-radius:var(--radius);padding:36px 28px;text-align:center;box-shadow:var(--shadow-card);transition:var(--transition);}
-.value-card:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,0.12);}
-.value-card:hover .value-icon{transform:scale(1.15);}
-.value-icon{font-size:2.6rem;margin-bottom:18px;display:block;transition:var(--transition);}
-.value-card h3{font-family:var(--font-heading);font-size:1.15rem;color:var(--black);margin-bottom:12px;}
-.value-card p{font-size:0.88rem;color:var(--text-muted);line-height:1.7;}
-.artisan-section{padding:100px 0;background:var(--black);}
-.artisan-section .section-title{color:var(--white);}
-.artisan-section .section-sub{color:rgba(255,255,255,0.5);}
-.artisan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.artisan-card{background:var(--dark2);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(201,168,76,0.1);transition:var(--transition);}
-.artisan-card:hover{border-color:rgba(201,168,76,0.4);transform:translateY(-4px);}
-.artisan-img{width:100%;aspect-ratio:1;object-fit:cover;opacity:0.85;}
-.artisan-info{padding:20px;}
-.artisan-name{font-family:var(--font-heading);color:var(--white);font-size:1.05rem;margin-bottom:4px;}
-.artisan-role{font-size:0.8rem;color:var(--gold);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
-.artisan-city{font-size:0.82rem;color:rgba(255,255,255,0.4);}
-.about-cta{padding:80px 0;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-top:1px solid rgba(201,168,76,0.15);}
-.about-cta-inner{text-align:center;}
-.about-cta-inner h2{font-family:var(--font-heading);font-size:clamp(1.8rem,4vw,2.8rem);color:var(--black);margin-bottom:16px;}
-.about-cta-inner p{color:var(--text-muted);margin-bottom:32px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.7;}
-.about-cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
-@media(max-width:900px){
-  .story-grid,.mv-grid{grid-template-columns:1fr;}
-  .story-badge{left:auto;right:16px;}
-  .stats-grid{grid-template-columns:repeat(2,1fr);}
-  .values-grid{grid-template-columns:1fr 1fr;}
-  .artisan-grid{grid-template-columns:1fr 1fr;}
+:root {
+  --white: #ffffff;
+  --luxury-pink: #e85d8e;
+  --soft-pink: #fce7ef;
+  --cream-beige: #f8f2ee;
+  --black: #2b2b2b;
+  --text-muted: #6d6d6d;
+  --light-gray: #f5f5f5;
+  --gold: #c9a84c;
+  --off-white: #faf5f1;
+  --shadow-soft: 0 18px 45px rgba(0,0,0,0.08);
+  --radius: 26px;
+  --radius-sm: 16px;
 }
-@media(max-width:600px){
-  .stats-grid{grid-template-columns:repeat(2,1fr);}
-  .values-grid{grid-template-columns:1fr;}
-  .artisan-grid{grid-template-columns:1fr;}
-  .story-accent,.story-accent2{display:none;}
+body { background: var(--off-white); color: var(--black); }
+.page-hero { position: relative; min-height: 520px; background: linear-gradient(180deg, rgba(248,242,238,0.92), rgba(255,255,255,0.92)), url('images/hero_model.png') center/cover no-repeat; display: flex; align-items: center; }
+.page-hero::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, rgba(232,93,142,0.14), transparent 45%); pointer-events: none; }
+.page-hero .hero-panel { position: relative; z-index: 1; padding: 110px 0 80px; }
+.page-hero-eyebrow { display: inline-flex; align-items:center; gap:8px; color: var(--luxury-pink); font-size:0.82rem; letter-spacing:1.7px; text-transform:uppercase; font-weight:700; margin-bottom:18px; }
+.page-hero-title { font-family: var(--font-heading); font-size: clamp(3rem,5vw,4.4rem); line-height:1.02; margin-bottom:22px; max-width: 700px; }
+.page-hero-sub { font-size: 1rem; max-width: 620px; color: var(--text-muted); line-height:1.85; margin-bottom:24px; }
+.page-hero .breadcrumb { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color: var(--text-muted); font-size:0.95rem; }
+.page-hero .breadcrumb a { color: var(--black); font-weight:600; }
+.section-header { max-width: 720px; margin: 0 auto 50px; text-align:left; }
+.section-header .section-eyebrow { display:inline-block; color: var(--luxury-pink); font-size:0.78rem; letter-spacing:1.8px; text-transform:uppercase; margin-bottom:14px; font-weight:700; }
+.section-title { font-family: var(--font-heading); font-size: clamp(2.2rem,3vw,3rem); line-height:1.08; margin-bottom:16px; }
+.section-sub { color: var(--text-muted); font-size:1rem; line-height:1.8; max-width: 680px; }
+.about-story { padding: 90px 0 60px; }
+.story-grid { display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items:center; }
+.story-copy { display:flex; flex-direction:column; gap:24px; }
+.story-copy p { color: var(--text-muted); line-height:1.9; font-size:0.98rem; }
+.story-image-card { position: relative; overflow:hidden; border-radius:var(--radius); box-shadow: var(--shadow-soft); }
+.story-image-card img { width:100%; height:auto; display:block; }
+.story-caption { position:absolute; bottom:22px; left:22px; background: rgba(255,255,255,0.92); padding: 16px 20px; border-radius: 18px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+.story-caption small { display:block; font-size:0.82rem; letter-spacing:1px; color: var(--luxury-pink); margin-bottom:6px; }
+.story-caption h3 { font-family:var(--font-heading); margin:0; font-size:1.1rem; color:var(--black); }
+.feature-section { padding: 80px 0; }
+.feature-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px; }
+.feature-card { background: var(--white); border-radius: var(--radius); padding: 30px 26px; box-shadow: var(--shadow-soft); transition: transform 0.3s ease, box-shadow 0.3s ease; border:1px solid rgba(232,93,142,0.08); }
+.feature-card:hover { transform: translateY(-6px); box-shadow: 0 26px 55px rgba(0,0,0,0.08); }
+.feature-icon { width: 54px; height: 54px; border-radius: 18px; display:flex; align-items:center; justify-content:center; background: rgba(232,93,142,0.1); color: var(--luxury-pink); font-size:1.7rem; margin-bottom: 18px; }
+.feature-card h3 { font-family: var(--font-heading); font-size:1.1rem; margin-bottom:12px; color: var(--black); }
+.feature-card p { color: var(--text-muted); line-height:1.8; font-size:0.94rem; }
+.mission-section { padding: 80px 0; }
+.mission-grid { display:grid; grid-template-columns: 1fr 1fr; gap:24px; }
+.mission-card { border-radius: var(--radius); padding:38px; background: var(--white); box-shadow: var(--shadow-soft); border:1px solid rgba(232,93,142,0.08); }
+.mission-card.light { background: var(--cream-beige); }
+.mission-card h3 { font-family: var(--font-heading); font-size:1.35rem; margin-bottom:16px; color: var(--black); }
+.mission-card p { color: var(--text-muted); font-size:0.95rem; line-height:1.9; }
+.gallery-section { padding: 80px 0 120px; }
+.gallery-grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:18px; }
+.gallery-card { position:relative; overflow:hidden; border-radius:var(--radius); box-shadow:var(--shadow-soft); }
+.gallery-card img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.4s ease; }
+.gallery-card:hover img { transform: scale(1.05); }
+.gallery-meta { position:absolute; bottom:16px; left:16px; background: rgba(255,255,255,0.9); padding: 10px 14px; border-radius: 999px; font-size:0.82rem; color: var(--black); letter-spacing:0.5px; }
+.about-cta { padding: 80px 0 120px; }
+.about-cta .section-header { text-align:center; }
+.about-cta .section-title { margin-bottom:14px; }
+.about-cta .section-sub { margin:0 auto 32px; }
+.about-cta .btn-primary { padding: 14px 32px; }
+.about-cta .btn-ghost { padding: 14px 32px; border-radius: 999px; }
+@media (max-width: 1100px) {
+  .story-grid { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .mission-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 720px) {
+  .page-hero { min-height: 480px; }
+  .page-hero .hero-panel { padding: 80px 0 60px; }
+  .page-hero-title { font-size:2.6rem; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .section-header { text-align:center; margin: 0 auto 40px; }
+  .story-caption { left: 50%; transform: translateX(-50%); }
+}
+@media (max-width: 520px) {
+  .page-hero { min-height:420px; }
+  .page-hero-title { font-size:2.2rem; }
+  .page-hero-sub { font-size:0.98rem; }
 }
 </style>
 </head>
@@ -86,30 +97,17 @@
 
 <header class="navbar solid" id="navbar">
   <div class="nav-container">
-    <!-- LEFT: Hamburger (Mobile) -->
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-left">
+      <a href="index.html" class="nav-logo">
+        <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+        <div class="brand-copy">
+          <span class="logo-text-primary">Shivaay</span>
+          <span class="logo-text-secondary">Paridhan</span>
+        </div>
+      </a>
+    </div>
 
-    <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
-    <a href="index.html" class="nav-logo">
-      <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
-      <span class="logo-text">Shivaay Paridhan</span>
-    </a>
-
-    <!-- CENTER: Main Navigation Menu (Desktop Only) -->
-    <nav class="nav-menu" id="nav-menu">
-      <a href="index.html" class="nav-menu-link">Home</a>
-      <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
-      <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
-      <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
-      <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
-      <a href="products.html" class="nav-menu-link">Collections</a>
-      <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
-    </nav>
-
-    <!-- RIGHT: Search & Cart Icons -->
-    <div class="nav-actions">
+    <div class="nav-right">
       <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
@@ -124,22 +122,26 @@
         </svg>
         <span class="cart-count" id="cart-count" style="display: none;">0</span>
       </a>
+      <button class="nav-icon-btn menu-btn hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-
-    <!-- MOBILE: Side Menu (Hamburger) -->
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-      <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
-      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
-      <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
-      <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
-      <a href="products.html" class="nav-link" onclick="closeMenu()">Collections</a>
-      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
-      <hr class="nav-divider">
-      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
-      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
-    </nav>
   </div>
+
+  <nav class="nav-links" id="nav-links">
+    <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+    <a href="shop.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
+    <a href="shop.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
+    <a href="shop.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
+    <a href="shop.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
+    <a href="shop.html" class="nav-link" onclick="closeMenu()">Collections</a>
+    <a href="contact.html" class="nav-link active" onclick="closeMenu()">Contact</a>
+    <hr class="nav-divider">
+    <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+    <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+  </nav>
 
   <!-- SEARCH BAR (Mobile Overlay) -->
   <div class="search-overlay" id="search-overlay">
@@ -256,7 +258,7 @@
       <h2>Ready to Wear a Masterpiece?</h2>
       <p>Explore our curated collection of handwoven sarees — each one a piece of living heritage, made just for you.</p>
       <div class="about-cta-btns">
-        <a href="products.html" class="btn-primary">Shop Collection →</a>
+        <a href="shop.html" class="btn-primary">Shop Collection →</a>
         <a href="contact.html" class="btn-ghost" style="border-color:var(--gold);color:var(--gold);">Contact Us</a>
       </div>
     </div>
@@ -268,13 +270,13 @@
 <footer class="site-footer">
   <div class="footer-top"><div class="container"><div class="footer-grid">
     <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating Indian weaving with premium handcrafted sarees.</p><div class="social-links"><a href="#" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="#" class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></div></div>
-    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="shop.html">Banarasi Silk</a></li><li><a href="shop.html">Kanjivaram</a></li><li><a href="shop.html">Bridal</a></li></ul></div>
     <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
   </div></div></div>
   <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
 </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>

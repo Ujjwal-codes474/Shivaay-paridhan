@@ -8,9 +8,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="main.css?v=2">
+<link rel="stylesheet" href="offer-timer.css?v=3">
 <style>
-.shop-layout{display:grid;grid-template-columns:260px 1fr;gap:36px;padding:60px 0 100px;}
+.brand-copy{display:flex;flex-direction:column;line-height:1;}
+.logo-text-primary{font-family:var(--font-heading);font-size:1.8rem;letter-spacing:0.25em;color:var(--text-dark);text-transform:none;font-weight:700;}
+.logo-text-secondary{font-size:0.92rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;}
+.collections-nav{background:var(--white);border-bottom:1px solid #eee;padding:16px 0;overflow-x:auto;margin-bottom:36px;}
+.collections-nav-inner{display:flex;gap:8px;padding:0 20px;flex-wrap:nowrap;}
+.collection-btn{padding:10px 18px;border:1.5px solid #ddd;background:var(--white);color:var(--text-dark);border-radius:50px;font-family:var(--font-body);font-size:0.88rem;font-weight:500;cursor:pointer;transition:var(--transition);white-space:nowrap;}
+.collection-btn:hover{border-color:var(--gold);color:var(--gold);}
+.collection-btn.active{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.subcategory-nav{background:var(--white);border-bottom:1px solid #eee;padding:12px 0;overflow-x:auto;margin-bottom:28px;display:none;}
+.subcategory-nav.show{display:block;}
+.subcategory-nav-inner{display:flex;gap:8px;padding:0 20px;flex-wrap:nowrap;}
+.subcategory-btn{padding:8px 14px;border:1.5px solid #ddd;background:var(--white);color:var(--text-dark);border-radius:50px;font-family:var(--font-body);font-size:0.82rem;font-weight:500;cursor:pointer;transition:var(--transition);white-space:nowrap;}
+.subcategory-btn:hover{border-color:var(--gold);color:var(--gold);}
+.subcategory-btn.active{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.shop-layout{display:grid;grid-template-columns:260px 1fr;gap:36px;padding:0 0 100px;}
 .filter-panel{background:var(--white);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow-card);height:fit-content;position:sticky;top:90px;}
 .filter-title{font-family:var(--font-heading);font-size:1.1rem;color:var(--black);margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid #eee;}
 .filter-group{margin-bottom:28px;}
@@ -49,6 +64,10 @@
   .products-grid{grid-template-columns:repeat(2,1fr);gap:16px;}
   .filter-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:499;}
   .filter-overlay.show{display:block;}
+  .collections-nav-inner{padding:0 12px;}
+  .collection-btn{padding:8px 14px;font-size:0.82rem;}
+  .subcategory-nav-inner{padding:0 12px;}
+  .subcategory-btn{padding:6px 12px;font-size:0.76rem;}
 }
 @media(max-width:480px){.products-grid{grid-template-columns:1fr 1fr;gap:12px;}}
 </style>
@@ -57,18 +76,49 @@
 
 <header class="navbar solid" id="navbar">
   <div class="nav-container">
-    <a href="index.html" class="nav-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"><span class="logo-text">Shivaay Paridhan</span></a>
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-      <a href="products.html" class="nav-link active" onclick="closeMenu()">Shop</a>
-      <a href="about.html" class="nav-link" onclick="closeMenu()">About</a>
-      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
-      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
-        <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
-      <a href="cart.html" class="nav-cta" onclick="closeMenu()">Cart 🛒</a>
-    </nav>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    <div class="nav-left">
+      <a href="index.html" class="nav-logo">
+        <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+        <div class="brand-copy">
+          <span class="logo-text-primary">Shivaay</span>
+          <span class="logo-text-secondary">Paridhan</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="nav-right">
+      <a href="profile.html" class="nav-icon-btn" aria-label="Profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </a>
+
+      <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span class="cart-count" id="cart-count">0</span>
+      </a>
+
+      <button class="nav-icon-btn menu-btn hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </div>
+
+  <nav class="nav-links" id="nav-links">
+    <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+    <a href="shop.html" class="nav-link active" onclick="closeMenu()">Shop</a>
+    <a href="about.html" class="nav-link" onclick="closeMenu()">About</a>
+    <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
+    <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+    <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+  </nav>
 </header>
 
 <div class="page-hero">
@@ -91,34 +141,36 @@
 
 <main>
   <div class="container">
+    <!-- Horizontal Collections Navigation -->
+    <div class="collections-nav">
+      <div class="collections-nav-inner">
+        <button class="collection-btn active" data-collection="all" onclick="filterByCollection(event, 'all')">All Collections</button>
+        <button class="collection-btn" data-collection="wedding" onclick="filterByCollection(event, 'wedding')">Wedding</button>
+        <button class="collection-btn" data-collection="cotton" onclick="filterByCollection(event, 'cotton')">Cotton</button>
+        <button class="collection-btn" data-collection="kota" onclick="filterByCollection(event, 'kota')">Kota</button>
+        <button class="collection-btn" data-collection="silk" onclick="filterByCollection(event, 'silk')">Silk</button>
+        <button class="collection-btn" data-collection="handloom" onclick="filterByCollection(event, 'handloom')">Handloom</button>
+        <button class="collection-btn" data-collection="jewellery" onclick="filterByCollection(event, 'jewellery')">Jewellery</button>
+      </div>
+    </div>
+
+    <!-- Horizontal Subcategory Navigation -->
+    <div class="subcategory-nav" id="subcategory-nav">
+      <div class="subcategory-nav-inner" id="subcategory-nav-inner"></div>
+    </div>
+
     <button class="filter-toggle-btn" onclick="toggleFilter()">⚙ Filters</button>
     <div class="filter-overlay" id="filter-overlay" onclick="toggleFilter()"></div>
 
     <div class="shop-layout">
       <aside class="filter-panel" id="filter-panel">
-        <h2 class="filter-title">Filter Sarees</h2>
-        <div class="filter-group">
-          <span class="filter-group-label">Category</span>
-          <div class="filter-option"><input type="checkbox" id="f-banarasi" checked><label for="f-banarasi">Banarasi Silk</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-kanjivaram"><label for="f-kanjivaram">Kanjivaram</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-chiffon"><label for="f-chiffon">Chiffon</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-cotton"><label for="f-cotton">Cotton</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-bridal"><label for="f-bridal">Bridal</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-festive"><label for="f-festive">Festive</label></div>
-        </div>
+        <h2 class="filter-title">Filter Products</h2>
         <div class="filter-group">
           <span class="filter-group-label">Price Range</span>
           <div class="price-range"><div class="price-inputs">
-            <input class="price-input" type="number" placeholder="Min ₹" value="999">
-            <input class="price-input" type="number" placeholder="Max ₹" value="15000">
+            <input class="price-input" type="number" id="price-min" placeholder="Min ₹" value="0">
+            <input class="price-input" type="number" id="price-max" placeholder="Max ₹" value="50000">
           </div></div>
-        </div>
-        <div class="filter-group">
-          <span class="filter-group-label">Occasion</span>
-          <div class="filter-option"><input type="checkbox" id="f-wedding"><label for="f-wedding">Wedding</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-party"><label for="f-party">Party Wear</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-casual"><label for="f-casual">Casual</label></div>
-          <div class="filter-option"><input type="checkbox" id="f-office"><label for="f-office">Office Wear</label></div>
         </div>
         <div class="filter-group">
           <span class="filter-group-label">Sort By</span>
@@ -127,34 +179,17 @@
           <div class="filter-option"><input type="radio" name="sort" id="s-lh"><label for="s-lh">Price: Low to High</label></div>
           <div class="filter-option"><input type="radio" name="sort" id="s-hl"><label for="s-hl">Price: High to Low</label></div>
         </div>
-        <button class="filter-btn-apply" onclick="toggleFilter()">Apply Filters</button>
+        <button class="filter-btn-apply" onclick="applyShopFilters(); toggleFilter()">Apply Filters</button>
       </aside>
 
       <div>
         <div class="shop-top">
-          <p class="shop-count">Showing <strong>12</strong> of 48 sarees</p>
-          <select class="shop-sort"><option>Popularity</option><option>Newest First</option><option>Price: Low to High</option><option>Price: High to Low</option></select>
+          <p class="shop-count">Showing <strong id="shop-product-count">0</strong> products</p>
+          <select class="shop-sort" id="shop-sort" onchange="handleSort()"><option value="popularity">Popularity</option><option value="newest">Newest First</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option></select>
         </div>
-        <div class="active-filters">
-          <span class="filter-tag">Banarasi Silk ✕</span>
-          <span class="filter-tag">Under ₹15,000 ✕</span>
-        </div>
-        <div class="products-grid">
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree1.png" alt="Crimson Zari Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div><span class="card-badge">Bestseller</span></div><div class="card-info"><p class="card-category">Banarasi Silk</p><h3 class="card-name">Crimson Zari Saree</h3><div class="card-footer"><span class="card-price">₹4,299</span><span class="card-old-price">₹5,999</span><span class="card-stars">★★★★★</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree2.png" alt="Blush Bridal Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div><span class="card-badge new-badge">New</span></div><div class="card-info"><p class="card-category">Banarasi Silk</p><h3 class="card-name">Blush Bridal Saree</h3><div class="card-footer"><span class="card-price">₹6,499</span><span class="card-old-price">₹8,000</span><span class="card-stars">★★★★★</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree3.png" alt="Emerald Temple Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div></div><div class="card-info"><p class="card-category">Kanjivaram Silk</p><h3 class="card-name">Emerald Temple Saree</h3><div class="card-footer"><span class="card-price">₹7,999</span><span class="card-old-price">₹10,500</span><span class="card-stars">★★★★☆</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree4.png" alt="Ivory Bridal Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div><span class="card-badge">Bridal</span></div><div class="card-info"><p class="card-category">Pure Silk</p><h3 class="card-name">Ivory Bridal Saree</h3><div class="card-footer"><span class="card-price">₹12,999</span><span class="card-old-price">₹16,000</span><span class="card-stars">★★★★★</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree5.png" alt="Navy Sequin Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div><span class="card-badge new-badge">New</span></div><div class="card-info"><p class="card-category">Chiffon</p><h3 class="card-name">Navy Sequin Saree</h3><div class="card-footer"><span class="card-price">₹3,199</span><span class="card-old-price">₹4,500</span><span class="card-stars">★★★★☆</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree1.png" alt="Ruby Festival Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div></div><div class="card-info"><p class="card-category">Banarasi Silk</p><h3 class="card-name">Ruby Festival Saree</h3><div class="card-footer"><span class="card-price">₹5,499</span><span class="card-old-price">₹7,000</span><span class="card-stars">★★★★★</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree2.png" alt="Rose Gold Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div></div><div class="card-info"><p class="card-category">Kanjivaram</p><h3 class="card-name">Rose Gold Saree</h3><div class="card-footer"><span class="card-price">₹8,299</span><span class="card-old-price">₹11,000</span><span class="card-stars">★★★★★</span></div></div></div>
-          <div class="product-card fade-up"><div class="card-image-wrap"><img src="images/saree3.png" alt="Forest Green Saree" class="card-img" loading="lazy"><div class="card-overlay"><a href="product.html" class="card-btn">View Details</a></div><span class="card-badge">Sale</span></div><div class="card-info"><p class="card-category">Kanjivaram Silk</p><h3 class="card-name">Forest Green Saree</h3><div class="card-footer"><span class="card-price">₹6,999</span><span class="card-old-price">₹9,500</span><span class="card-stars">★★★★☆</span></div></div></div>
-        </div>
-        <div class="pagination">
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn">›</button>
-        </div>
+        <div class="active-filters" id="active-filters"></div>
+        <div class="products-grid" id="products-grid"></div>
+        <div class="pagination" id="pagination"></div>
       </div>
     </div>
   </div>
@@ -169,9 +204,8 @@
   </div></div></div>
   <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
 </footer>
-
-<script>
-window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
+  <script src="script.js?v=4"></script>
+  <script>
 function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');document.getElementById('hamburger').classList.toggle('active');}
 function closeMenu(){document.getElementById('nav-links').classList.remove('open');document.getElementById('hamburger').classList.remove('active');}
 function toggleFilter(){document.getElementById('filter-panel').classList.toggle('open');document.getElementById('filter-overlay').classList.toggle('show');}

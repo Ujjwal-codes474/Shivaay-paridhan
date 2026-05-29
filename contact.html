@@ -10,55 +10,49 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="main.css">
 <style>
-.contact-section { padding: 80px 0 100px; background: var(--off-white); }
-.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 28px; margin-top: 50px; }
-.contact-card {
-  background: var(--white); padding: 36px 28px; border-radius: var(--radius);
-  box-shadow: var(--shadow-card); transition: var(--transition); text-align: center;
-  border-top: 3px solid transparent;
+.contact-section { padding: 80px 0 90px; background: var(--off-white); }
+.contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 28px; margin-top: 50px; }
+.contact-panel { background: var(--white); border-radius: var(--radius); padding: 34px 32px; box-shadow: var(--shadow-soft); border: 1px solid rgba(201,168,76,0.12); }
+.contact-panel h3 { font-family: var(--font-heading); font-size: 1.4rem; margin-bottom: 16px; }
+.contact-panel p { color: var(--text-muted); line-height:1.85; margin-bottom: 26px; }
+.contact-list { display: grid; gap: 16px; }
+.contact-item { display:flex; gap:18px; align-items:flex-start; background: var(--cream-beige); border-radius: 18px; padding:18px 20px; }
+.contact-item span { font-size:1.35rem; line-height:1; margin-top:2px; }
+.contact-item div a { display:block; color: var(--black); font-weight: 600; margin-top:4px; }
+.contact-item div p { margin:0; color: var(--text-muted); font-size:0.95rem; }
+.contact-form { background: var(--white); border-radius: var(--radius); padding: 34px 34px; box-shadow: var(--shadow-soft); border: 1px solid rgba(201,168,76,0.1); }
+.contact-form label { display:block; font-weight:600; color: var(--black); margin-bottom: 10px; }
+.contact-form input, .contact-form textarea { width:100%; border:1px solid rgba(43,43,43,0.12); border-radius: 18px; padding: 16px 18px; background: var(--off-white); color: var(--black); font-size:0.95rem; margin-bottom:18px; }
+.contact-form textarea { min-height: 150px; resize: vertical; }
+.contact-form button { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding: 14px 32px; background: var(--black); color: var(--white); border:none; border-radius: 999px; font-size:0.95rem; font-weight:600; cursor:pointer; transition: transform 0.25s ease, background 0.25s ease; }
+.contact-form button:hover { background: var(--gold); color: var(--black); transform: translateY(-1px); }
+.map-card { border-radius: var(--radius); overflow:hidden; height:100%; box-shadow: var(--shadow-soft); border: 1px solid rgba(201,168,76,0.12); }
+.map-card iframe { width:100%; height:100%; border:0; }
+.contact-quick { display:grid; gap:22px; margin-top: 40px; }
+.quick-card { display:flex; align-items:flex-start; gap:18px; background: var(--white); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-soft); border:1px solid rgba(201,168,76,0.08); }
+.quick-card span { font-size:1.6rem; margin-top:2px; }
+.quick-card div h4 { margin:0 0 6px; font-size:1rem; }
+.quick-card div p { margin:0; color: var(--text-muted); font-size:0.95rem; }
+@media (max-width: 900px) {
+  .contact-grid { grid-template-columns: 1fr; }
 }
-.contact-card:hover { transform: translateY(-8px); box-shadow: 0 16px 50px rgba(0,0,0,0.12); }
-.contact-card.whatsapp { border-top-color: #25D366; }
-.contact-card.instagram { border-top-color: #E1306C; }
-.contact-card.email { border-top-color: var(--gold); }
-.contact-card .c-icon { font-size: 2.8rem; margin-bottom: 16px; display: block; }
-.contact-card h3 { font-family: var(--font-heading); font-size: 1.2rem; color: var(--black); margin-bottom: 10px; }
-.contact-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.7; margin-bottom: 24px; }
-.contact-btn {
-  display: inline-block; padding: 11px 28px; background: var(--black); color: var(--white);
-  border-radius: 50px; font-weight: 600; font-size: 0.88rem; transition: var(--transition);
-}
-.contact-btn:hover { background: var(--gold); color: var(--black); }
 </style>
 </head>
 <body>
 
 <header class="navbar solid" id="navbar">
   <div class="nav-container">
-    <!-- LEFT: Hamburger (Mobile) -->
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-left">
+      <a href="index.html" class="nav-logo">
+        <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+        <div class="brand-copy">
+          <span class="logo-text-primary">Shivaay</span>
+          <span class="logo-text-secondary">Paridhan</span>
+        </div>
+      </a>
+    </div>
 
-    <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
-    <a href="index.html" class="nav-logo">
-      <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
-      <span class="logo-text">Shivaay Paridhan</span>
-    </a>
-
-    <!-- CENTER: Main Navigation Menu (Desktop Only) -->
-    <nav class="nav-menu" id="nav-menu">
-      <a href="index.html" class="nav-menu-link">Home</a>
-      <a href="products.html?category=sarees" class="nav-menu-link">Sarees</a>
-      <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
-      <a href="products.html?category=banarasi" class="nav-menu-link">Banarasi Handloom</a>
-      <a href="products.html?category=kanjivaram" class="nav-menu-link">Kanjivaram</a>
-      <a href="products.html" class="nav-menu-link">Collections</a>
-      <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
-    </nav>
-
-    <!-- RIGHT: Search & Cart Icons -->
-    <div class="nav-actions">
+    <div class="nav-right">
       <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
@@ -73,22 +67,26 @@
         </svg>
         <span class="cart-count" id="cart-count" style="display: none;">0</span>
       </a>
+      <button class="nav-icon-btn menu-btn hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-
-    <!-- MOBILE: Side Menu (Hamburger) -->
-    <nav class="nav-links" id="nav-links">
-      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-      <a href="products.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
-      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
-      <a href="products.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
-      <a href="products.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
-      <a href="products.html" class="nav-link" onclick="closeMenu()">Collections</a>
-      <a href="contact.html" class="nav-link active" onclick="closeMenu()">Contact</a>
-      <hr class="nav-divider">
-      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
-      <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
-    </nav>
   </div>
+
+  <nav class="nav-links" id="nav-links">
+    <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
+    <a href="shop.html?category=sarees" class="nav-link" onclick="closeMenu()">Sarees</a>
+    <a href="shop.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery</a>
+    <a href="shop.html?category=banarasi" class="nav-link" onclick="closeMenu()">Banarasi Handloom</a>
+    <a href="shop.html?category=kanjivaram" class="nav-link" onclick="closeMenu()">Kanjivaram</a>
+    <a href="shop.html" class="nav-link" onclick="closeMenu()">Collections</a>
+    <a href="contact.html" class="nav-link active" onclick="closeMenu()">Contact</a>
+    <hr class="nav-divider">
+    <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+    <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
+  </nav>
 
   <!-- SEARCH BAR (Mobile Overlay) -->
   <div class="search-overlay" id="search-overlay">
@@ -101,37 +99,44 @@
 
 <div class="page-hero">
   <p class="page-hero-eyebrow">Reach Out</p>
-  <h1 class="page-hero-title">Contact Us</h1>
-  <p class="page-hero-sub">Choose your preferred way to connect with us.</p>
+  <h1 class="page-hero-title">Contact the Shivaay Paridhan Team</h1>
+  <p class="page-hero-sub">We're here to help you choose the perfect saree, answer your questions, and deliver a premium shopping experience.</p>
   <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><span>Contact</span></div>
 </div>
 
 <section class="contact-section">
   <div class="container">
-    <div class="section-header">
-      <p class="section-eyebrow">Get in Touch</p>
-      <h2 class="section-title">We're Always Available</h2>
-      <p class="section-sub">Reach us instantly through WhatsApp, Instagram or Email</p>
-    </div>
     <div class="contact-grid">
-      <div class="contact-card whatsapp fade-up">
-        <span class="c-icon">📱</span>
-        <h3>WhatsApp</h3>
-        <p>Chat with us instantly for quick support and order help.</p>
-        <a href="https://wa.me/918539865430" target="_blank" class="contact-btn">Chat Now</a>
+      <div class="contact-panel fade-up">
+        <h3>Let’s Talk</h3>
+        <p>Our customer care team is available for styling guidance, order updates, custom requests, and aftercare advice. Share your details below and we will respond within 24 hours.</p>
+        <div class="contact-list">
+          <div class="contact-item"><span>📍</span><div><strong>Store Location</strong><a href="https://maps.google.com/?q=Jamshedpur" target="_blank">Jamshedpur, Jharkhand</a></div></div>
+          <div class="contact-item"><span>📞</span><div><strong>Phone</strong><a href="tel:+918539865430">+91 85398 65430</a></div></div>
+          <div class="contact-item"><span>✉️</span><div><strong>Email</strong><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></div></div>
+          <div class="contact-item"><span>📸</span><div><strong>Instagram</strong><a href="https://instagram.com/shivaayparidhaan" target="_blank">@shivaayparidhaan</a></div></div>
+        </div>
       </div>
-      <div class="contact-card instagram fade-up">
-        <span class="c-icon">📸</span>
-        <h3>Instagram</h3>
-        <p>Explore our latest collection and DM us for styling advice.</p>
-        <a href="https://instagram.com/shivaayparidhaan" target="_blank" class="contact-btn">Visit Page</a>
+      <div class="contact-form fade-up">
+        <h3>Send a Message</h3>
+        <form action="#" method="post">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="name@example.com" required>
+          <label for="message">How can we help?</label>
+          <textarea id="message" name="message" placeholder="Tell us about your request" required></textarea>
+          <button type="submit">Send Message</button>
+        </form>
       </div>
-      <div class="contact-card email fade-up">
-        <span class="c-icon">✉️</span>
-        <h3>Email</h3>
-        <p>Send us your queries, bulk orders or custom requests.</p>
-        <a href="mailto:info@shivaayparidhaan.com" class="contact-btn">Send Mail</a>
+      <div class="map-card fade-up">
+        <iframe src="https://maps.google.com/maps?q=Jamshedpur%20Jharkhand&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
       </div>
+    </div>
+    <div class="contact-quick fade-up">
+      <div class="quick-card"><span>⚡</span><div><h4>Fast WhatsApp Support</h4><p>Chat directly for order updates, styling advice, and sizing guidance.</p></div></div>
+      <div class="quick-card"><span>💬</span><div><h4>Custom Saree Assistance</h4><p>Need a bespoke design or bridal inquiry? We’re happy to help you create your dream saree.</p></div></div>
+      <div class="quick-card"><span>🛍️</span><div><h4>Order & Delivery Questions</h4><p>Track your order, inquire about delivery times, or request gift wrapping options.</p></div></div>
     </div>
   </div>
 </section>
@@ -139,13 +144,13 @@
 <footer class="site-footer">
   <div class="footer-top"><div class="container"><div class="footer-grid">
     <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating Indian weaving with premium handcrafted sarees.</p><div class="social-links"><a href="#" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a><a href="#" class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></div></div>
-    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="shop.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="shop.html">Banarasi Silk</a></li><li><a href="shop.html">Kanjivaram</a></li><li><a href="shop.html">Bridal</a></li></ul></div>
     <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📍</span><span>Jamshedpur, Jharkhand, India</span></li><li><span>📞</span><a href="tel:+918539865430">+91 85398 65430</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
   </div></div></div>
   <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved. Crafted with ❤️ for every Indian woman.</p></div></div>
 </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>
