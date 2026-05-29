@@ -25,71 +25,44 @@
   --radius-sm: 16px;
 }
 body { background: var(--off-white); color: var(--black); }
-.page-hero { position: relative; min-height: 520px; background: linear-gradient(180deg, rgba(248,242,238,0.92), rgba(255,255,255,0.92)), url('images/hero_model.png') center/cover no-repeat; display: flex; align-items: center; }
-.page-hero::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, rgba(232,93,142,0.14), transparent 45%); pointer-events: none; }
+.page-hero { position: relative; min-height: 600px; background: url('images/model4.png') center 10%/cover no-repeat; display: flex; align-items: center; }
+.page-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%); pointer-events: none; }
 .page-hero .hero-panel { position: relative; z-index: 1; padding: 110px 0 80px; }
-.page-hero-eyebrow { display: inline-flex; align-items:center; gap:8px; color: var(--luxury-pink); font-size:0.82rem; letter-spacing:1.7px; text-transform:uppercase; font-weight:700; margin-bottom:18px; }
-.page-hero-title { font-family: var(--font-heading); font-size: clamp(3rem,5vw,4.4rem); line-height:1.02; margin-bottom:22px; max-width: 700px; }
-.page-hero-sub { font-size: 1rem; max-width: 620px; color: var(--text-muted); line-height:1.85; margin-bottom:24px; }
-.page-hero .breadcrumb { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color: var(--text-muted); font-size:0.95rem; }
-.page-hero .breadcrumb a { color: var(--black); font-weight:600; }
+.page-hero-eyebrow { display: inline-flex; align-items:center; gap:8px; color: var(--gold); font-size:0.82rem; letter-spacing:1.7px; text-transform:uppercase; font-weight:700; margin-bottom:18px; }
+.page-hero-title { font-family: var(--font-heading); font-size: clamp(3rem,5vw,4.4rem); line-height:1.02; margin-bottom:22px; max-width: 700px; color: var(--white); text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.page-hero-sub { font-size: 1.05rem; max-width: 620px; color: #f0f0f0; line-height:1.85; margin-bottom:24px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.page-hero .breadcrumb { display:flex; flex-wrap:wrap; gap:8px; align-items:center; color: #ccc; font-size:0.95rem; }
+.page-hero .breadcrumb a { color: var(--white); font-weight:600; }
 .section-header { max-width: 720px; margin: 0 auto 50px; text-align:left; }
 .section-header .section-eyebrow { display:inline-block; color: var(--luxury-pink); font-size:0.78rem; letter-spacing:1.8px; text-transform:uppercase; margin-bottom:14px; font-weight:700; }
 .section-title { font-family: var(--font-heading); font-size: clamp(2.2rem,3vw,3rem); line-height:1.08; margin-bottom:16px; }
 .section-sub { color: var(--text-muted); font-size:1rem; line-height:1.8; max-width: 680px; }
-.about-story { padding: 90px 0 60px; }
-.story-grid { display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items:center; }
-.story-copy { display:flex; flex-direction:column; gap:24px; }
-.story-copy p { color: var(--text-muted); line-height:1.9; font-size:0.98rem; }
-.story-image-card { position: relative; overflow:hidden; border-radius:var(--radius); box-shadow: var(--shadow-soft); }
-.story-image-card img { width:100%; height:auto; display:block; }
-.story-caption { position:absolute; bottom:22px; left:22px; background: rgba(255,255,255,0.92); padding: 16px 20px; border-radius: 18px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
-.story-caption small { display:block; font-size:0.82rem; letter-spacing:1px; color: var(--luxury-pink); margin-bottom:6px; }
-.story-caption h3 { font-family:var(--font-heading); margin:0; font-size:1.1rem; color:var(--black); }
-.feature-section { padding: 80px 0; }
-.feature-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px; }
-.feature-card { background: var(--white); border-radius: var(--radius); padding: 30px 26px; box-shadow: var(--shadow-soft); transition: transform 0.3s ease, box-shadow 0.3s ease; border:1px solid rgba(232,93,142,0.08); }
-.feature-card:hover { transform: translateY(-6px); box-shadow: 0 26px 55px rgba(0,0,0,0.08); }
-.feature-icon { width: 54px; height: 54px; border-radius: 18px; display:flex; align-items:center; justify-content:center; background: rgba(232,93,142,0.1); color: var(--luxury-pink); font-size:1.7rem; margin-bottom: 18px; }
-.feature-card h3 { font-family: var(--font-heading); font-size:1.1rem; margin-bottom:12px; color: var(--black); }
-.feature-card p { color: var(--text-muted); line-height:1.8; font-size:0.94rem; }
-.mission-section { padding: 80px 0; }
-.mission-grid { display:grid; grid-template-columns: 1fr 1fr; gap:24px; }
-.mission-card { border-radius: var(--radius); padding:38px; background: var(--white); box-shadow: var(--shadow-soft); border:1px solid rgba(232,93,142,0.08); }
-.mission-card.light { background: var(--cream-beige); }
-.mission-card h3 { font-family: var(--font-heading); font-size:1.35rem; margin-bottom:16px; color: var(--black); }
-.mission-card p { color: var(--text-muted); font-size:0.95rem; line-height:1.9; }
-.gallery-section { padding: 80px 0 120px; }
-.gallery-grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:18px; }
-.gallery-card { position:relative; overflow:hidden; border-radius:var(--radius); box-shadow:var(--shadow-soft); }
-.gallery-card img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.4s ease; }
-.gallery-card:hover img { transform: scale(1.05); }
-.gallery-meta { position:absolute; bottom:16px; left:16px; background: rgba(255,255,255,0.9); padding: 10px 14px; border-radius: 999px; font-size:0.82rem; color: var(--black); letter-spacing:0.5px; }
-.about-cta { padding: 80px 0 120px; }
-.about-cta .section-header { text-align:center; }
-.about-cta .section-title { margin-bottom:14px; }
-.about-cta .section-sub { margin:0 auto 32px; }
-.about-cta .btn-primary { padding: 14px 32px; }
-.about-cta .btn-ghost { padding: 14px 32px; border-radius: 999px; }
-@media (max-width: 1100px) {
-  .story-grid { grid-template-columns: 1fr; }
-  .feature-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .mission-grid { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+/* Minimal Premium Styles */
+.minimal-story { padding: 120px 0; text-align: center; }
+.minimal-story-title { font-family: var(--font-heading); font-size: clamp(2.5rem, 4vw, 3.5rem); margin-bottom: 30px; color: var(--black); line-height: 1.2; }
+.minimal-story-text { max-width: 700px; margin: 0 auto; color: var(--text-muted); font-size: 1.15rem; line-height: 2; font-weight: 300; }
+.premium-gallery { padding: 40px 0 100px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-inline: 20px; }
+.pg-item { overflow: hidden; border-radius: 16px; }
+.pg-img { width: 100%; height: 100%; object-fit: cover; box-shadow: var(--shadow-soft); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+.pg-item:hover .pg-img { transform: scale(1.05); }
+.pg-1 { grid-column: 1 / 8; grid-row: 1 / 3; height: 650px; }
+.pg-2 { grid-column: 8 / 13; grid-row: 1 / 2; height: 313px; }
+.pg-3 { grid-column: 8 / 13; grid-row: 2 / 3; height: 313px; }
+.minimal-values { padding: 120px 0; background: var(--white); }
+.minimal-values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; text-align: center; max-width: 1100px; margin: 0 auto; }
+.minimal-value-icon { font-size: 2rem; color: var(--gold); margin-bottom: 20px; display: block; }
+.minimal-value-card h3 { font-family: var(--font-heading); font-size: 1.4rem; margin-bottom: 15px; color: var(--black); }
+.minimal-value-card p { color: var(--text-muted); line-height: 1.8; font-size: 0.95rem; max-width: 300px; margin: 0 auto; }
+.minimal-cta { padding: 120px 0; text-align: center; background: var(--off-white); }
+.minimal-cta-title { font-family: var(--font-heading); font-size: 2rem; margin-bottom: 30px; }
+@media (max-width: 900px) {
+  .premium-gallery { display: flex; flex-direction: column; }
+  .pg-1, .pg-2, .pg-3 { height: auto; aspect-ratio: 4/5; }
 }
-@media (max-width: 720px) {
-  .page-hero { min-height: 480px; }
-  .page-hero .hero-panel { padding: 80px 0 60px; }
-  .page-hero-title { font-size:2.6rem; }
-  .feature-grid { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: 1fr; }
-  .section-header { text-align:center; margin: 0 auto 40px; }
-  .story-caption { left: 50%; transform: translateX(-50%); }
-}
-@media (max-width: 520px) {
-  .page-hero { min-height:420px; }
-  .page-hero-title { font-size:2.2rem; }
-  .page-hero-sub { font-size:0.98rem; }
+@media (max-width: 768px) {
+  .minimal-values-grid { grid-template-columns: 1fr; gap: 60px; }
+  .minimal-story, .minimal-values, .minimal-cta { padding: 80px 0; }
+  .page-hero { min-height: 400px; }
 }
 </style>
 </head>
@@ -161,107 +134,63 @@ body { background: var(--off-white); color: var(--black); }
 
 <main>
 
-<section class="story-section">
+<section class="minimal-story">
   <div class="container">
-    <div class="story-grid">
-      <div class="story-image-wrap fade-up">
-        <div class="story-accent"></div>
-        <div class="story-accent2"></div>
-        <img src="images/hero_model.png" alt="Shivaay Paridhan Story" class="story-img">
-        <div class="story-badge">
-          <span class="story-badge-num">10+</span>
-          <p class="story-badge-text">Years of Legacy</p>
-        </div>
+    <h2 class="minimal-story-title">A Legacy of Elegance.</h2>
+    <div class="minimal-story-text" style="max-width: 800px;">
+      <p style="margin-bottom: 24px;">
+        Shivaay Paridhan was born from a singular passion: to celebrate the timeless artistry of Indian weaving. Our journey began in the spiritual heart of Varanasi, where the rhythmic clatter of handlooms has echoed for centuries. We believe that true luxury lies in simplicity, authenticity, and the masterful hands of our weavers.
+      </p>
+      <p style="margin-bottom: 24px;">
+        Every saree we curate is not just a garment, but a masterpiece woven with tradition. We spend months working alongside master craftsmen across India—from the silk looms of Kanchipuram to the intricate Zari workshops of Surat—ensuring that every motif and every border tells a story of cultural pride.
+      </p>
+      <p>
+        To wear Shivaay Paridhan is to embrace a legacy. We are dedicated to making every woman feel extraordinary, draped in six yards of uncompromised quality, quiet luxury, and enduring elegance. Welcome to our family.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="premium-gallery-section">
+  <div class="premium-gallery">
+    <div class="pg-item pg-1">
+      <img src="images/model1.jpeg" alt="Handcrafted Saree" class="pg-img" loading="lazy">
+    </div>
+    <div class="pg-item pg-2">
+      <img src="images/model2.png" alt="Zari Weaving" class="pg-img" loading="lazy">
+    </div>
+    <div class="pg-item pg-3">
+      <img src="images/model3.png" alt="Traditional Elegance" class="pg-img" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section class="minimal-values">
+  <div class="container">
+    <div class="minimal-values-grid">
+      <div class="minimal-value-card">
+        <span class="minimal-value-icon">✧</span>
+        <h3>Pure Artistry</h3>
+        <p>Hand-selected silk, authentic zari, and weaves that carry the legacy of generations of master craftsmen.</p>
       </div>
-      <div class="story-text fade-up">
-        <p class="section-eyebrow">Our Story</p>
-        <h2 class="story-title">From the Looms of Varanasi to Your Wardrobe</h2>
-        <p class="story-body">Shivaay Paridhan was born in 2026 from a deep love for India's rich weaving heritage. Founded in the lanes of Varanasi — the spiritual home of Banarasi silk — our journey began with a simple belief: every Indian woman deserves to wear art.</p>
-        <p class="story-body">What started as a small curated collection has grown into a trusted brand, serving thousands of women across India. We work directly with master weavers, ensuring that every saree carries the warmth of human hands and the spirit of generations of craftsmanship.</p>
-        <p class="story-body">We don't just sell sarees — we tell stories. Each thread, each motif, each border is a chapter of India's living textile tradition.</p>
-        <p class="story-signature">— Founder, Shivaay Paridhan</p>
-        <p class="story-sig-name">Shalini Ojha</p>
+      <div class="minimal-value-card">
+        <span class="minimal-value-icon">✧</span>
+        <h3>Quiet Luxury</h3>
+        <p>A curated collection that speaks volumes through subtle grace, impeccable quality, and timeless design.</p>
+      </div>
+      <div class="minimal-value-card">
+        <span class="minimal-value-icon">✧</span>
+        <h3>Enduring Trust</h3>
+        <p>We are devoted to transparency, fair trade with our artisans, and providing a flawless experience for you.</p>
       </div>
     </div>
   </div>
 </section>
 
-<div class="stats-bar">
+<section class="minimal-cta">
   <div class="container">
-    <div class="stats-grid">
-      <div class="stat-item fade-up"><span class="stat-number">500+</span><p class="stat-label2">Unique Designs</p></div>
-      <div class="stat-item fade-up"><span class="stat-number">10K+</span><p class="stat-label2">Happy Customers</p></div>
-      <div class="stat-item fade-up"><span class="stat-number">200+</span><p class="stat-label2">Artisan Partners</p></div>
-      <div class="stat-item fade-up"><span class="stat-number">10+</span><p class="stat-label2">Years of Excellence</p></div>
-    </div>
-  </div>
-</div>
-
-<section class="mission-section">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-eyebrow">Purpose</span>
-      <h2 class="section-title">Mission & Vision</h2>
-      <p class="section-sub">Everything we do is driven by a commitment to Indian artistry and the women we serve.</p>
-    </div>
-    <div class="mv-grid">
-      <div class="mv-card mv-card-mission fade-up">
-        <span class="mv-icon">🎯</span>
-        <h3 class="mv-card-title">Our Mission</h3>
-        <p class="mv-card-text">To make authentic, handcrafted Indian sarees accessible to every woman — bridging the gap between traditional weavers and modern shoppers, while ensuring fair wages and sustainable practices across our supply chain.</p>
-        <div class="mv-card-glow"></div>
-      </div>
-      <div class="mv-card mv-card-vision fade-up">
-        <span class="mv-icon">🌟</span>
-        <h3 class="mv-card-title">Our Vision</h3>
-        <p class="mv-card-text">To become India's most loved ethnic wear destination — a brand synonymous with trust, elegance, and cultural pride. We envision a world where handwoven Indian textiles are celebrated globally as the luxury they truly are.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="values-section">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-eyebrow">What We Stand For</span>
-      <h2 class="section-title">Our Core Values</h2>
-    </div>
-    <div class="values-grid">
-      <div class="value-card fade-up"><span class="value-icon">🧵</span><h3>Artisan First</h3><p>We partner directly with weavers across Varanasi, Kanchipuram, and Surat — ensuring fair trade and celebrating their mastery.</p></div>
-      <div class="value-card fade-up"><span class="value-icon">✨</span><h3>Uncompromised Quality</h3><p>Every saree passes a rigorous quality check. We use only Grade-A silk, natural dyes, and pure zari — no shortcuts, ever.</p></div>
-      <div class="value-card fade-up"><span class="value-icon">🌿</span><h3>Sustainable Practice</h3><p>From eco-friendly packaging to natural dyeing methods, we're committed to leaving a lighter footprint on our planet.</p></div>
-      <div class="value-card fade-up"><span class="value-icon">💛</span><h3>Customer Love</h3><p>Every customer interaction is an opportunity to delight. Our support team is always a call or message away.</p></div>
-      <div class="value-card fade-up"><span class="value-icon">🏛️</span><h3>Cultural Pride</h3><p>We celebrate India's heritage textile arts — keeping alive traditions that have been passed down for over 3,000 years.</p></div>
-      <div class="value-card fade-up"><span class="value-icon">🤝</span><h3>Trust & Transparency</h3><p>Honest pricing, authentic products, and clear policies. No hidden charges, no fake discounts — just pure value.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="artisan-section">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-eyebrow">The Makers</span>
-      <h2 class="section-title">Our Artisan Partners</h2>
-      <p class="section-sub">The real magic comes from the hands of these gifted weavers who pour decades of skill into every thread.</p>
-    </div>
-    <div class="artisan-grid">
-      <div class="artisan-card fade-up"><img src="images/saree1.png" alt="Artisan Ramesh" class="artisan-img"><div class="artisan-info"><h3 class="artisan-name">Ramesh Kumar</h3><p class="artisan-role">Master Weaver</p><p class="artisan-city">📍 Varanasi, UP — Banarasi Silk specialist, 28 years of experience</p></div></div>
-      <div class="artisan-card fade-up"><img src="images/saree3.png" alt="Artisan Lakshmi" class="artisan-img"><div class="artisan-info"><h3 class="artisan-name">Lakshmi Devi</h3><p class="artisan-role">Kanjivaram Artisan</p><p class="artisan-city">📍 Kanchipuram, TN — Temple border motif specialist, 35 years</p></div></div>
-      <div class="artisan-card fade-up"><img src="images/saree2.png" alt="Artisan Firoz" class="artisan-img"><div class="artisan-info"><h3 class="artisan-name">Firoz Sheikh</h3><p class="artisan-role">Zari Embroidery Expert</p><p class="artisan-city">📍 Surat, Gujarat — Gold zari craftsmanship, 22 years</p></div></div>
-    </div>
-  </div>
-</section>
-
-<section class="about-cta">
-  <div class="container">
-    <div class="about-cta-inner">
-      <h2>Ready to Wear a Masterpiece?</h2>
-      <p>Explore our curated collection of handwoven sarees — each one a piece of living heritage, made just for you.</p>
-      <div class="about-cta-btns">
-        <a href="shop.html" class="btn-primary">Shop Collection →</a>
-        <a href="contact.html" class="btn-ghost" style="border-color:var(--gold);color:var(--gold);">Contact Us</a>
-      </div>
-    </div>
+    <h2 class="minimal-cta-title">Discover the Collection</h2>
+    <a href="shop.html" class="btn-primary" style="padding: 16px 40px; border-radius: 999px;">Shop Now</a>
   </div>
 </section>
 

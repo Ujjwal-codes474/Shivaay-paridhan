@@ -478,7 +478,7 @@ ul {
   }
   
   .menu-btn {
-    display: none !important; /* Remove from right side on mobile */
+    display: flex !important; /* Keep on right side on mobile */
   }
   
   .logo-text {
@@ -2451,8 +2451,7 @@ ul {
 
   .checkout-grid,
   .profile-layout,
-  .site-footer .footer-grid,
-  .products-grid {
+  .site-footer .footer-grid {
     grid-template-columns: 1fr !important;
   }
 

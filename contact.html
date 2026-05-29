@@ -10,31 +10,96 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="main.css">
 <style>
-.contact-section { padding: 80px 0 90px; background: var(--off-white); }
-.contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 28px; margin-top: 50px; }
-.contact-panel { background: var(--white); border-radius: var(--radius); padding: 34px 32px; box-shadow: var(--shadow-soft); border: 1px solid rgba(201,168,76,0.12); }
-.contact-panel h3 { font-family: var(--font-heading); font-size: 1.4rem; margin-bottom: 16px; }
-.contact-panel p { color: var(--text-muted); line-height:1.85; margin-bottom: 26px; }
-.contact-list { display: grid; gap: 16px; }
-.contact-item { display:flex; gap:18px; align-items:flex-start; background: var(--cream-beige); border-radius: 18px; padding:18px 20px; }
-.contact-item span { font-size:1.35rem; line-height:1; margin-top:2px; }
-.contact-item div a { display:block; color: var(--black); font-weight: 600; margin-top:4px; }
-.contact-item div p { margin:0; color: var(--text-muted); font-size:0.95rem; }
-.contact-form { background: var(--white); border-radius: var(--radius); padding: 34px 34px; box-shadow: var(--shadow-soft); border: 1px solid rgba(201,168,76,0.1); }
-.contact-form label { display:block; font-weight:600; color: var(--black); margin-bottom: 10px; }
-.contact-form input, .contact-form textarea { width:100%; border:1px solid rgba(43,43,43,0.12); border-radius: 18px; padding: 16px 18px; background: var(--off-white); color: var(--black); font-size:0.95rem; margin-bottom:18px; }
-.contact-form textarea { min-height: 150px; resize: vertical; }
-.contact-form button { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding: 14px 32px; background: var(--black); color: var(--white); border:none; border-radius: 999px; font-size:0.95rem; font-weight:600; cursor:pointer; transition: transform 0.25s ease, background 0.25s ease; }
-.contact-form button:hover { background: var(--gold); color: var(--black); transform: translateY(-1px); }
-.map-card { border-radius: var(--radius); overflow:hidden; height:100%; box-shadow: var(--shadow-soft); border: 1px solid rgba(201,168,76,0.12); }
-.map-card iframe { width:100%; height:100%; border:0; }
-.contact-quick { display:grid; gap:22px; margin-top: 40px; }
-.quick-card { display:flex; align-items:flex-start; gap:18px; background: var(--white); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-soft); border:1px solid rgba(201,168,76,0.08); }
-.quick-card span { font-size:1.6rem; margin-top:2px; }
-.quick-card div h4 { margin:0 0 6px; font-size:1rem; }
-.quick-card div p { margin:0; color: var(--text-muted); font-size:0.95rem; }
-@media (max-width: 900px) {
-  .contact-grid { grid-template-columns: 1fr; }
+.contact-section { padding: 100px 0 120px; background: var(--off-white); }
+.premium-contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 50px auto 0; }
+.premium-contact-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 50px 40px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.04);
+  border: 1px solid rgba(201,168,76,0.15);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--black);
+}
+.premium-contact-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+  border-color: var(--gold);
+}
+.premium-contact-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(201,168,76,0.1);
+  color: var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.premium-contact-icon svg { width: 36px; height: 36px; }
+.premium-contact-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  color: var(--black);
+}
+.premium-contact-card p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+.premium-contact-btn {
+  margin-top: auto;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+.premium-contact-card:hover .premium-contact-btn {
+  transform: translateY(-3px);
+}
+.btn-whatsapp {
+  background: #25D366;
+  box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+}
+.premium-contact-card:hover .btn-whatsapp {
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+}
+.btn-insta {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  box-shadow: 0 6px 15px rgba(220, 39, 67, 0.3);
+}
+.premium-contact-card:hover .btn-insta {
+  box-shadow: 0 8px 25px rgba(220, 39, 67, 0.45);
+}
+.btn-email {
+  background: #EA4335;
+  box-shadow: 0 6px 15px rgba(234, 67, 53, 0.3);
+}
+.premium-contact-card:hover .btn-email {
+  box-shadow: 0 8px 25px rgba(234, 67, 53, 0.45);
+}
+@media (max-width: 1024px) {
+  .premium-contact-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .premium-contact-card { padding: 40px 20px; }
+}
+@media (max-width: 768px) {
+  .premium-contact-grid { grid-template-columns: 1fr; max-width: 450px; margin-left: auto; margin-right: auto; }
 }
 </style>
 </head>
@@ -66,12 +131,6 @@
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
         </svg>
         <span class="cart-count" id="cart-count" style="display: none;">0</span>
-      </a>
-      <button class="nav-icon-btn menu-btn hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
     </div>
   </div>
 
@@ -106,37 +165,36 @@
 
 <section class="contact-section">
   <div class="container">
-    <div class="contact-grid">
-      <div class="contact-panel fade-up">
-        <h3>Let’s Talk</h3>
-        <p>Our customer care team is available for styling guidance, order updates, custom requests, and aftercare advice. Share your details below and we will respond within 24 hours.</p>
-        <div class="contact-list">
-          <div class="contact-item"><span>📍</span><div><strong>Store Location</strong><a href="https://maps.google.com/?q=Jamshedpur" target="_blank">Jamshedpur, Jharkhand</a></div></div>
-          <div class="contact-item"><span>📞</span><div><strong>Phone</strong><a href="tel:+918539865430">+91 85398 65430</a></div></div>
-          <div class="contact-item"><span>✉️</span><div><strong>Email</strong><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></div></div>
-          <div class="contact-item"><span>📸</span><div><strong>Instagram</strong><a href="https://instagram.com/shivaayparidhaan" target="_blank">@shivaayparidhaan</a></div></div>
+    <div class="premium-contact-grid">
+      <!-- WhatsApp -->
+      <a href="https://wa.me/918448460446" target="_blank" class="premium-contact-card">
+        <div class="premium-contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
         </div>
-      </div>
-      <div class="contact-form fade-up">
-        <h3>Send a Message</h3>
-        <form action="#" method="post">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" placeholder="Your full name" required>
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="name@example.com" required>
-          <label for="message">How can we help?</label>
-          <textarea id="message" name="message" placeholder="Tell us about your request" required></textarea>
-          <button type="submit">Send Message</button>
-        </form>
-      </div>
-      <div class="map-card fade-up">
-        <iframe src="https://maps.google.com/maps?q=Jamshedpur%20Jharkhand&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
-      </div>
-    </div>
-    <div class="contact-quick fade-up">
-      <div class="quick-card"><span>⚡</span><div><h4>Fast WhatsApp Support</h4><p>Chat directly for order updates, styling advice, and sizing guidance.</p></div></div>
-      <div class="quick-card"><span>💬</span><div><h4>Custom Saree Assistance</h4><p>Need a bespoke design or bridal inquiry? We’re happy to help you create your dream saree.</p></div></div>
-      <div class="quick-card"><span>🛍️</span><div><h4>Order & Delivery Questions</h4><p>Track your order, inquire about delivery times, or request gift wrapping options.</p></div></div>
+        <h3>WhatsApp Us</h3>
+        <p>Chat with our styling experts for personalized recommendations and immediate assistance.</p>
+        <span class="premium-contact-btn btn-whatsapp">Start Chat <span>&rarr;</span></span>
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://instagram.com/shaliniojha1528" target="_blank" class="premium-contact-card" style="transition-delay: 0.1s;">
+        <div class="premium-contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </div>
+        <h3>Instagram</h3>
+        <p>Explore our latest collections, exclusive reels, and behind-the-scenes artisan craftsmanship.</p>
+        <span class="premium-contact-btn btn-insta">Follow Us <span>&rarr;</span></span>
+      </a>
+
+      <!-- Email -->
+      <a href="mailto:info@shivaayparidhaan.com" class="premium-contact-card" style="transition-delay: 0.2s;">
+        <div class="premium-contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </div>
+        <h3>Email Support</h3>
+        <p>For custom bridal wear inquiries, bulk orders, or corporate gifting, drop us an email.</p>
+        <span class="premium-contact-btn btn-email">Write to Us <span>&rarr;</span></span>
+      </a>
     </div>
   </div>
 </section>

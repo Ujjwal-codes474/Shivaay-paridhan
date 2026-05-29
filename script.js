@@ -674,10 +674,11 @@ function initHeaderLayout() {
           
           <div class="nav-desktop-actions">
             <a href="profile.html#wishlist" class="nav-action-item">
-              <span class="nav-action-icon">
+              <span class="nav-action-icon" style="position:relative;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
+                <span class="cart-count wishlist-count" style="display:none;">0</span>
               </span>
               <span class="nav-action-label">Wishlist</span>
             </a>
@@ -737,10 +738,11 @@ function initHeaderLayout() {
           </a>
           
           <div class="nav-mobile-actions-right">
-            <a href="profile.html#wishlist" class="nav-mobile-icon-link">
+            <a href="profile.html#wishlist" class="nav-mobile-icon-link" style="position:relative;">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
+              <span class="cart-count wishlist-count" style="display:none;">0</span>
             </a>
             <a href="cart.html" class="nav-mobile-icon-link" style="position: relative;">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -3566,6 +3568,11 @@ function renderSliderCard(product, showDiscount = false) {
       <div class="card-image-wrap">
         <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name)}" class="card-img" loading="lazy" onerror="this.src='images/placeholder.jpg'">
         ${hasDiscount ? `<div class="limited-offer-tag">Limited Offer</div>` : ''}
+        <button class="wishlist-icon-btn ${isWishlisted(productId) ? 'active' : ''}" onclick="toggleWishlist('${productId}', event)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="${isWishlisted(productId) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
       </div>
       <div class="card-info">
         <h3 class="card-name">${escapeHtml(product.name)}</h3>
@@ -3790,6 +3797,11 @@ function renderProductCard(product) {
         <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name)}" class="card-img" loading="lazy" onerror="this.src='images/placeholder.jpg'">
         ${limitedOffer}
         ${cardTimerHtml}
+        <button class="wishlist-icon-btn ${isWishlisted(productId) ? 'active' : ''}" onclick="toggleWishlist('${productId}', event)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="${isWishlisted(productId) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
       </div>
       <div class="card-info">
         <h3 class="card-name">${escapeHtml(product.name)}</h3>
@@ -5720,4 +5732,57 @@ document.addEventListener('DOMContentLoaded', () => {
     couponForm.addEventListener('submit', saveCoupon);
     document.getElementById('cancel-coupon-edit')?.addEventListener('click', cancelCouponEdit);
   }
+});
+
+// ============ WISHLIST FUNCTIONALITY ============
+function toggleWishlist(productId, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  const index = wishlist.indexOf(String(productId));
+  const btn = event ? event.currentTarget : null;
+  
+  if (index > -1) {
+    wishlist.splice(index, 1);
+    if (btn) {
+      btn.classList.remove('active');
+      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+    }
+    if (typeof showToast === 'function') showToast('Removed from wishlist');
+    else if (typeof showAdminToast === 'function') showAdminToast('Removed from wishlist');
+  } else {
+    wishlist.push(String(productId));
+    if (btn) {
+      btn.classList.add('active');
+      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+    }
+    if (typeof showToast === 'function') showToast('Added to wishlist');
+    else if (typeof showAdminToast === 'function') showAdminToast('Added to wishlist');
+  }
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  updateWishlistCount();
+}
+
+function updateWishlistCount() {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  const countElements = document.querySelectorAll('.wishlist-count');
+  countElements.forEach(el => {
+    if (wishlist.length > 0) {
+      el.textContent = wishlist.length;
+      el.style.display = 'flex';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
+function isWishlisted(productId) {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+  return wishlist.includes(String(productId));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateWishlistCount();
 });

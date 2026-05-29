@@ -235,6 +235,13 @@
               <!-- JS will populate or show empty state -->
             </div>
           </div>
+
+          <div class="wishlist-section" id="wishlist" style="margin-top: 40px;">
+            <h2>My Wishlist</h2>
+            <div id="wishlist-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+              <!-- JS will populate -->
+            </div>
+          </div>
         </div>
 
       </div>
@@ -415,6 +422,39 @@
             <a href="products.html" class="btn-primary" style="margin-top:15px; display:inline-block;">Start Shopping</a>
           </div>
         `;
+      }
+
+      // Load Wishlist
+      const wishlistContainer = document.getElementById('wishlist-container');
+      const wishlistIds = JSON.parse(localStorage.getItem('wishlist')) || [];
+      const allProducts = JSON.parse(localStorage.getItem('products')) || [];
+      
+      if (wishlistIds.length > 0 && allProducts.length > 0) {
+        const wishlistedProducts = allProducts.filter(p => wishlistIds.includes(String(p.id || p._id)));
+        if (wishlistedProducts.length > 0) {
+          wishlistContainer.innerHTML = wishlistedProducts.map(p => {
+            let imgUrl = 'images/placeholder.jpg';
+            if (p.images && p.images.length > 0) {
+              imgUrl = p.images[0].startsWith('http') || p.images[0].startsWith('/uploads') ? (p.images[0].startsWith('http') ? p.images[0] : `${window.API_BASE_URL || ''}${p.images[0]}`) : `images/${p.images[0]}`;
+            } else if (p.image) {
+              imgUrl = p.image.startsWith('http') ? p.image : `${window.API_BASE_URL || ''}/${p.image}`;
+            }
+            return `
+              <div style="border: 1px solid #eee; border-radius: 8px; overflow: hidden; padding-bottom: 10px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                <img src="${imgUrl}" alt="${p.name}" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;">
+                <div style="padding: 15px;">
+                  <h4 style="margin: 0 0 5px; font-size: 0.95rem; font-family: var(--font-heading);">${p.name}</h4>
+                  <p style="margin: 0 0 15px; color: #c0392b; font-weight: 700;">₹${(p.price || 0).toLocaleString()}</p>
+                  <button onclick="window.location.href='product.html?id=${p.id || p._id}'" class="btn-ghost" style="width: 100%; padding: 8px; font-size: 0.85rem; border-color: #ddd;">View Details</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          wishlistContainer.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><p>Your wishlist is empty.</p></div>';
+        }
+      } else {
+        wishlistContainer.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><p>Your wishlist is empty.</p></div>';
       }
     });
   </script>

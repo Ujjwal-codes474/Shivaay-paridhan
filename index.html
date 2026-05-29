@@ -345,7 +345,7 @@
         order: 1;
       }
       .hero-slider {
-        height: 95vh;
+        height: 75vh;
       }
       .hero-slider .hero-content {
         padding: 60px 50px;
@@ -381,7 +381,7 @@
     }
     @media (max-width: 768px) {
       .hero-slider {
-        height: 90vh;
+        height: 70vh;
       }
       .hero-slider .hero-content {
         padding: 50px 30px;
@@ -416,7 +416,7 @@
         padding-left: 46px;
       }
       .hero-slider {
-        height: 85vh;
+        height: 65vh;
       }
       .hero-slider .hero-content {
         padding: 40px 20px;
@@ -448,7 +448,7 @@
         font-size: 0.9rem;
       }
       .dynamic-product-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0,1fr));
       }
       .category-link {
         padding: 10px 16px;
@@ -462,8 +462,8 @@
     .hero-slider {
       position: relative !important;
       width: 100% !important;
-      height: 100vh !important;
-      min-height: 100vh !important;
+      height: 80vh !important;
+      min-height: 80vh !important;
       overflow: hidden !important;
       background: #000 !important;
       padding: 0 !important;
@@ -478,7 +478,7 @@
       inset: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      min-height: 100vh !important;
+      min-height: 80vh !important;
       opacity: 0 !important;
       transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
       z-index: 1 !important;
@@ -634,13 +634,13 @@
     
     /* Responsive */
     @media (max-width: 1024px) {
-      .hero-slider { height: 90vh !important; min-height: 90vh !important; }
-      .hero-slider .slide { min-height: 90vh !important; }
+      .hero-slider { height: 75vh !important; min-height: 75vh !important; }
+      .hero-slider .slide { min-height: 75vh !important; }
       .hero-slider .hero-content { padding: 60px 50px !important; }
     }
     @media (max-width: 768px) {
-      .hero-slider { height: 85vh !important; min-height: 85vh !important; }
-      .hero-slider .slide { min-height: 85vh !important; }
+      .hero-slider { height: 65vh !important; min-height: 65vh !important; }
+      .hero-slider .slide { min-height: 65vh !important; }
       .hero-slider .hero-content { 
         padding: 50px 30px !important; 
         justify-content: center !important;

@@ -70,6 +70,21 @@
   .subcategory-btn{padding:6px 12px;font-size:0.76rem;}
 }
 @media(max-width:480px){.products-grid{grid-template-columns:1fr 1fr;gap:12px;}}
+
+.shop-hero-bg {
+  background-image: url('images/model3.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  z-index: 1;
+}
+.shop-hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
 </style>
 </head>
 <body>
@@ -121,7 +136,7 @@
   </nav>
 </header>
 
-<div class="page-hero">
+<div class="page-hero shop-hero-bg">
   <p class="page-hero-eyebrow">Our Sarees</p>
   <h1 class="page-hero-title">The Collection</h1>
   <p class="page-hero-sub">Handpicked sarees for every occasion — from festive to bridal.</p>
