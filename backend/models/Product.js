@@ -18,6 +18,7 @@ const productSchema = new mongoose.Schema({
   moreInfo: { type: String, default: '' },
   // Offer / Countdown Timer Fields
   offerLabel: { type: String, default: '' },
+  offerDiscount: { type: Number, default: 0 },
   offerStartDate: { type: Date, default: null },
   offerEndDate: { type: Date, default: null }
 }, { timestamps: true });

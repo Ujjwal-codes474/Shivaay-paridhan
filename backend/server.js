@@ -237,7 +237,7 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
       name, price, originalPrice, category,
       type, material, discount, description, colors,
       stock, quantity, specifications, productCare, moreInfo,
-      offerLabel, offerStartDate, offerEndDate
+      offerLabel, offerDiscount, offerStartDate, offerEndDate
     } = req.body;
 
     let images = [];
@@ -266,6 +266,7 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
       productCare,
       moreInfo: moreInfo || '',
       offerLabel: offerLabel || '',
+      offerDiscount: parseFloat(offerDiscount) || 0,
       offerStartDate: offerStartDate ? new Date(offerStartDate) : null,
       offerEndDate: offerEndDate ? new Date(offerEndDate) : null
     });
@@ -288,7 +289,7 @@ app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
       name, price, originalPrice, category,
       type, material, discount, description, colors,
       stock, quantity, specifications, productCare, moreInfo,
-      offerLabel, offerStartDate, offerEndDate
+      offerLabel, offerDiscount, offerStartDate, offerEndDate
     } = req.body;
 
     // Handle new images if uploaded
@@ -474,7 +475,7 @@ app.use((err, req, res, next) => {
 // Simple password validation — minimum 4 characters, no complex rules
 function validatePassword(password) {
   const errors = [];
-  if (!password || typeof password !== 'string') {
+   if (!password || typeof password !== 'string') {
     errors.push("Password is required");
     return errors;
   }
@@ -890,6 +891,6 @@ mongoose.connect(MONGO_URI)
     });
   })
   .catch((error) => {
-    console.error("MongoDB connection error:", error);
+   console.error("MongoDB connection error:", error);
     process.exit(1);
   });
