@@ -9,9 +9,7 @@
     content="Discover premium women's ethnic wear — handcrafted sarees that blend Indian tradition with modern elegance. Shop Shivaay Paridhan.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="offer-timer.css?v=3">
   <link rel="stylesheet" href="premium-redesign.css?v=4">
@@ -461,7 +459,8 @@
     /* ═══════ HERO SLIDER — FULL WIDTH CINEMATIC ═══════ */
     .hero-slider {
       position: relative !important;
-      width: 100% !important;
+      width: 100vw !important;
+      max-width: 100% !important;
       height: 80vh !important;
       min-height: 80vh !important;
       overflow: hidden !important;
@@ -663,7 +662,7 @@
 </style>
 </head>
 
-<body class="home-page">
+<body class="home-page" style="max-width: 100vw; overflow-x: hidden;">
 
   <!-- ══════════ PROMO BAR ══════════ -->
   <div class="promo-bar" id="promoBar"></div>
@@ -706,7 +705,7 @@
             <circle cx="20" cy="21" r="1"></circle>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
           </svg>
-          <span class="cart-count" id="cart-count">0</span>
+          <span class="cart-count" id="cart-count" style="display: none;">0</span>
         </a>
 
         <button class="nav-icon-btn menu-btn" id="menu-btn" onclick="toggleMenu()" aria-label="Menu">
@@ -720,7 +719,7 @@
     </div>
 
     <nav class="nav-links" id="nav-links">
-      <a href="index.html" class="nav-link active" onclick="closeMenu()">Home</a>
+      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
       <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
       <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
       <a href="shop.html" class="nav-link" onclick="closeMenu()">Shop</a>
@@ -903,35 +902,35 @@
       <div class="category-grid">
         <a href="shop.html?category=wedding" class="category-card">
           <div class="category-card-img-wrap">
-            <img src="images/saree4.png" alt="Wedding Collection">
+            <img loading="lazy" src="images/saree4.png" alt="Wedding Collection">
           </div>
           <span class="category-card-title">Wedding</span>
           <span class="category-card-cta">Explore Now →</span>
         </a>
         <a href="shop.html?category=cotton" class="category-card">
           <div class="category-card-img-wrap">
-            <img src="images/1.png" alt="Professional Cotton">
+            <img loading="lazy" src="images/1.png" alt="Professional Cotton">
           </div>
-          <span class="category-card-title">Professional Cotton</span>
+          <span class="category-card-title">Cotton</span>
           <span class="category-card-cta">Explore Now →</span>
         </a>
         <a href="shop.html?category=silk" class="category-card">
           <div class="category-card-img-wrap">
-            <img src="images/model3.png" alt="Silk Collection">
+            <img loading="lazy" src="images/model3.png" alt="Silk Collection">
           </div>
           <span class="category-card-title">Silk</span>
           <span class="category-card-cta">Explore Now →</span>
         </a>
         <a href="shop.html?category=handloom" class="category-card">
           <div class="category-card-img-wrap">
-            <img src="images/model5 (2).jpeg" alt="Handloom Collection">
+            <img loading="lazy" src="images/model5 (2).jpeg" alt="Handloom Collection">
           </div>
           <span class="category-card-title">Handloom</span>
           <span class="category-card-cta">Explore Now →</span>
         </a>
         <a href="shop.html?category=jewellery" class="category-card">
           <div class="category-card-img-wrap">
-            <img src="images/jewellery_category.png" alt="Jewellery Collection">
+            <img loading="lazy" src="images/jewellery_category.png" alt="Jewellery Collection">
           </div>
           <span class="category-card-title">Jewellery</span>
           <span class="category-card-cta">Explore Now →</span>
@@ -981,117 +980,82 @@
     </div>
   </div>
 
-  <!-- ══════════ FRESH ARRIVALS — HORIZONTAL SCROLL ══════════ -->
-  <section class="fresh-arrivals" id="collection">
-    <div class="doodle-bg pattern-floral"></div>
-    <div class="container">
-      <div class="section-header">
-        <p class="section-eyebrow">Fresh Arrivals</p>
-        <h2 class="section-title">Latest Masterpieces</h2>
-        <p class="section-sub">Discover our newest additions, crafted with precision and love.</p>
-      </div>
+  <!-- ══════════ THE SHIVAAY COLLECTIONS ══════════ -->
+  <section class="shivaay-collections" id="collections">
+    <div class="collections-header">
+      <p class="section-eyebrow">Exquisite Craftsmanship</p>
+      <h2 class="collections-title">The Shivaay Collections</h2>
+      <p class="collections-subtitle">Curated collections crafted for every occasion.</p>
+    </div>
 
-      <div class="horizontal-scroll-wrapper">
-        <button class="scroll-btn prev-btn" aria-label="Scroll left" onclick="scrollCarousel(-1)">❮</button>
-        <div class="horizontal-scroll-container" id="freshArrivalsScroll">
-          <!-- Card 1 -->
-          <a href="product.html" class="product-card" style="text-decoration:none">
-            <div class="card-image-wrap">
-              <img loading="lazy" src="images/saree1.png" alt="Crimson Silk Saree" class="card-img" loading="lazy">
-              <span class="card-badge">Bestseller</span>
-              <div class="card-overlay">
-                <button class="card-btn" onclick="event.preventDefault(); addToCart(1, this)">Add to Cart</button>
-              </div>
-            </div>
-            <div class="card-info">
-              <p class="card-category">Banarasi Silk</p>
-              <h3 class="card-name">Crimson Zari Saree</h3>
-              <div class="card-footer">
-                <span class="card-price">₹4,299</span>
-                <span class="card-old-price">₹5,999</span>
-                <span class="card-discount">28% OFF</span>
-              </div>
-            </div>
-          </a>
-          <!-- Card 2 -->
-          <a href="product.html" class="product-card" style="text-decoration:none">
-            <div class="card-image-wrap">
-              <img loading="lazy" src="images/saree2.png" alt="Blush Pink Saree" class="card-img" loading="lazy">
-              <span class="card-badge new-badge">New</span>
-              <div class="card-overlay">
-                <button class="card-btn" onclick="event.preventDefault(); addToCart(2, this)">Add to Cart</button>
-              </div>
-            </div>
-            <div class="card-info">
-              <p class="card-category">Banarasi Silk</p>
-              <h3 class="card-name">Blush Bridal Saree</h3>
-              <div class="card-footer">
-                <span class="card-price">₹6,499</span>
-                <span class="card-old-price">₹8,000</span>
-                <span class="card-discount">18% OFF</span>
-              </div>
-            </div>
-          </a>
-          <!-- Card 3 -->
-          <a href="product.html" class="product-card" style="text-decoration:none">
-            <div class="card-image-wrap">
-              <img loading="lazy" src="images/saree3.png" alt="Emerald Kanjivaram Saree" class="card-img"
-                loading="lazy">
-              <div class="card-overlay">
-                <button class="card-btn" onclick="event.preventDefault(); addToCart(3, this)">Add to Cart</button>
-              </div>
-            </div>
-            <div class="card-info">
-              <p class="card-category">Kanjivaram Silk</p>
-              <h3 class="card-name">Emerald Temple Saree</h3>
-              <div class="card-footer">
-                <span class="card-price">₹7,999</span>
-                <span class="card-old-price">₹10,500</span>
-                <span class="card-discount">23% OFF</span>
-              </div>
-            </div>
-          </a>
-          <!-- Card 4 -->
-          <a href="product.html" class="product-card" style="text-decoration:none">
-            <div class="card-image-wrap">
-              <img loading="lazy" src="images/saree4.png" alt="Ivory Bridal Saree" class="card-img" loading="lazy">
-              <span class="card-badge">Bridal</span>
-              <div class="card-overlay">
-                <button class="card-btn" onclick="event.preventDefault(); addToCart(4, this)">Add to Cart</button>
-              </div>
-            </div>
-            <div class="card-info">
-              <p class="card-category">Pure Silk</p>
-              <h3 class="card-name">Ivory Bridal Saree</h3>
-              <div class="card-footer">
-                <span class="card-price">₹12,999</span>
-                <span class="card-old-price">₹16,000</span>
-                <span class="card-discount">18% OFF</span>
-              </div>
-            </div>
-          </a>
-          <!-- Card 5 -->
-          <a href="product.html" class="product-card" style="text-decoration:none">
-            <div class="card-image-wrap">
-              <img loading="lazy" src="images/saree5.png" alt="Navy Sequin Saree" class="card-img" loading="lazy">
-              <span class="card-badge new-badge">New</span>
-              <div class="card-overlay">
-                <button class="card-btn" onclick="event.preventDefault(); addToCart(5, this)">Add to Cart</button>
-              </div>
-            </div>
-            <div class="card-info">
-              <p class="card-category">Chiffon</p>
-              <h3 class="card-name">Navy Sequin Saree</h3>
-              <div class="card-footer">
-                <span class="card-price">₹3,199</span>
-                <span class="card-old-price">₹4,500</span>
-                <span class="card-discount">28% OFF</span>
-              </div>
-            </div>
-          </a>
+    <div class="collections-masonry">
+      <!-- Left Large Vertical Card -->
+      <a href="shop.html?category=bridal" class="collection-card card-left">
+        <img loading="lazy" src="images/model4.png" alt="Bridal Collection" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title gold-ivory">Bridal Collection</h3>
+          <div class="collection-card-arrow">Explore Collection <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
         </div>
-        <button class="scroll-btn next-btn" aria-label="Scroll right" onclick="scrollCarousel(1)">❯</button>
-      </div>
+      </a>
+
+      <!-- Center Top Horizontal Card -->
+      <a href="shop.html?category=bestsellers" class="collection-card card-center-top">
+        <img loading="lazy" src="images/saree1.png" alt="Bestsellers" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title">Bestsellers</h3>
+          <div class="collection-card-arrow">Explore Collection <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+        </div>
+      </a>
+
+      <!-- Center Bottom Horizontal Card -->
+      <a href="shop.html?category=silk" class="collection-card card-center-bottom">
+        <img loading="lazy" src="images/model3.png" alt="Luxury Silks" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title">Luxury Silks</h3>
+          <div class="collection-card-arrow">Explore Collection <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+        </div>
+      </a>
+
+      <!-- Right Large Vertical Card -->
+      <a href="shop.html?category=jewellery" class="collection-card card-right">
+        <img loading="lazy" src="images/jewellery_category.png" alt="Jewellery Collection" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title gold-ivory">Jewellery Collection</h3>
+          <div class="collection-card-arrow">Explore Collection <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Small Premium Cards -->
+    <div class="collections-small">
+      <a href="shop.html?category=festive" class="collection-card small-card">
+        <img loading="lazy" src="images/model2.png" alt="Festive Edit" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title">Festive Edit</h3>
+          <div class="collection-card-arrow">Explore <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+        </div>
+      </a>
+      <a href="shop.html?category=cotton" class="collection-card small-card">
+        <img loading="lazy" src="images/1.png" alt="Cotton Elegance" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title">Cotton Elegance</h3>
+          <div class="collection-card-arrow">Explore <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+        </div>
+      </a>
+      <a href="shop.html?category=new" class="collection-card small-card">
+        <img loading="lazy" src="images/saree5.png" alt="New Arrivals" class="collection-img">
+        <div class="collection-overlay"></div>
+        <div class="collection-content">
+          <h3 class="collection-card-title">New Arrivals</h3>
+          <div class="collection-card-arrow">Explore <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -1143,7 +1107,7 @@
         </div>
         <div class="story-image-panel">
           <div class="story-image-card">
-            <img loading="lazy" src="images/hero_model.png" alt="Our story" class="story-image">
+            <img src="images/hero_model.png" alt="Our story" class="story-image">
           </div>
         </div>
       </div>
@@ -1199,45 +1163,7 @@
     </div>
   </section>
 
-  <!-- ══════════ GALLERY / INSTAGRAM ══════════ -->
-  <section class="gallery-section">
-    <div class="container">
-      <div class="section-header">
-        <p class="section-eyebrow">@shivaayparidhaan</p>
-        <h2 class="section-title">Follow Our Story</h2>
-        <p class="section-sub">Tag us in your saree moments for a chance to be featured.</p>
-      </div>
-      <div class="gallery-grid">
-        <div class="gallery-item" style="background: linear-gradient(135deg,#c41e3a,#8b1a2c)">
-          <img loading="lazy" src="images/saree1.png" alt="Gallery 1" loading="lazy">
-          <div class="gallery-overlay"><span>📸</span></div>
-        </div>
-        <div class="gallery-item" style="background: linear-gradient(135deg,#f4a7b9,#d4818e)">
-          <img loading="lazy" src="images/saree2.png" alt="Gallery 2" loading="lazy">
-          <div class="gallery-overlay"><span>📸</span></div>
-        </div>
-        <div class="gallery-item" style="background: linear-gradient(135deg,#1a5c38,#0d3321)">
-          <img loading="lazy" src="images/saree3.png" alt="Gallery 3" loading="lazy">
-          <div class="gallery-overlay"><span>📸</span></div>
-        </div>
-        <div class="gallery-item" style="background: linear-gradient(135deg,#f5f0e8,#d4c4a0)">
-          <img loading="lazy" src="images/saree4.png" alt="Gallery 4" loading="lazy">
-          <div class="gallery-overlay"><span>📸</span></div>
-        </div>
-        <div class="gallery-item" style="background: linear-gradient(135deg,#1a2c5c,#0d1a3d)">
-          <img loading="lazy" src="images/saree5.png" alt="Gallery 5" loading="lazy">
-          <div class="gallery-overlay"><span>📸</span></div>
-        </div>
-        <div class="gallery-item insta-cta-card">
-          <a href="https://instagram.com" target="_blank" rel="noopener" class="insta-cta-link">
-            <span class="insta-icon">📷</span>
-            <p>Follow on Instagram</p>
-            <p class="insta-handle">@shivaayparidhaan</p>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
   <!-- ══════════ FOOTER ══════════ -->
 

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════
    SHIVAAY PARIDHAN — Unified Main CSS
-   Fonts: Playfair Display + Poppins
+   Fonts: Cormorant Garamond + Inter
    Colors: White, Pink, Cream
 ═══════════════════════════════════════ */
 
@@ -23,8 +23,8 @@
   --radius: 24px;
   --radius-sm: 14px;
   --transition: 0.32s cubic-bezier(0.33, 1, 0.68, 1);
-  --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Poppins', sans-serif;
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 /* ── Reset ── */
@@ -2586,5 +2586,20 @@ ul {
 
   .cart-mobile-cta {
     bottom: 14px;
+  }
+}
+
+
+/* ══════════ GLOBAL RESPONSIVENESS FIXES (ADDED) ══════════ */
+/* Ensure no horizontal scroll */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Touch-friendly inputs for mobile */
+@media(max-width: 768px) {
+  input, select, textarea, button {
+    font-size: 16px !important; /* prevents zoom on iOS */
   }
 }

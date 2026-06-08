@@ -10,8 +10,8 @@
   --shadow: 0 8px 40px rgba(0,0,0,0.15);
   --shadow-card: 0 4px 24px rgba(0,0,0,0.1);
   --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
-  --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Poppins', sans-serif;
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}

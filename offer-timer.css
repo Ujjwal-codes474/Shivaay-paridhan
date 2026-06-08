@@ -11,7 +11,7 @@
   --offer-crimson: #c0392b;
   --offer-cream:   #fdf8ef;
   --offer-radius:  10px;
-  --offer-font:    'Poppins', sans-serif;
+  --offer-font:    'Inter', sans-serif;
 }
 
 /* ─── PRODUCT-CARD COUNTDOWN BADGE ─────────────────────────── */
@@ -220,7 +220,7 @@
 
 .offer-discount-pct {
   display: block;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 2rem;
   font-weight: 700;
   color: var(--offer-gold-lt);
@@ -247,7 +247,7 @@
 }
 
 .offer-price-final {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: #fff;

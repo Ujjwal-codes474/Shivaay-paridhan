@@ -7,7 +7,7 @@
   <meta name="description" content="Explore premium handcrafted sarees — Banarasi, Kanjivaram, Chiffon & Bridal collections at Shivaay Paridhan.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="offer-timer.css?v=3">
   <link rel="stylesheet" href="premium-redesign.css?v=4">
@@ -134,76 +134,66 @@
 <body class="products-page">
 
 <!-- ══════════ NAVBAR ══════════ -->
-<header class="navbar solid" id="navbar">
-  <div class="nav-container">
-    <!-- LEFT: Hamburger (Mobile) -->
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+<header class="navbar" id="navbar">
+    <div class="nav-container">
 
-    <!-- CENTER: Logo & Brand (Mobile) / Navigation Menu (Desktop) -->
-    <a href="index.html" class="nav-logo">
-      <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
-      <span class="logo-text">Shivaay Paridhan</span>
-    </a>
+      <div class="nav-left">
+        <a href="index.html" class="nav-logo">
+          <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+          <div class="brand-copy">
+            <span class="logo-text-primary">Shivaay</span>
+            <span class="logo-text-secondary">Paridhan</span>
+          </div>
+        </a>
+      </div>
 
-    <!-- CENTER: Main Navigation Menu (Desktop Only) -->
-    <nav class="nav-menu" id="nav-menu">
-      <a href="index.html" class="nav-menu-link">Home</a>
-      <a href="products.html?category=clothing&type=wedding" class="nav-menu-link">Wedding</a>
-      <a href="products.html?category=clothing&type=cotton" class="nav-menu-link">Professional Cotton</a>
-      <a href="products.html?category=clothing&type=silk" class="nav-menu-link">Silk</a>
-      <a href="products.html?category=clothing&type=handloom" class="nav-menu-link">Handloom</a>
-      <a href="products.html?category=jewellery" class="nav-menu-link">Jewellery</a>
-      <a href="products.html?sort=new" class="nav-menu-link">New Arrivals</a>
-      <a href="products.html?sort=offers" class="nav-menu-link">Offers</a>
-    </nav>
+      <div class="nav-center">
+        <div class="search-input-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon-inline" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="search-input" placeholder="Search for products, categories..." class="nav-search-input">
+        </div>
+      </div>
 
-    <!-- RIGHT: Search & Cart Icons -->
-    <div class="nav-actions">
-      <button class="nav-icon-btn search-btn" id="search-btn" onclick="toggleSearch()" aria-label="Search">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-      </button>
-      <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span class="cart-count" id="cart-count" style="display: none;">0</span>
-      </a>
+      <div class="nav-right">
+        <a href="profile.html" class="nav-icon-btn" aria-label="Profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+
+        <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-count" id="cart-count" style="display: none;">0</span>
+        </a>
+
+        <button class="nav-icon-btn menu-btn" id="menu-btn" onclick="toggleMenu()" aria-label="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 7h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 17h16"></path>
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- MOBILE: Side Menu (Hamburger) -->
     <nav class="nav-links" id="nav-links">
       <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-      <a href="products.html" class="nav-link" onclick="closeMenu()">Shop All</a>
-      <a href="products.html?category=clothing&type=wedding" class="nav-link" onclick="closeMenu()">Wedding Collection</a>
-      <a href="products.html?category=clothing&type=cotton" class="nav-link" onclick="closeMenu()">Professional Cotton</a>
-      <a href="products.html?category=clothing&type=silk" class="nav-link" onclick="closeMenu()">Silk Collection</a>
-      <a href="products.html?category=clothing&type=handloom" class="nav-link" onclick="closeMenu()">Handloom Collection</a>
-      <a href="products.html?category=jewellery" class="nav-link" onclick="closeMenu()">Jewellery Collection</a>
-      <a href="products.html?sort=new" class="nav-link" onclick="closeMenu()">New Arrivals</a>
-      <a href="products.html?sort=offers" class="nav-link" onclick="closeMenu()">Offers</a>
       <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
       <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
-      <hr class="nav-divider">
+      <a href="shop.html" class="nav-link" onclick="closeMenu()">Shop</a>
+      <a href="cart.html" class="nav-link" onclick="closeMenu()">Cart</a>
       <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
       <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
     </nav>
-  </div>
-
-  <!-- SEARCH BAR (Mobile Overlay) -->
-  <div class="search-overlay" id="search-overlay">
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search for sarees, jewellery..." class="search-input">
-      <button onclick="closeSearch()" class="search-close-btn">✕</button>
-    </div>
-  </div>
-</header>
+  </header>
 
 <!-- ══════════ PAGE HERO ══════════ -->
 <div class="page-hero">
@@ -223,7 +213,7 @@
       <div style="margin-top:16px;"><a href="products.html?category=wedding" class="btn-primary">Shop Wedding Sarees</a></div>
     </div>
     <div style="width:420px;max-width:40%;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-md);">
-      <img src="images/saree4.png" alt="Wedding Collection" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <img loading="lazy" src="images/saree4.png" alt="Wedding Collection" style="width:100%;height:100%;object-fit:cover;display:block;">
     </div>
   </div>
 </section>
@@ -360,7 +350,7 @@
       <div class="footer-grid">
         <div class="footer-brand-col">
           <a href="index.html" class="footer-logo">
-            <img src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+            <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
             Shivaay Paridhan
           </a>
           <p class="footer-tagline">Elegance in Every Drape</p>
