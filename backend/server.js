@@ -2,9 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("cloudinary").v2;
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
+const path = require("path");
 require('dotenv').config();
 const Product = require("./models/Product");
 const Review = require("./models/Review");
@@ -19,15 +19,13 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
-// ============ CLOUDINARY CONFIGURATION ============
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true
-});
+// Ensure uploads folder exists locally
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-const requiredEnvVars = ["MONGO_URI", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
+const requiredEnvVars = ["MONGO_URI"];
 const missingEnvVars = requiredEnvVars.filter((name) => !process.env[name]);
 if (missingEnvVars.length) {
   console.error("Missing required environment variables:", missingEnvVars.join(", "));
@@ -54,26 +52,19 @@ app.use(cors({
 }));
 app.use(express.json());
 // Serve frontend files from parent directory
-app.use(express.static(require("path").join(__dirname, "..")));
+app.use(express.static(path.join(__dirname, "..")));
+// Serve uploaded images statically at /uploads URL path
+app.use("/uploads", express.static(uploadsDir));
 
-// ============ CLOUDINARY MULTER STORAGE ============
-// Images are uploaded directly to Cloudinary — nothing written to local disk.
-// This ensures images survive Render redeploys, restarts, and sleep cycles.
-const productStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "shivaay-paridhan/products",
-    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
-    transformation: [{ quality: "auto", fetch_format: "auto" }]
-  }
-});
-
-const reviewStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "shivaay-paridhan/reviews",
-    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
-    transformation: [{ quality: "auto", fetch_format: "auto" }]
+// ============ LOCAL MULTER DISK STORAGE ============
+const localDiskStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
   }
 });
 
@@ -88,32 +79,28 @@ const fileFilter = (req, file, cb) => {
 
 // Upload middleware for product images (up to 5 files, 10MB each)
 const upload = multer({
-  storage: productStorage,
+  storage: localDiskStorage,
   fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 // Upload middleware for review images (single file)
 const reviewUpload = multer({
-  storage: reviewStorage,
+  storage: localDiskStorage,
   fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
 
-// Helper: delete a Cloudinary image by its public_id (extracted from the URL)
-async function deleteCloudinaryImage(imageUrl) {
-  if (!imageUrl || !imageUrl.startsWith('http')) return;
-  try {
-    // Extract public_id from Cloudinary URL, e.g.:
-    // https://res.cloudinary.com/<cloud>/image/upload/v123/shivaay-paridhan/products/abc123.jpg
-    // → public_id = shivaay-paridhan/products/abc123
-    const matches = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
-    if (matches && matches[1]) {
-      await cloudinary.uploader.destroy(matches[1]);
+// Helper: delete a local image file
+function deleteLocalImage(imagePath) {
+  if (!imagePath || !imagePath.startsWith('/uploads/')) return;
+  const filename = imagePath.replace('/uploads/', '');
+  const filePath = path.join(uploadsDir, filename);
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.warn("Local image delete warning (non-fatal):", err.message);
     }
-  } catch (err) {
-    console.warn("Cloudinary delete warning (non-fatal):", err.message);
-  }
+  });
 }
 
 // ============ HEALTH CHECK ============
@@ -262,7 +249,7 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
-// Add product (up to 5 images) — images uploaded directly to Cloudinary
+// Add product (up to 5 images)
 app.post("/api/products", upload.array("images", 5), async (req, res) => {
   try {
     const {
@@ -274,10 +261,8 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
 
     let images = [];
     if (req.files && req.files.length > 0) {
-      // Cloudinary: req.files[i].path contains the permanent Cloudinary HTTPS URL
-      images = req.files.map(file => file.path);
+      images = req.files.map(file => `/uploads/${file.filename}`);
     } else if (req.body.images) {
-      // Accept pre-existing Cloudinary URLs passed as text
       images = Array.isArray(req.body.images) ? req.body.images : req.body.images.split(',').map(s => s.trim());
     }
 
@@ -313,7 +298,7 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
   }
 });
 
-// Edit product — new images replace old ones; old Cloudinary images are deleted
+// Edit product — new images replace old ones; old local images are deleted
 app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -326,14 +311,13 @@ app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
       offerLabel, offerDiscount, offerStartDate, offerEndDate
     } = req.body;
 
-    // Handle new images if uploaded — delete old Cloudinary images first
+    // Handle new images if uploaded — delete old local images first
     let images = product.images;
     if (req.files && req.files.length > 0) {
-      // Delete old Cloudinary images asynchronously (non-blocking, non-fatal)
-      Promise.all(product.images.map(url => deleteCloudinaryImage(url)))
-        .catch(err => console.warn("Old image cleanup warning:", err.message));
-      // Save new Cloudinary URLs
-      images = req.files.map(file => file.path);
+      // Delete old local images
+      product.images.forEach(img => deleteLocalImage(img));
+      // Save new file paths
+      images = req.files.map(file => `/uploads/${file.filename}`);
     }
 
     const stockVal = parseInt(stock || quantity || product.stock);
@@ -371,9 +355,8 @@ app.delete("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (product && product.images && product.images.length > 0) {
-      // Delete Cloudinary images asynchronously (non-blocking, non-fatal)
-      Promise.all(product.images.map(url => deleteCloudinaryImage(url)))
-        .catch(err => console.warn("Cloudinary cleanup on delete (non-fatal):", err.message));
+      // Delete local images
+      product.images.forEach(img => deleteLocalImage(img));
     }
     await Product.findByIdAndDelete(req.params.id);
     res.json({ message: "Product deleted" });
@@ -459,8 +442,8 @@ app.put("/api/orders/:id/status", async (req, res) => {
 app.post("/api/reviews", reviewUpload.single("image"), async (req, res) => {
   try {
     const { productId, userName, rating, comment } = req.body;
-    // Cloudinary: req.file.path contains the permanent HTTPS URL
-    const imagePath = req.file ? req.file.path : null;
+    // Multer: req.file.filename contains the local filename
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     const newReview = new Review({
       productId,
