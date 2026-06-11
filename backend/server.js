@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 const bcrypt = require("bcryptjs");
 require('dotenv').config();
 const Product = require("./models/Product");
@@ -19,7 +19,15 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
-const requiredEnvVars = ["MONGO_URI"];
+// ============ CLOUDINARY CONFIGURATION ============
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
+
+const requiredEnvVars = ["MONGO_URI", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
 const missingEnvVars = requiredEnvVars.filter((name) => !process.env[name]);
 if (missingEnvVars.length) {
   console.error("Missing required environment variables:", missingEnvVars.join(", "));
@@ -37,12 +45,6 @@ if ((TWILIO_ACCOUNT_SID && !TWILIO_AUTH_TOKEN) || (!TWILIO_ACCOUNT_SID && TWILIO
 
 const app = express();
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
 // Middleware — CORS: allow requests from any origin in production and echo the origin for credentialed requests
 app.use(cors({
   origin: true,
@@ -51,38 +53,68 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Serve frontend files from parent directory
-app.use(express.static(path.join(__dirname, "..")));
+app.use(express.static(require("path").join(__dirname, "..")));
 
-// Multer Storage Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `product-${uniqueSuffix}${ext}`);
+// ============ CLOUDINARY MULTER STORAGE ============
+// Images are uploaded directly to Cloudinary — nothing written to local disk.
+// This ensures images survive Render redeploys, restarts, and sleep cycles.
+const productStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "shivaay-paridhan/products",
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
+    transformation: [{ quality: "auto", fetch_format: "auto" }]
+  }
+});
+
+const reviewStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "shivaay-paridhan/reviews",
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
+    transformation: [{ quality: "auto", fetch_format: "auto" }]
   }
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|gif|webp/;
-  const extValid = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mimeValid = allowed.test(file.mimetype.split("/")[1]);
-  if (extValid && mimeValid) {
+  const allowedMimes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+  if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new Error("Only image files (jpg, png, gif, webp) are allowed"), false);
   }
 };
 
+// Upload middleware for product images (up to 5 files, 10MB each)
 const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB per file
+  storage: productStorage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
+
+// Upload middleware for review images (single file)
+const reviewUpload = multer({
+  storage: reviewStorage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+// Helper: delete a Cloudinary image by its public_id (extracted from the URL)
+async function deleteCloudinaryImage(imageUrl) {
+  if (!imageUrl || !imageUrl.startsWith('http')) return;
+  try {
+    // Extract public_id from Cloudinary URL, e.g.:
+    // https://res.cloudinary.com/<cloud>/image/upload/v123/shivaay-paridhan/products/abc123.jpg
+    // → public_id = shivaay-paridhan/products/abc123
+    const matches = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
+    if (matches && matches[1]) {
+      await cloudinary.uploader.destroy(matches[1]);
+    }
+  } catch (err) {
+    console.warn("Cloudinary delete warning (non-fatal):", err.message);
+  }
+}
 
 // ============ HEALTH CHECK ============
 app.get("/api/health", (req, res) => {
@@ -230,7 +262,7 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
-// Add product (up to 5 images)
+// Add product (up to 5 images) — images uploaded directly to Cloudinary
 app.post("/api/products", upload.array("images", 5), async (req, res) => {
   try {
     const {
@@ -242,8 +274,10 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
 
     let images = [];
     if (req.files && req.files.length > 0) {
-      images = req.files.map(file => `/uploads/${file.filename}`);
+      // Cloudinary: req.files[i].path contains the permanent Cloudinary HTTPS URL
+      images = req.files.map(file => file.path);
     } else if (req.body.images) {
+      // Accept pre-existing Cloudinary URLs passed as text
       images = Array.isArray(req.body.images) ? req.body.images : req.body.images.split(',').map(s => s.trim());
     }
 
@@ -279,7 +313,7 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
   }
 });
 
-// Edit product
+// Edit product — new images replace old ones; old Cloudinary images are deleted
 app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -292,15 +326,14 @@ app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
       offerLabel, offerDiscount, offerStartDate, offerEndDate
     } = req.body;
 
-    // Handle new images if uploaded
+    // Handle new images if uploaded — delete old Cloudinary images first
     let images = product.images;
     if (req.files && req.files.length > 0) {
-      // Delete old images
-      product.images.forEach(imgPath => {
-        const fullPath = path.join(__dirname, imgPath);
-        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-      });
-      images = req.files.map(file => `/uploads/${file.filename}`);
+      // Delete old Cloudinary images asynchronously (non-blocking, non-fatal)
+      Promise.all(product.images.map(url => deleteCloudinaryImage(url)))
+        .catch(err => console.warn("Old image cleanup warning:", err.message));
+      // Save new Cloudinary URLs
+      images = req.files.map(file => file.path);
     }
 
     const stockVal = parseInt(stock || quantity || product.stock);
@@ -337,13 +370,10 @@ app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
 app.delete("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (product && product.images) {
-      product.images.forEach(imgPath => {
-        const fullPath = path.join(__dirname, imgPath);
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        }
-      });
+    if (product && product.images && product.images.length > 0) {
+      // Delete Cloudinary images asynchronously (non-blocking, non-fatal)
+      Promise.all(product.images.map(url => deleteCloudinaryImage(url)))
+        .catch(err => console.warn("Cloudinary cleanup on delete (non-fatal):", err.message));
     }
     await Product.findByIdAndDelete(req.params.id);
     res.json({ message: "Product deleted" });
@@ -426,10 +456,11 @@ app.put("/api/orders/:id/status", async (req, res) => {
 
 // ============ REVIEW APIS ============
 
-app.post("/api/reviews", upload.single("image"), async (req, res) => {
+app.post("/api/reviews", reviewUpload.single("image"), async (req, res) => {
   try {
     const { productId, userName, rating, comment } = req.body;
-    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+    // Cloudinary: req.file.path contains the permanent HTTPS URL
+    const imagePath = req.file ? req.file.path : null;
 
     const newReview = new Review({
       productId,

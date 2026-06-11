@@ -1821,14 +1821,18 @@ img {
   .feature-item-lux { width: 100%; }
 }
 
-/* Fix product grid specifically for mobile to prevent overflow */
+/* Fix product grid specifically for mobile to support premium 2-column layout */
 .dynamic-product-grid, .products-grid {
   box-sizing: border-box;
   width: 100%;
 }
-@media (max-width: 425px) {
-  .dynamic-product-grid { grid-template-columns: 1fr !important; }
-  .products-grid { grid-template-columns: 1fr !important; }
+@media (max-width: 768px) {
+  .dynamic-product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+  .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .dynamic-product-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
+  .products-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
 }
 
 /* Make sure mobile bottom nav doesn't cover content */
@@ -1925,3 +1929,387 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 30px !important;
   color: var(--black) !important;
 }
+
+/* ==========================================================================
+   SHIVAAY PARIDHAN RESPONSIVE HEADER & LOGO FIXES
+   ========================================================================== */
+
+/* --- GLOBAL HEADER & NAVIGATION ALIGNMENT --- */
+.navbar {
+  padding: 12px 0 !important;
+  transition: all 0.3s ease !important;
+}
+.nav-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+}
+.nav-left {
+  display: flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+}
+.nav-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 auto !important;
+  max-width: 560px !important;
+}
+.nav-right {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex: 0 0 auto !important;
+  gap: 16px !important;
+}
+
+/* --- LOGO & BRAND DETAILS (DESKTOP) --- */
+.nav-logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  text-decoration: none !important;
+}
+.nav-logo .logo-img {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 1px solid rgba(201, 168, 76, 0.3) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
+  transition: all 0.3s ease !important;
+}
+.brand-copy, .logo-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  line-height: 1.1 !important;
+}
+.logo-text-primary {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 1.45rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  color: var(--text-dark, #2b2b2b) !important;
+  transition: all 0.3s ease !important;
+}
+.logo-text-secondary {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.62rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.38em !important;
+  text-transform: uppercase !important;
+  color: var(--primary, #e85d8e) !important;
+  margin-top: 2px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* --- SEARCH BAR DESKTOP --- */
+.search-input-wrap {
+  width: 100% !important;
+  position: relative !important;
+}
+.nav-search-input {
+  width: 100% !important;
+  padding: 12px 18px 12px 46px !important;
+  font-size: 0.92rem !important;
+  border-radius: 30px !important;
+  border: 1px solid rgba(43, 43, 43, 0.12) !important;
+  transition: all 0.3s ease !important;
+}
+.search-icon-inline {
+  left: 16px !important;
+}
+
+/* --- ICON BUTTONS --- */
+.nav-icon-btn {
+  width: 44px !important;
+  height: 44px !important;
+  background: rgba(248, 242, 238, 0.7) !important;
+  border: 1px solid rgba(43, 43, 43, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* ==========================================
+   TABLET RESPONSIVE RULES (max-width: 1024px)
+   ========================================== */
+@media (max-width: 1024px) {
+  .nav-container {
+    flex-wrap: wrap !important;
+    gap: 12px 16px !important;
+  }
+  .nav-left {
+    order: 1 !important;
+  }
+  .nav-right {
+    order: 2 !important;
+    gap: 12px !important;
+  }
+  .nav-center {
+    order: 3 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 8px !important;
+  }
+  .search-input-wrap {
+    max-width: 100% !important;
+  }
+  .nav-logo .logo-img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .logo-text-primary {
+    font-size: 1.3rem !important;
+    letter-spacing: 0.14em !important;
+  }
+  .logo-text-secondary {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.34em !important;
+  }
+  .nav-icon-btn {
+    width: 42px !important;
+    height: 42px !important;
+  }
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE RULES (max-width: 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 8px 0 !important;
+  }
+  .nav-container {
+    padding: 0 16px !important;
+    gap: 8px 12px !important;
+  }
+  .nav-logo .logo-img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .logo-text-primary {
+    font-size: 1.2rem !important;
+    letter-spacing: 0.12em !important;
+  }
+  .logo-text-secondary {
+    font-size: 0.55rem !important;
+    letter-spacing: 0.3em !important;
+    margin-top: 1px !important;
+  }
+  .nav-icon-btn {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .nav-icon-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  
+  /* Dynamic layout logo scaling */
+  .nav-logo-mobile .logo-img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .logo-text-mobile {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE RULES (max-width: 425px)
+   ========================================== */
+@media (max-width: 425px) {
+  .nav-container {
+    gap: 6px 8px !important;
+  }
+  .nav-logo .logo-img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .logo-text-primary {
+    font-size: 1.1rem !important;
+    letter-spacing: 0.08em !important;
+  }
+  .logo-text-secondary {
+    display: none !important; /* Hide secondary line on small screens for elegant clean fit */
+  }
+  .nav-right {
+    gap: 8px !important;
+  }
+  .nav-icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .nav-icon-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  
+  /* Dynamic layout logo scaling */
+  .nav-logo-mobile .logo-img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .logo-text-mobile {
+    font-size: 1rem !important;
+  }
+}
+
+/* ==========================================
+   TINY MOBILE RESPONSIVE RULES (max-width: 320px)
+   ========================================== */
+@media (max-width: 320px) {
+  .nav-container {
+    padding: 0 10px !important;
+  }
+  .nav-logo .logo-img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .logo-text-primary {
+    font-size: 0.95rem !important;
+    letter-spacing: 0.04em !important;
+  }
+  .nav-icon-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .nav-icon-btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  
+  /* Dynamic layout logo scaling */
+  .nav-logo-mobile .logo-img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .logo-text-mobile {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE SHOP PAGE PREMIUM GRID & CARD FIXES
+   ========================================================================== */
+
+/* --- Aspect Ratio & Image Alignment (All screens) --- */
+.product-card .card-image-wrap {
+  aspect-ratio: 3/4 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  width: 100% !important;
+}
+.product-card .card-image-wrap .card-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* --- Mobile Grid Optimization (max-width: 768px) --- */
+@media (max-width: 768px) {
+  /* Shop Layout columns on mobile */
+  .shop-layout {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 0 0 60px !important;
+  }
+
+  /* Reduce spacing inside product cards */
+  .product-card {
+    border-radius: 12px !important; /* Premium clean edges */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+  }
+  .product-card .card-info {
+    padding: 10px 10px 12px 10px !important;
+    gap: 4px !important;
+  }
+  .product-card .card-name {
+    font-size: 0.88rem !important;
+    line-height: 1.25 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    min-height: 2.5em !important;
+    margin: 0 !important;
+  }
+  .product-card .card-price-row {
+    margin-top: 2px !important;
+    gap: 6px !important;
+  }
+  .product-card .card-price {
+    font-size: 0.95rem !important;
+  }
+  .product-card .card-old-price {
+    font-size: 0.78rem !important;
+  }
+  .product-card .card-discount {
+    font-size: 0.75rem !important;
+  }
+  .product-card .card-savings {
+    font-size: 0.72rem !important;
+    margin-top: 1px !important;
+    padding: 2px 6px !important;
+    display: inline-block !important;
+  }
+  
+  /* Buttons styling on mobile cards */
+  .product-card .card-footer {
+    margin-top: 8px !important;
+    gap: 6px !important;
+  }
+  .product-card .card-footer .btn {
+    padding: 8px 4px !important;
+    font-size: 0.72rem !important;
+    border-radius: 6px !important;
+    height: 32px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .product-card .card-footer .btn-cart {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 6px !important;
+    padding: 0 !important;
+  }
+  .product-card .card-footer .btn-cart svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  
+  /* Wishlist Icon Scaling */
+  .product-card .wishlist-icon-btn {
+    top: 8px !important;
+    right: 8px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .product-card .wishlist-icon-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* Limit Timer Text size on mobile */
+  .product-card .card-timer {
+    font-size: 0.7rem !important;
+    padding: 4px 6px !important;
+  }
+  .product-card .card-offer-expired {
+    font-size: 0.7rem !important;
+    padding: 4px 6px !important;
+  }
+  
+  /* Touch Feedback */
+  .product-card:active {
+    transform: scale(0.98) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+

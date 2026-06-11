@@ -1,6 +1,6 @@
 // Backend API configuration — always points to the Express backend
 const API_BASE_URL = 'https://shivaay-paridhan-1.onrender.com';
-const WHATSAPP_NUMBER = '918539865430';
+const WHATSAPP_NUMBER = '918448460446';
 const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
 function buildWhatsAppUrl(message) {
@@ -1215,6 +1215,7 @@ function getDefaultHomepageConfig() {
       { label: 'Professional Cotton', href: 'shop.html?category=cotton' },
       { label: 'Silk', href: 'shop.html?category=silk' },
       { label: 'Handloom', href: 'shop.html?category=handloom' },
+      { label: 'Kota', href: 'shop.html?category=kota' },
       { label: 'Jewellery', href: 'shop.html?category=jewellery' },
       { label: 'New Arrival', href: 'shop.html?sort=new' },
       { label: 'Offers', href: 'shop.html?sort=offers' },
@@ -1295,7 +1296,17 @@ function getHomepageConfig() {
   const stored = localStorage.getItem(HOMEPAGE_CONFIG_KEY);
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const config = JSON.parse(stored);
+      // Ensure Kota category is included in categoryNavigation if not present
+      if (config && config.categoryNavigation) {
+        const hasKota = config.categoryNavigation.some(item => item.label === 'Kota' || (item.href && item.href.includes('category=kota')));
+        if (!hasKota) {
+          const defaultNav = getDefaultHomepageConfig().categoryNavigation;
+          config.categoryNavigation = defaultNav;
+          saveHomepageConfig(config);
+        }
+      }
+      return config;
     } catch (err) {
       console.error('Invalid homepage config, restoring defaults.', err);
     }
@@ -1437,6 +1448,7 @@ function getAdminCategoryOptions() {
     { value: 'cotton', label: 'Professional Cotton' },
     { value: 'silk', label: 'Silk' },
     { value: 'handloom', label: 'Handloom' },
+    { value: 'kota', label: 'Kota' },
     { value: 'jewellery', label: 'Jewellery' },
   ];
 }
@@ -1478,6 +1490,11 @@ function getAdminSubcategoryOptions(category) {
       { value: 'jamdani', label: 'Jamdani Sarees' },
       { value: 'ikat', label: 'Ikat Sarees' },
       { value: 'linen', label: 'Linen Sarees' }
+    ],
+    kota: [
+      { value: 'kota_silk', label: 'Kota Silk' },
+      { value: 'kota_cotton', label: 'Kota Cotton' },
+      { value: 'kota_doria', label: 'Kota Doria' }
     ],
     jewellery: [
       { value: 'earrings', label: 'Earrings' },
@@ -2130,31 +2147,20 @@ function saveOrderAndOpenWhatsApp(customerData, orderItems, total) {
 function orderOnWhatsAppFromDetail() {
   if (!window.currentProduct) return;
 
+  const product = window.currentProduct;
   const qty = parseInt(document.getElementById('qty')?.value || 1);
-  const color = window.selectedColor || (window.currentProduct.colors?.[0]) || '';
+  const productName = product.name || 'Product';
+  const price = getItemFinalPrice(product);
+  const totalPrice = price * qty;
+  const productUrl = window.location.href;
 
-  if (window.currentProduct.colors?.length > 0 && !color) {
-    alert('Please select a color before placing your WhatsApp order.');
-    return;
-  }
+  const message = `Hello Shivaay Paridhan,\n\nI am interested in ordering:\n\n` +
+    `📦 Product: ${productName}\n` +
+    `💰 Price: ₹${totalPrice.toLocaleString()}${qty > 1 ? ` (${qty} × ₹${price.toLocaleString()})` : ''}\n` +
+    `🔗 Link: ${productUrl}\n\n` +
+    `Please share availability and ordering details.`;
 
-  const customerData = JSON.parse(localStorage.getItem('savedAddress')) || {};
-  if (!customerData.fullName || !customerData.phone) {
-    if (confirm('Please save your delivery details on the checkout page before placing a WhatsApp order. Go to checkout now?')) {
-      window.location.href = 'checkout.html';
-    }
-    return;
-  }
-
-  const orderItem = {
-    id: window.currentProduct.id || window.currentProduct._id,
-    name: window.currentProduct.name,
-    price: getItemFinalPrice(window.currentProduct),
-    quantity: qty,
-    color
-  };
-
-  saveOrderAndOpenWhatsApp(customerData, [orderItem], orderItem.price * qty);
+  window.open(buildWhatsAppUrl(message), '_blank');
 }
 
 // ============ AUTHENTICATION ============
@@ -3550,11 +3556,11 @@ function renderSliderCard(product, showDiscount = false) {
   const actionButtons = role === 'admin'
     ? `<button onclick="deleteProduct('${productId}')" class="btn btn-danger">Delete</button>`
     : `<button class="btn btn-primary add-to-cart-btn">Add to Cart</button>
-       <button onclick="buyNow('${productId}')" class="btn btn-secondary">Buy Now</button>`;
+       <button onclick="buyNow('${productId}')" class="btn btn-secondary">Order on WhatsApp</button>`;
 
-  const imageUrl = product.image?.startsWith('http') 
-    ? product.image 
-    : `${API_BASE_URL}/${product.image}`;
+  const imageUrl = product.images && product.images.length > 0
+    ? resolveImageUrl(product.images[0])
+    : resolveImageUrl(product.image);
 
   const badgeDisplay = hasDiscount
     ? `<div class="card-badge discount-badge">
@@ -3682,13 +3688,12 @@ async function loadAdminProducts() {
     const hasDiscount = !offer.expired && ((discount > 0 && savings > 0) || (offer.active && offerDiscount > 0 && offerSavings > 0));
     const stockVal = product.stock || product.quantity || 0;
 
-    // Get first image URL
+    // Get first image URL — Cloudinary URLs are absolute https:// links
     let imageUrl = 'images/placeholder.jpg';
     if (product.images && product.images.length > 0) {
-      const img = product.images[0];
-      imageUrl = img.startsWith('http') ? img : (img.startsWith('/uploads') ? `${API_BASE_URL}${img}` : `images/${img}`);
+      imageUrl = resolveImageUrl(product.images[0]);
     } else if (product.image) {
-      imageUrl = product.image.startsWith('http') ? product.image : `images/${product.image}`;
+      imageUrl = resolveImageUrl(product.image);
     }
 
     return `
@@ -3743,7 +3748,7 @@ function renderProductCard(product) {
   const actionButtons = role === 'admin'
     ? `<button onclick="deleteProduct('${productId}')" class="btn btn-danger">Delete</button>`
     : `<button class="btn btn-primary add-to-cart-btn">Add to Cart</button>
-       <button onclick="buyNow('${productId}')" class="btn btn-secondary">Buy Now</button>`;
+       <button onclick="buyNow('${productId}')" class="btn btn-secondary">Order on WhatsApp</button>`;
 
   const priceDisplay = offer.expired
     ? `<div class="card-price">₹${originalPrice.toLocaleString()}</div>`
@@ -3769,14 +3774,12 @@ function renderProductCard(product) {
 
   const limitedOffer = '';
 
-  // Show only the 1st image in shop card
+  // Show only the 1st image in shop card — Cloudinary URLs are absolute https:// links
   let imageUrl = 'images/placeholder.jpg';
   if (product.images && product.images.length > 0) {
-    imageUrl = product.images[0].startsWith('http') || product.images[0].startsWith('/uploads')
-      ? (product.images[0].startsWith('http') ? product.images[0] : `${API_BASE_URL}${product.images[0]}`)
-      : `images/${product.images[0]}`;
+    imageUrl = resolveImageUrl(product.images[0]);
   } else if (product.image) {
-    imageUrl = product.image.startsWith('http') ? product.image : `${API_BASE_URL}/${product.image}`;
+    imageUrl = resolveImageUrl(product.image);
   }
 
   // Build card timer HTML if offer is active
@@ -4230,9 +4233,20 @@ async function loadAdminPolicies() {
 
 
 function buyNow(productId) {
-  // Clear cart and add only this product
-  localStorage.setItem('cart', JSON.stringify([{ id: productId, quantity: 1 }]));
-  window.location.href = 'checkout.html';
+  // Find the product from stored products list
+  const products = JSON.parse(localStorage.getItem('products')) || [];
+  const product = products.find(p => String(p.id) === String(productId) || String(p._id) === String(productId));
+  const productName = product?.name || 'Product';
+  const price = product ? getItemFinalPrice(product) : 0;
+  const productUrl = window.location.href;
+
+  const message = `Hello Shivaay Paridhan,\n\nI am interested in ordering:\n\n` +
+    `📦 Product: ${productName}\n` +
+    `💰 Price: ₹${price.toLocaleString()}\n` +
+    `🔗 Link: ${productUrl}\n\n` +
+    `Please share availability and ordering details.`;
+
+  window.open(buildWhatsAppUrl(message), '_blank');
 }
 
 /**
@@ -4259,6 +4273,26 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+/**
+ * Resolve a product image path to a full displayable URL.
+ *
+ * Priority order:
+ *  1. Absolute Cloudinary / external URL (https://...) → returned as-is
+ *  2. Legacy /uploads/... path (pre-Cloudinary) → prepend API_BASE_URL for backward-compat
+ *  3. Relative filename (e.g. "placeholder.jpg") → prepend 'images/'
+ *
+ * This makes images work correctly regardless of whether they were uploaded
+ * before or after the Cloudinary migration, and regardless of server restarts.
+ */
+function resolveImageUrl(img) {
+  if (!img || typeof img !== 'string') return 'images/placeholder.jpg';
+  if (img.startsWith('http://') || img.startsWith('https://')) return img;       // Cloudinary / external
+  if (img.startsWith('/uploads')) return `${API_BASE_URL}${img}`;                 // Legacy local (backward compat)
+  if (img.startsWith('images/') || img.startsWith('./images/')) return img;       // Already relative path
+  return `images/${img}`;                                                          // Bare filename
+}
+
 
 // ============ CART FUNCTIONS ============
 
@@ -4291,9 +4325,9 @@ function renderCart() {
     
     let imageUrl = 'images/placeholder.jpg';
     if (product.images && product.images.length > 0) {
-      imageUrl = product.images[0].startsWith('http') || product.images[0].startsWith('/uploads') ? (product.images[0].startsWith('http') ? product.images[0] : `${API_BASE_URL}${product.images[0]}`) : `images/${product.images[0]}`;
+      imageUrl = resolveImageUrl(product.images[0]);
     } else if (product.image) {
-      imageUrl = product.image.startsWith('http') ? product.image : `${API_BASE_URL}/${product.image}`;
+      imageUrl = resolveImageUrl(product.image);
     }
 
     return `
@@ -4449,6 +4483,12 @@ const subcategoryMap = {
     { value: 'ikat', label: 'Ikat' },
     { value: 'linen', label: 'Linen' }
   ],
+  kota: [
+    { value: 'all', label: 'All Kota' },
+    { value: 'kota_silk', label: 'Kota Silk' },
+    { value: 'kota_cotton', label: 'Kota Cotton' },
+    { value: 'kota_doria', label: 'Kota Doria' }
+  ],
   jewellery: [
     { value: 'all', label: 'All Jewellery' },
     { value: 'earrings', label: 'Earrings' },
@@ -4480,7 +4520,7 @@ function getShopQueryState() {
   const params = new URLSearchParams(window.location.search);
   const rawCategory = params.get('category')?.toString().trim().toLowerCase();
   const rawSubcategory = params.get('type')?.toString().trim().toLowerCase();
-  const validCollections = ['all', 'wedding', 'cotton', 'silk', 'handloom', 'jewellery'];
+  const validCollections = ['all', 'wedding', 'cotton', 'silk', 'handloom', 'kota', 'jewellery'];
 
   const category = validCollections.includes(rawCategory) ? rawCategory : 'all';
   const subcategories = subcategoryMap[category] || [];
@@ -4607,6 +4647,7 @@ function renderShopProducts() {
         cotton: ['cotton', 'maheswari_cotton', 'chanderi_cotton', 'mul_cotton', 'linen_cotton'],
         silk: ['silk', 'kanjivaram_silk', 'banarasi_silk', 'tussar_silk', 'soft_silk', 'mysore_silk', 'maheswari_silk', 'patola_silk', 'gajji_silk', 'dola_silk', 'pashmina_silk'],
         handloom: ['handloom', 'khadi', 'jamdani', 'ikat', 'linen'],
+        kota: ['kota', 'kota_silk', 'kota_cotton', 'kota_doria'],
         jewellery: ['jewellery', 'earrings', 'necklaces', 'bangles', 'rings', 'handmade_jewellery']
       };
       const validTypes = collectionMap[currentShopCollection] || [];
@@ -5022,19 +5063,16 @@ function updateProductDetailPage(product) {
   const breadcrumbProduct = document.querySelector('.breadcrumb span:last-child');
   if (breadcrumbProduct) breadcrumbProduct.textContent = product.name;
   
-  // Update main image from gallery
+  // Update main image from gallery — Cloudinary URLs are absolute https:// links
   const mainImg = document.getElementById('main-img');
   if (mainImg && product.images && product.images.length > 0) {
-    const firstImg = product.images[0];
-    const imageUrl = firstImg.startsWith('http') || firstImg.startsWith('/uploads') 
-      ? (firstImg.startsWith('http') ? firstImg : `${API_BASE_URL}${firstImg}`) 
-      : `images/${firstImg}`;
-    mainImg.src = imageUrl;
+    mainImg.src = resolveImageUrl(product.images[0]);
     mainImg.alt = product.name;
+    mainImg.onerror = function() { this.src = 'images/placeholder.jpg'; this.onerror = null; };
   } else if (mainImg && product.image) {
-    const imageUrl = product.image.startsWith('http') ? product.image : `${API_BASE_URL}/${product.image}`;
-    mainImg.src = imageUrl;
+    mainImg.src = resolveImageUrl(product.image);
     mainImg.alt = product.name;
+    mainImg.onerror = function() { this.src = 'images/placeholder.jpg'; this.onerror = null; };
   }
   
   // Update product info
@@ -5109,14 +5147,13 @@ function updateProductDetailPage(product) {
   if (thumbRow && product.images && product.images.length > 0) {
     const images = product.images.slice(0, 5);
     thumbRow.innerHTML = images.map((img, index) => {
-      const imageUrl = img.startsWith('http') || img.startsWith('/uploads') ? (img.startsWith('http') ? img : `${API_BASE_URL}${img}`) : `images/${img}`;
-      return `<div class="thumb ${index === 0 ? 'active' : ''}" onclick="setImg('${imageUrl}', this)"><img src="${imageUrl}" alt="View ${index + 1}" loading="lazy"></div>`;
+      const imageUrl = resolveImageUrl(img);
+      return `<div class="thumb ${index === 0 ? 'active' : ''}" onclick="setImg('${imageUrl}', this)"><img src="${imageUrl}" alt="View ${index + 1}" loading="lazy" onerror="this.src='images/placeholder.jpg'"></div>`;
     }).join('');
     
     // Set initial main image
     if (mainImg) {
-      const firstImg = images[0].startsWith('http') || images[0].startsWith('/uploads') ? (images[0].startsWith('http') ? images[0] : `${API_BASE_URL}${images[0]}`) : `images/${images[0]}`;
-      mainImg.src = firstImg;
+      mainImg.src = resolveImageUrl(images[0]);
     }
   }
 
@@ -5174,10 +5211,10 @@ function updateProductDetailButtons(product) {
       <a href="admin.html" class="btn-ghost" style="border-color:var(--gold);color:var(--gold);text-align:center;display:flex;align-items:center;justify-content:center;text-decoration:none;">← Back to Admin</a>
     `;
   } else {
-    // User sees add to cart and buy now
+    // User sees add to cart and order on WhatsApp
     actionBtns.innerHTML = `
       <button class="btn-primary" onclick="addToCartFromDetail()">🛒 Add to Cart</button>
-      <button class="btn-ghost" onclick="buyNowFromDetail()" style="border-color:var(--gold);color:var(--gold);background:transparent;cursor:pointer;">Buy Now →</button>
+      <button class="btn-ghost" onclick="buyNowFromDetail()" style="background:#25D366;color:#fff;border:none;cursor:pointer;">💬 Order on WhatsApp</button>
     `;
   }
 }
@@ -5227,13 +5264,21 @@ function addToCartFromDetail() {
  */
 function buyNowFromDetail() {
   if (!window.currentProduct) return;
-  
-  const productId = window.currentProduct.id || window.currentProduct._id;
+
+  const product = window.currentProduct;
   const qty = parseInt(document.getElementById('qty')?.value || 1);
-  
-  // Clear cart and add only this product with quantity
-  localStorage.setItem('cart', JSON.stringify([{ id: productId, quantity: qty }]));
-  window.location.href = 'checkout.html';
+  const productName = product.name || 'Product';
+  const price = getItemFinalPrice(product);
+  const totalPrice = price * qty;
+  const productUrl = window.location.href;
+
+  const message = `Hello Shivaay Paridhan,\n\nI am interested in ordering:\n\n` +
+    `📦 Product: ${productName}\n` +
+    `💰 Price: ₹${totalPrice.toLocaleString()}${qty > 1 ? ` (${qty} × ₹${price.toLocaleString()})` : ''}\n` +
+    `🔗 Link: ${productUrl}\n\n` +
+    `Please share availability and ordering details.`;
+
+  window.open(buildWhatsAppUrl(message), '_blank');
 }
 
 function changeQty(delta) {
@@ -5251,28 +5296,105 @@ function changeQty(delta) {
 // ============ ACCORDION FUNCTIONS ============
 
 /**
- * Initialize accordion - one section open at a time
+ * Initialize accordion — mobile-first, touch-safe, accessible.
+ *
+ * Fixes:
+ * - Uses touchstart for instant response on iOS/Android (no 300ms tap delay)
+ * - Guards against duplicate listener stacking with [data-accordion-init]
+ * - Adds role="button" + tabindex + aria-expanded for accessibility
+ * - Handles keyboard (Enter / Space) for desktop a11y
+ * - Works for both static and dynamically injected items (e.g. Return & Exchange)
  */
 function initAccordion() {
   const accordionItems = document.querySelectorAll('.accordion-item');
-  
+
   accordionItems.forEach(item => {
     const header = item.querySelector('.accordion-header');
     if (!header) return;
-    
-    header.addEventListener('click', () => {
+
+    // ── Deduplication guard — never attach more than one listener ──
+    if (header.dataset.accordionInit === 'true') return;
+    header.dataset.accordionInit = 'true';
+
+    // ── Accessibility attributes ──
+    header.setAttribute('role', 'button');
+    header.setAttribute('tabindex', '0');
+    header.setAttribute('aria-expanded', item.classList.contains('active') ? 'true' : 'false');
+
+    // ── Core toggle logic ──
+    function toggleAccordion(e) {
+      // Prevent any ghost click that follows a touchstart
+      if (e.cancelable) e.preventDefault();
+      e.stopPropagation();
+
       const isActive = item.classList.contains('active');
-      
-      // Close all items
-      accordionItems.forEach(i => i.classList.remove('active'));
-      
-      // Open clicked item if it wasn't active
+
+      // Close all items and reset aria
+      accordionItems.forEach(i => {
+        i.classList.remove('active');
+        const h = i.querySelector('.accordion-header');
+        if (h) h.setAttribute('aria-expanded', 'false');
+      });
+
+      // Open this item if it wasn't active
       if (!isActive) {
         item.classList.add('active');
+        header.setAttribute('aria-expanded', 'true');
+        // Smooth scroll into view on mobile so content is visible
+        if (window.innerWidth <= 900) {
+          setTimeout(() => {
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 380); // after CSS transition completes
+        }
+      }
+    }
+
+    // ── Touch handler (primary for mobile) ──
+    // touchstart fires immediately with no 300ms delay.
+    // We track whether it was a tap (not a scroll).
+    let touchStartY = 0;
+    let touchMoved = false;
+
+    header.addEventListener('touchstart', (e) => {
+      touchStartY = e.changedTouches[0].clientY;
+      touchMoved = false;
+    }, { passive: true });
+
+    header.addEventListener('touchmove', () => {
+      touchMoved = true;
+    }, { passive: true });
+
+    header.addEventListener('touchend', (e) => {
+      if (touchMoved) return; // user was scrolling, not tapping
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+      if (dy > 10) return; // micro-scroll tolerance
+      toggleAccordion(e);
+    }, { passive: false });
+
+    // ── Click handler (desktop + fallback for browsers without touch) ──
+    header.addEventListener('click', (e) => {
+      // On touch devices the touchend already handled it;
+      // only process click if it wasn't preceded by a touch.
+      if (e.detail === 0) return; // keyboard-triggered click — handle below
+      // Check if this was a synthetic click from touch (common on iOS)
+      // We use a small flag to skip the ghost click after touchend.
+      if (header._touchHandled) {
+        header._touchHandled = false;
+        return;
+      }
+      toggleAccordion(e);
+    });
+
+    // ── Keyboard support (Enter / Space) ──
+    header.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleAccordion(e);
       }
     });
   });
 }
+
 
 /**
  * Update accordion content with product data

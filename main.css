@@ -111,11 +111,15 @@ ul {
 @media (max-width: 768px) {
   .whatsapp-float-btn {
     right: 16px;
-    bottom: 16px;
+    bottom: 80px; /* clears the product-sticky-cta bar (~70px) */
     padding: 14px 16px;
     font-size: 0.9rem;
+    /* Ensure it never blocks content below it */
+    pointer-events: auto;
+    touch-action: manipulation;
   }
 }
+
 
 /* ══════════ NAVBAR ══════════ */
 .navbar {
