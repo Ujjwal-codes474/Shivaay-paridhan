@@ -2364,9 +2364,13 @@ async function handleLogin(event) {
       return;
     }
 
-    // Save auth state
-    localStorage.setItem('role', data.user.role || 'user');
-    localStorage.setItem('currentUser', JSON.stringify(data.user));
+// Save authentication state
+localStorage.setItem('role', data.user.role || 'user');
+localStorage.setItem('currentUser', JSON.stringify(data.user));
+
+if (data.token) {
+  localStorage.setItem('authToken', data.token);
+}
 
     showAuthAlert('success', 'Login successful! Redirecting...');
     setTimeout(() => {

@@ -1,8 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const multer = require("multer");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 require('dotenv').config();
@@ -15,9 +18,53 @@ const Coupon = require("./models/Coupon");
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const emailTransporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const JWT_SECRET = process.env.JWT_SECRET || "";
+function generateToken(user) {
+  return jwt.sign(
+    {
+      id: user._id.toString(),
+      role: user.role,
+      email: user.email
+    },
+    JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+}
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : null;
+
+  if (!token) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+}
+
+function requireAdmin(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+
+  next();
+}
 
 // Ensure uploads folder exists locally
 const uploadsDir = path.join(__dirname, "uploads");
@@ -109,7 +156,11 @@ app.get("/api/health", (req, res) => {
 });
 
 // ============ DASHBOARD STATS API ============
-app.get("/api/dashboard-stats", async (req, res) => {
+app.get(
+  "/api/dashboard-stats",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     const [productCount, orderCount, userCount, orders] = await Promise.all([
       Product.countDocuments(),
@@ -142,7 +193,11 @@ app.get("/api/dashboard-stats", async (req, res) => {
 
 // ============ USER MANAGEMENT API ============
 
-app.get("/api/users", async (req, res) => {
+app.get(
+  "/api/users",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     // Exclude password field for security — never expose hashes
     const users = await User.find({}, '-password -resetOtp -otpExpiry').sort({ createdAt: -1 });
@@ -154,10 +209,18 @@ app.get("/api/users", async (req, res) => {
 });
 
 // Update user profile
-app.put("/api/users/:id", async (req, res) => {
+app.put(
+  "/api/users/:id",
+  authenticateToken,
+  async (req, res) => {
   try {
     const { name, phone, email } = req.body;
     const userId = req.params.id;
+    if (req.user.role !== "admin" && req.user.id !== userId) {
+  return res.status(403).json({
+    message: "You can only update your own profile"
+  });
+}
 
     const user = await User.findById(userId);
     if (!user) {
@@ -176,11 +239,11 @@ app.put("/api/users/:id", async (req, res) => {
     await user.save();
     res.json({
       message: "Profile updated successfully",
-      user: { 
-        id: user._id, 
-        name: user.name, 
-        email: user.email, 
-        phone: user.phone, 
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
         role: user.role,
         createdAt: user.createdAt
       }
@@ -207,7 +270,11 @@ app.get("/api/policies", async (req, res) => {
   }
 });
 
-app.post("/api/policies", async (req, res) => {
+app.post(
+  "/api/policies",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     const { shippingPolicy, returnPolicy } = req.body;
     let policy = await Policy.findOne();
@@ -250,7 +317,12 @@ app.get("/api/products/:id", async (req, res) => {
 });
 
 // Add product (up to 5 images)
-app.post("/api/products", upload.array("images", 5), async (req, res) => {
+app.post(
+  "/api/products",
+  authenticateToken,
+  requireAdmin,
+  upload.array("images", 5),
+  async (req, res) => {
   try {
     const {
       name, price, originalPrice, category,
@@ -299,7 +371,12 @@ app.post("/api/products", upload.array("images", 5), async (req, res) => {
 });
 
 // Edit product — new images replace old ones; old local images are deleted
-app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
+app.put(
+  "/api/products/:id",
+  authenticateToken,
+  requireAdmin,
+  upload.array("images", 5),
+  async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
@@ -351,7 +428,11 @@ app.put("/api/products/:id", upload.array("images", 5), async (req, res) => {
   }
 });
 
-app.delete("/api/products/:id", async (req, res) => {
+app.delete(
+  "/api/products/:id",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (product && product.images && product.images.length > 0) {
@@ -370,7 +451,22 @@ app.delete("/api/products/:id", async (req, res) => {
 app.post("/api/orders", async (req, res) => {
   try {
     const { customer, items, total, paymentMethod, source } = req.body;
+   let authenticatedUserId = null;
 
+const authHeader = req.headers.authorization;
+
+if (authHeader && authHeader.startsWith("Bearer ")) {
+  const token = authHeader.slice(7);
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    authenticatedUserId = decoded.id;
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid or expired token"
+    });
+  }
+}
     if (!customer || !items || !total) {
       return res.status(400).json({ message: "Missing required order fields" });
     }
@@ -381,6 +477,7 @@ app.post("/api/orders", async (req, res) => {
 
     const newOrder = new Order({
       orderId,
+      userId: authenticatedUserId,
       customer,
       items,
       total: parseFloat(total),
@@ -397,46 +494,126 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
-app.get("/api/orders", async (req, res) => {
-  try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    res.json(orders);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching orders" });
-  }
-});
+app.get(
+  "/api/orders",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      let orders;
 
-app.get("/api/orders/:id", async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ message: "Order not found" });
-    res.json(order);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching order" });
-  }
-});
+      if (req.user.role === "admin") {
+        // Admin can see all orders
+        orders = await Order.find().sort({ createdAt: -1 });
+      } else {
+        // Normal users can see only their own authenticated orders
+        orders = await Order.find({
+          userId: req.user.id
+        }).sort({ createdAt: -1 });
+      }
 
-app.put("/api/orders/:id/status", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const validStatuses = ['pending', 'pending_whatsapp', 'confirmed', 'shipped', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({
+        message: "Error fetching orders"
+      });
     }
-
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status, updatedAt: Date.now() },
-      { new: true }
-    );
-
-    if (!order) return res.status(404).json({ message: "Order not found" });
-    res.json({ message: "Order status updated", order });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating order status" });
   }
-});
+);
 
+app.get(
+  "/api/orders/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const order = await Order.findById(req.params.id);
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found"
+        });
+      }
+
+      // Admin can view any order
+      if (req.user.role === "admin") {
+        return res.json(order);
+      }
+
+      // Normal users can only view their own orders
+      if (
+        !order.userId ||
+        String(order.userId) !== String(req.user.id)
+      ) {
+        return res.status(403).json({
+          message: "You can only view your own orders"
+        });
+      }
+
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({
+        message: "Error fetching order"
+      });
+    }
+  }
+);
+
+app.put(
+  "/api/orders/:id/status",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { status } = req.body;
+
+      const validStatuses = [
+        "pending",
+        "pending_whatsapp",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled"
+      ];
+
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid status"
+        });
+      }
+
+      const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        {
+          status,
+          updatedAt: Date.now()
+        },
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found"
+        });
+      }
+
+      res.json({
+        message: "Order status updated",
+        order
+      });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+
+      res.status(500).json({
+        message: "Error updating order status",
+        error: error.message
+      });
+    }
+  }
+);
 // ============ REVIEW APIS ============
 
 app.post("/api/reviews", reviewUpload.single("image"), async (req, res) => {
@@ -489,14 +666,28 @@ app.use((err, req, res, next) => {
 // Simple password validation — minimum 4 characters, no complex rules
 function validatePassword(password) {
   const errors = [];
-   if (!password || typeof password !== 'string') {
+
+  if (!password) {
     errors.push("Password is required");
     return errors;
   }
-  // Simple validation: just check length (min 4 as per request)
-  if (password.length < 4) {
-    errors.push("Password must be at least 4 characters long");
+
+  if (password.length < 8) {
+    errors.push("Password must be at least 8 characters long");
   }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push("Password must contain at least one uppercase letter");
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push("Password must contain at least one lowercase letter");
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push("Password must contain at least one number");
+  }
+
   return errors;
 }
 
@@ -526,17 +717,15 @@ app.post("/forgot-password", async (req, res) => {
       return res.status(404).json({ message: "No account found with this email/mobile" });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = crypto.randomInt(100000, 1000000).toString();
     const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    user.resetOtp = otp;
+    user.resetOtp = await bcrypt.hash(otp, 12);
+user.otpAttempts = 0;
+user.otpVerified = false;
     user.otpExpiry = otpExpiry;
     await user.save();
 
-    console.log(`\n========================================`);
-    console.log(`  OTP for ${user.email}: ${otp}`);
-    console.log(`  Expires at: ${otpExpiry.toLocaleTimeString()}`);
-    console.log(`========================================\n`);
 
     res.json({
       message: "OTP sent successfully",
@@ -554,7 +743,9 @@ app.post("/verify-otp", async (req, res) => {
     const { identifier, otp } = req.body;
 
     if (!identifier || !otp) {
-      return res.status(400).json({ message: "Email/mobile and OTP are required" });
+      return res.status(400).json({
+        message: "Email/mobile and OTP are required"
+      });
     }
 
     const user = await User.findOne({
@@ -565,31 +756,68 @@ app.post("/verify-otp", async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found"
+      });
     }
 
     if (!user.resetOtp) {
-      return res.status(400).json({ message: "No OTP requested. Please request a new one." });
+      return res.status(400).json({
+        message: "No OTP requested. Please request a new one."
+      });
     }
 
-    if (new Date() > user.otpExpiry) {
+    if (!user.otpExpiry || new Date() > user.otpExpiry) {
       user.resetOtp = null;
       user.otpExpiry = null;
+      user.otpAttempts = 0;
+      user.otpVerified = false;
       await user.save();
-      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+
+      return res.status(400).json({
+        message: "OTP has expired. Please request a new one."
+      });
     }
 
-    if (user.resetOtp !== otp) {
-      return res.status(400).json({ message: "Invalid OTP. Please try again." });
+    if (user.otpAttempts >= 5) {
+      user.resetOtp = null;
+      user.otpExpiry = null;
+      user.otpAttempts = 0;
+      user.otpVerified = false;
+      await user.save();
+
+      return res.status(429).json({
+        message: "Too many incorrect OTP attempts. Please request a new OTP."
+      });
     }
 
-    res.json({ message: "OTP verified successfully", verified: true });
+    const otpMatches = await bcrypt.compare(otp, user.resetOtp);
+
+    if (!otpMatches) {
+      user.otpAttempts += 1;
+      await user.save();
+
+      return res.status(400).json({
+        message: "Invalid OTP. Please try again."
+      });
+    }
+
+    user.otpVerified = true;
+    await user.save();
+
+    return res.json({
+      message: "OTP verified successfully",
+      verified: true
+    });
+
   } catch (error) {
     console.error("OTP verification error:", error);
-    res.status(500).json({ message: "Server error during OTP verification" });
+
+    res.status(500).json({
+      message: "Server error during OTP verification"
+    });
   }
 });
-
 // POST /reset-password
 app.post("/reset-password", async (req, res) => {
   try {
@@ -615,17 +843,33 @@ app.post("/reset-password", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!user.resetOtp || user.resetOtp !== otp || new Date() > user.otpExpiry) {
-      return res.status(400).json({ message: "OTP is invalid or expired. Please request a new one." });
-    }
+if (
+  !user.resetOtp ||
+  !user.otpVerified ||
+  new Date() > user.otpExpiry
+) {
+  return res.status(400).json({
+    message: "OTP is invalid or expired. Please request a new one."
+  });
+}
+
+const otpMatches = await bcrypt.compare(otp, user.resetOtp);
+
+if (!otpMatches) {
+  return res.status(400).json({
+    message: "OTP is invalid or expired. Please request a new one."
+  });
+}
 
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    user.password = hashedPassword;
-    user.resetOtp = null;
-    user.otpExpiry = null;
-    await user.save();
+user.password = hashedPassword;
+user.resetOtp = null;
+user.otpExpiry = null;
+user.otpAttempts = 0;
+user.otpVerified = false;
+await user.save();
 
     console.log(`Password reset successful for: ${user.email}`);
     res.json({ message: "Password reset successful! You can now login with your new password." });
@@ -657,15 +901,15 @@ async function registerHandler(req, res) {
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new User({
       name, email: email.toLowerCase(), phone, password: hashedPassword,
-      role: email.toLowerCase() === 'admin@gmail.com' ? 'admin' : 'user'
+      role: "user"
     });
     await newUser.save();
     res.status(201).json({
       message: "Registration successful",
-      user: { 
-        id: newUser._id, 
-        name: newUser.name, 
-        email: newUser.email, 
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
         phone: newUser.phone,
         role: newUser.role,
         createdAt: newUser.createdAt
@@ -682,68 +926,140 @@ async function registerHandler(req, res) {
 
 async function loginHandler(req, res) {
   console.log(`Login request received for: ${req.body.email}`);
+
   try {
     const { email, password } = req.body || {};
+
     if (!email || !password) {
       console.log("Login failed: Missing email or password");
-      return res.status(400).json({ message: "Email and password are required" });
+
+      return res.status(400).json({
+        message: "Email and password are required"
+      });
     }
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    const user = await User.findOne({
+      email: email.toLowerCase().trim()
+    });
+
     if (!user) {
       console.log(`Login failed: User not found (${email})`);
-      return res.status(401).json({ message: "Invalid email or password" });
+
+      return res.status(401).json({
+        message: "Invalid email or password"
+      });
     }
+
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       if (user.password === password) {
-        console.warn(`Legacy plain-text password detected for ${email}. Migrating to bcrypt hash.`);
+        console.warn(
+          `Legacy plain-text password detected for ${email}. Migrating to bcrypt hash.`
+        );
+
         user.password = await bcrypt.hash(password, 12);
         await user.save();
       } else {
         console.log(`Login failed: Incorrect password for ${email}`);
-        return res.status(401).json({ message: "Invalid email or password" });
+
+        return res.status(401).json({
+          message: "Invalid email or password"
+        });
       }
     }
+
     console.log(`Login successful: ${email}`);
+
+    // Generate JWT token
+    const token = generateToken(user);
+
     res.json({
       message: "Login successful",
-      user: { 
-        id: user._id, 
-        name: user.name, 
-        email: user.email, 
-        phone: user.phone, 
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
         role: user.role,
         createdAt: user.createdAt
       }
     });
+
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ message: "Server error during login. Please try again." });
+
+    res.status(500).json({
+      message: "Server error during login. Please try again."
+    });
   }
 }
 
 app.post('/api/auth/register', registerHandler);
 app.post('/api/auth/login', loginHandler);
 app.post('/api/auth/forgot-password', async (req, res) => {
-  req.url = '/forgot-password';
-  // forward to the already-registered route handler by re-calling
   try {
     const { identifier } = req.body;
-    if (!identifier) return res.status(400).json({ message: "Please enter your email or mobile number" });
-    const user = await User.findOne({ $or: [{ email: identifier.toLowerCase() }, { phone: identifier }] });
-    if (!user) return res.status(404).json({ message: "No account found with this email/mobile" });
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    if (!identifier) {
+      return res.status(400).json({
+        message: "Please enter your email or mobile number"
+      });
+    }
+
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase().trim() },
+        { phone: identifier }
+      ]
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No account found with this email/mobile"
+      });
+    }
+
+    const otp = crypto.randomInt(100000, 1000000).toString();
     const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
-    user.resetOtp = otp; user.otpExpiry = otpExpiry;
+
+    // Store only a bcrypt hash of the OTP
+    user.resetOtp = await bcrypt.hash(otp, 12);
+    user.otpAttempts = 0;
+    user.otpVerified = false;
+    user.otpExpiry = otpExpiry;
+
     await user.save();
-    console.log(`\n========================================`);
-    console.log(`  OTP for ${user.email}: ${otp}`);
-    console.log(`  Expires at: ${otpExpiry.toLocaleTimeString()}`);
-    console.log(`========================================\n`);
-    res.json({ message: "OTP sent successfully", email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') });
+
+    // Send OTP by email
+    await emailTransporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: "Shivaay Paridhan - Password Reset OTP",
+      text: `Your password reset OTP is ${otp}. It will expire in 5 minutes. If you did not request this, please ignore this email.`,
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Shivaay Paridhan</h2>
+          <p>Your password reset OTP is:</p>
+          <h1>${otp}</h1>
+          <p>This OTP will expire in <strong>5 minutes</strong>.</p>
+          <p>If you did not request a password reset, please ignore this email.</p>
+        </div>
+      `
+    });
+
+    res.json({
+      message: "OTP sent successfully",
+      email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
+    });
+
   } catch (error) {
     console.error("Forgot password error:", error);
-    res.status(500).json({ message: "Server error. Please try again." });
+
+    res.status(500).json({
+      message: "Unable to send OTP. Please try again."
+    });
   }
 });
 app.post('/api/auth/verify-otp', async (req, res) => {
@@ -757,13 +1073,45 @@ app.post('/api/auth/verify-otp', async (req, res) => {
       user.resetOtp = null; user.otpExpiry = null; await user.save();
       return res.status(400).json({ message: "OTP has expired. Please request a new one." });
     }
-    if (user.resetOtp !== otp) return res.status(400).json({ message: "Invalid OTP. Please try again." });
-    res.json({ message: "OTP verified successfully", verified: true });
-  } catch (error) {
-    console.error("OTP verification error:", error);
-    res.status(500).json({ message: "Server error during OTP verification" });
-  }
+ if (user.otpAttempts >= 5) {
+  user.resetOtp = null;
+  user.otpExpiry = null;
+  user.otpAttempts = 0;
+  user.otpVerified = false;
+  await user.save();
+
+  return res.status(429).json({
+    message: "Too many incorrect OTP attempts. Please request a new OTP."
+  });
+}
+
+const otpMatches = await bcrypt.compare(otp, user.resetOtp);
+
+if (!otpMatches) {
+  user.otpAttempts += 1;
+  await user.save();
+
+  return res.status(400).json({
+    message: "Invalid OTP. Please try again."
+  });
+}
+
+user.otpVerified = true;
+await user.save();
+
+res.json({
+  message: "OTP verified successfully",
+  verified: true
 });
+
+} catch (error) {
+  console.error("OTP verification error:", error);
+  res.status(500).json({
+    message: "Server error during OTP verification"
+  });
+}
+});
+
 app.post('/api/auth/reset-password', async (req, res) => {
   try {
     const { identifier, otp, newPassword } = req.body;
@@ -772,13 +1120,31 @@ app.post('/api/auth/reset-password', async (req, res) => {
     if (passwordErrors.length > 0) return res.status(400).json({ message: passwordErrors[0], errors: passwordErrors });
     const user = await User.findOne({ $or: [{ email: identifier.toLowerCase() }, { phone: identifier }] });
     if (!user) return res.status(404).json({ message: "User not found" });
-    if (!user.resetOtp || user.resetOtp !== otp || new Date() > user.otpExpiry) {
-      return res.status(400).json({ message: "OTP is invalid or expired. Please request a new one." });
-    }
+  if (
+  !user.resetOtp ||
+  !user.otpVerified ||
+  !user.otpExpiry ||
+  new Date() > user.otpExpiry
+) {
+  return res.status(400).json({
+    message: "OTP is invalid or expired. Please request a new one."
+  });
+}
+
+const otpMatches = await bcrypt.compare(otp, user.resetOtp);
+
+if (!otpMatches) {
+  return res.status(400).json({
+    message: "OTP is invalid or expired. Please request a new one."
+  });
+}
     const salt = await bcrypt.genSalt(12);
-    user.password = await bcrypt.hash(newPassword, salt);
-    user.resetOtp = null; user.otpExpiry = null;
-    await user.save();
+    user.password = await bcrypt.hash(newPassword, 12);
+user.resetOtp = null;
+user.otpExpiry = null;
+user.otpAttempts = 0;
+user.otpVerified = false;
+await user.save();
     res.json({ message: "Password reset successful! You can now login with your new password." });
   } catch (error) {
     console.error("Password reset error:", error);
@@ -802,7 +1168,11 @@ app.get("/api/coupons", async (req, res) => {
 });
 
 // Create coupon (Admin)
-app.post("/api/coupons", async (req, res) => {
+app.post(
+  "/api/coupons",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     const coupon = new Coupon(req.body);
     await coupon.save();
@@ -816,7 +1186,11 @@ app.post("/api/coupons", async (req, res) => {
 });
 
 // Update coupon (Admin)
-app.put("/api/coupons/:id", async (req, res) => {
+app.put(
+  "/api/coupons/:id",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     const coupon = await Coupon.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!coupon) return res.status(404).json({ message: "Coupon not found" });
@@ -827,7 +1201,11 @@ app.put("/api/coupons/:id", async (req, res) => {
 });
 
 // Delete coupon (Admin)
-app.delete("/api/coupons/:id", async (req, res) => {
+app.delete(
+  "/api/coupons/:id",
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
   try {
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
     if (!coupon) return res.status(404).json({ message: "Coupon not found" });
@@ -889,10 +1267,13 @@ app.post("/api/coupons/validate", async (req, res) => {
 
 // MongoDB connection
 console.log("Connecting to MongoDB...");
+
 mongoose.connect(MONGO_URI)
   .then(async () => {
     const db = mongoose.connection;
+
     console.log("Database connected ✅", db.host, db.name);
+
     try {
       const userCount = await User.countDocuments();
       console.log(`User count in database: ${userCount}`);
@@ -905,6 +1286,6 @@ mongoose.connect(MONGO_URI)
     });
   })
   .catch((error) => {
-   console.error("MongoDB connection error:", error);
+    console.error("MongoDB connection error:", error);
     process.exit(1);
   });
