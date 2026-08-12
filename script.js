@@ -1,5 +1,8 @@
 // Backend API configuration — always points to the Express backend
-const API_BASE_URL = 'https://shivaay-paridhan-1.onrender.com';
+const API_BASE_URL =
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000'
+    : 'https://shivaay-paridhan-1.onrender.com';
 const WHATSAPP_NUMBER = '918448460446';
 const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 
@@ -2844,7 +2847,13 @@ function loadSectionData(section) {
 // ============ ADMIN - DASHBOARD STATS ============
 async function updateDashboardStats() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/dashboard-stats`);
+    const token = localStorage.getItem('authToken');
+
+const res = await fetch(`${API_BASE_URL}/api/dashboard-stats`, {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
     if (res.ok) {
       const stats = await res.json();
       const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -2894,7 +2903,13 @@ async function loadUsers() {
   </div>`;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/users`);
+    const token = localStorage.getItem('authToken');
+
+const res = await fetch(`${API_BASE_URL}/api/users`, {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
     if (!res.ok) throw new Error('Failed to fetch users');
     const users = await res.json();
 
@@ -3855,9 +3870,14 @@ async function deleteProduct(id) {
   if (!confirm('Are you sure you want to delete this product?')) return;
   
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-      method: "DELETE"
-    });
+    const token = localStorage.getItem('authToken');
+
+const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+  method: "DELETE",
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
 
     if (response.ok) {
       alert('✓ Product deleted successfully');
@@ -3934,10 +3954,20 @@ async function addProduct(event) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products`, {
-      method: "POST",
-      body: finalFormData
-    });
+    const token = localStorage.getItem('authToken');
+
+if (!token) {
+  alert('Please login as admin first.');
+  return;
+}
+
+const response = await fetch(`${API_BASE_URL}/api/products`, {
+  method: "POST",
+  headers: {
+    'Authorization': `Bearer ${token}`
+  },
+  body: finalFormData
+});
 
     if (response.ok) {
       // Show success message
