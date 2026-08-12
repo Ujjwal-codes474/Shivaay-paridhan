@@ -1,0 +1,53 @@
+/*
+ * Shivaay Paridhan - Fixed Desktop Layout
+ * Keeps the desktop composition stable when the browser width changes.
+ * Existing component styles remain untouched.
+ */
+
+html {
+  min-width: 1200px;
+}
+
+body {
+  min-width: 1200px;
+  overflow-x: auto;
+}
+
+/* Prevent responsive flex/grid items from shrinking the desktop composition. */
+.container,
+.main-container,
+.page-container,
+.content-container,
+.site-container,
+.header-container,
+.nav-container,
+.footer-container {
+  min-width: 1200px;
+}
+
+/* Keep common desktop navigation structures stable. */
+.navbar,
+.nav,
+.navigation,
+.header,
+.site-header {
+  min-width: 1200px;
+}
+
+/* Preserve image/card proportions rather than allowing viewport changes
+   to collapse them unexpectedly. */
+.product-grid,
+.products-grid,
+.card-grid,
+.product-list {
+  min-width: 1100px;
+}
+
+/* Disable common mobile-only visibility changes introduced by existing
+   media-query styles, where matching classes are present. */
+@media (max-width: 1199px) {
+  html,
+  body {
+    min-width: 1200px;
+  }
+}
