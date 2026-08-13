@@ -37,7 +37,7 @@ function createWhatsAppOrderContent(customerData, cartItems, total) {
   const address = getFormattedAddress(customerData) || 'N/A';
   const couponText = appliedCoupon ? `\nCoupon: ${appliedCoupon.couponCode}\nDiscount: -₹${appliedCoupon.discountAmount.toLocaleString()}\n` : '';
 
-  return `${header}\n${itemLines}\n${couponText}\nTotal: ₹${total.toLocaleString()}\n\nCustomer Name: ${customerData.name || ''}\nPhone: ${customerData.phone || ''}\nAddress: ${address}\n\nPlease confirm the order and delivery details.`;
+  return `${header}\n${itemLines}\n${couponText}\nTotal: ₹${total.toLocaleString()}\n\nCustomer Name: $Customer Name: ${customerData.fullName || customerData.name || ''}\nPhone: ${customerData.phone || ''}\nAddress: ${address}\n\nPlease confirm the order and delivery details.`;
 }
 
 function openWhatsAppChat(customerData, cartItems, total) {
@@ -2080,43 +2080,89 @@ function setupCartActions() {
 
 function handleCartWhatsAppOrder() {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
   if (cart.length === 0) {
     alert('Your cart is empty!');
     return;
   }
 
   const savedAddress = JSON.parse(localStorage.getItem('savedAddress')) || {};
-  const requiredFields = ['fullName', 'phone', 'flat', 'area', 'city', 'state', 'pincode'];
-  const hasAddress = requiredFields.every(field => savedAddress[field] && savedAddress[field].toString().trim().length > 0);
+
+  const requiredFields = [
+    'fullName',
+    'phone',
+    'flat',
+    'area',
+    'city',
+    'state',
+    'pincode'
+  ];
+
+  const hasAddress = requiredFields.every(
+    field =>
+      savedAddress[field] &&
+      savedAddress[field].toString().trim().length > 0
+  );
 
   if (!hasAddress) {
-    if (confirm('Please save your delivery details on the checkout page before placing a WhatsApp order. Go to checkout now?')) {
+    if (
+      confirm(
+        'Please save your delivery details on the checkout page before placing a WhatsApp order. Go to checkout now?'
+      )
+    ) {
       window.location.href = 'checkout.html';
     }
     return;
   }
 
   const products = JSON.parse(localStorage.getItem('products')) || [];
+
   const orderItems = cart.map(item => {
-    const product = products.find(p => String(p.id) === String(item.id));
+    const product = products.find(
+      p => String(p.id || p._id) === String(item.id || item._id)
+    );
+
     return {
-      id: item.id,
-      name: product?.name || 'Product',
+      id: item.id || item._id,
+      name: product?.name || item.name || 'Product',
       price: getItemFinalPrice(product),
-      quantity: item.quantity,
+      quantity: item.quantity || 1,
       color: item.color || ''
     };
   });
 
   const total = calculateCartTotal();
-  saveOrderAndOpenWhatsApp(savedAddress, orderItems, total);
+
+  // IMPORTANT:
+  // Open WhatsApp immediately while still inside the button click.
+  const whatsappMessage = createWhatsAppOrderContent(
+    savedAddress,
+    orderItems,
+    total
+  );
+
+  const whatsappUrl = buildWhatsAppUrl(whatsappMessage);
+
+  const whatsappWindow = window.open(
+    whatsappUrl,
+    '_blank'
+  );
+
+  // Fallback if browser blocks the new tab.
+  if (!whatsappWindow) {
+    window.location.href = whatsappUrl;
+  }
+
+  // Save order in backend.
+  saveOrderToBackend(savedAddress, orderItems, total);
 }
 
-function saveOrderAndOpenWhatsApp(customerData, orderItems, total) {
+
+function saveOrderToBackend(customerData, orderItems, total) {
   const payload = {
     customer: customerData,
     items: orderItems,
-    total,
+    total: total,
     paymentMethod: 'whatsapp',
     source: 'whatsapp',
     status: 'pending_whatsapp'
@@ -2124,27 +2170,65 @@ function saveOrderAndOpenWhatsApp(customerData, orderItems, total) {
 
   fetch(`${API_BASE_URL}/api/orders`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(payload)
-  }).then(async res => {
-    if (res.ok) {
+  })
+    .then(async res => {
+      if (!res.ok) {
+        throw new Error('Order request failed');
+      }
+
       const data = await res.json();
-      localStorage.setItem('lastOrder', JSON.stringify(data.order));
-    } else {
-      throw new Error('Order request failed');
-    }
-  }).catch(() => {
-    const orderId = 'SP' + Date.now().toString(36).toUpperCase();
-    const order = { id: orderId, customer: customerData, items: orderItems, total, paymentMethod: 'whatsapp', source: 'whatsapp', status: 'pending_whatsapp', createdAt: new Date().toISOString() };
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    orders.push(order);
-    localStorage.setItem('orders', JSON.stringify(orders));
-    localStorage.setItem('lastOrder', JSON.stringify(order));
-  }).finally(() => {
-    openWhatsAppChat(customerData, orderItems, total);
-    localStorage.removeItem('cart');
-    setTimeout(() => window.location.href = 'success.html', 600);
-  });
+
+      if (data.order) {
+        localStorage.setItem(
+          'lastOrder',
+          JSON.stringify(data.order)
+        );
+      }
+    })
+    .catch(error => {
+      console.error('Backend order save failed:', error);
+
+      // Local fallback
+      const orderId =
+        'SP' + Date.now().toString(36).toUpperCase();
+
+      const order = {
+        id: orderId,
+        customer: customerData,
+        items: orderItems,
+        total: total,
+        paymentMethod: 'whatsapp',
+        source: 'whatsapp',
+        status: 'pending_whatsapp',
+        createdAt: new Date().toISOString()
+      };
+
+      const orders =
+        JSON.parse(localStorage.getItem('orders')) || [];
+
+      orders.push(order);
+
+      localStorage.setItem(
+        'orders',
+        JSON.stringify(orders)
+      );
+
+      localStorage.setItem(
+        'lastOrder',
+        JSON.stringify(order)
+      );
+    })
+    .finally(() => {
+      localStorage.removeItem('cart');
+
+      setTimeout(() => {
+        window.location.href = 'success.html';
+      }, 1200);
+    });
 }
 
 function orderOnWhatsAppFromDetail() {
