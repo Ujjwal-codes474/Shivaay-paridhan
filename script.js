@@ -1735,7 +1735,7 @@ function initializeDefaultProducts() {
 // Main initialization function
 async function initializeApp() {
   // Initialize data
-  initializeDefaultProducts();
+//   initializeDefaultProducts();
   
   // Handle URL parameters
   handleUrlParams();
@@ -3470,13 +3470,9 @@ async function fetchProductsFromBackend() {
         offerEndDate:   p.offerEndDate   || null
       }));
 
-      const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-      const localOnlyProducts = storedProducts.filter(lp => {
-        const localId = String(lp._id || lp.id || '');
-        return localId && !remoteProducts.some(rp => String(rp._id || rp.id || '') === localId);
-      });
-      allProducts = [...remoteProducts, ...localOnlyProducts];
-      localStorage.setItem('products', JSON.stringify(allProducts));
+      // Backend is the single source of truth
+      allProducts = remoteProducts;
+      localStorage.setItem('products', JSON.stringify(remoteProducts));
     } catch (err) {
       console.error('Fetch failed, using localStorage cache:', err);
       allProducts = JSON.parse(localStorage.getItem('products')) || [];
