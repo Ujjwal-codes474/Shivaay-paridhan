@@ -2258,8 +2258,11 @@ function checkPasswordStrength(password) {
 }
 
 function isPasswordValid(password) {
-  // Minimum 4 characters, no special-character requirement
-  return typeof password === 'string' && password.trim().length >= 4;
+  return typeof password === "string" &&
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[0-9]/.test(password);
 }
 
 // --- Real-time password validation UI ---
@@ -2493,7 +2496,7 @@ async function handleRegister(event) {
 
   // Validate password meets minimum 4 characters
   if (!isPasswordValid(password)) {
-    showAuthAlert('error', 'Password must be at least 4 characters long.');
+    showAuthAlert('error', 'Password must be at least 8 characters long and contain uppercase, lowercase, and a number.');
     return;
   }
 
@@ -2637,7 +2640,7 @@ async function handleResetPassword() {
 
   // Validate password meets minimum 4 characters
   if (!isPasswordValid(newPassword)) {
-    showAuthAlert('error', 'Password must be at least 4 characters long.');
+    showAuthAlert('error', 'Password must be at least 8 characters long and contain uppercase, lowercase, and a number.');
     return;
   }
 
