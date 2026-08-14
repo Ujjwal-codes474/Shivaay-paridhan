@@ -731,10 +731,19 @@ user.otpVerified = false;
       message: "OTP sent successfully",
       email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
     });
-  } catch (error) {
-    console.error("Forgot password error:", error);
-    res.status(500).json({ message: "Server error. Please try again." });
-  }
+} catch (error) {
+  console.error("Forgot password error:", {
+    message: error.message,
+    code: error.code,
+    command: error.command,
+    response: error.response,
+    responseCode: error.responseCode
+  });
+
+  res.status(500).json({
+    message: "Unable to send OTP. Please try again."
+  });
+}
 });
 
 // POST /verify-otp
