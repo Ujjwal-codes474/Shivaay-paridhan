@@ -19,10 +19,20 @@ const Coupon = require("./models/Coupon");
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const emailTransporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD
+  }
+});
+emailTransporter.verify((error, success) => {
+  if (error) {
+    console.error("SMTP connection error:", error);
+  } else {
+    console.log("SMTP server is ready to send emails");
   }
 });
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
