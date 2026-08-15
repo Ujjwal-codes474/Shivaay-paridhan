@@ -23,9 +23,8 @@ dns.setDefaultResultOrder("ipv4first");
 
 const emailTransporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
+  port: 465,
+  secure: true,
   family: 4,
   connectionTimeout: 30000,
   greetingTimeout: 30000,
