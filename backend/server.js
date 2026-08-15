@@ -10,6 +10,33 @@ const fs = require("fs");
 const dns = require("dns");
 dns.setDefaultResultOrder("ipv4first");
 
+const net = require("net");
+
+const smtpTest = net.createConnection({
+  host: "192.178.211.108",
+  port: 587,
+  family: 4
+});
+
+smtpTest.setTimeout(15000);
+
+smtpTest.on("connect", () => {
+  console.log("===== SMTP TCP TEST: CONNECTED =====");
+  smtpTest.end();
+});
+
+smtpTest.on("timeout", () => {
+  console.error("===== SMTP TCP TEST: TIMEOUT =====");
+  smtpTest.destroy();
+});
+
+smtpTest.on("error", (err) => {
+  console.error("===== SMTP TCP TEST: ERROR =====");
+  console.error(err.code, err.message);
+});
+
+const express = require("express");
+
 const path = require("path");
 require('dotenv').config();
 const Product = require("./models/Product");
