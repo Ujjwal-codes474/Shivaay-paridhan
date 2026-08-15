@@ -1,5 +1,3 @@
-const dns = require("dns");
-dns.setDefaultResultOrder("ipv4first");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -20,12 +18,18 @@ const Coupon = require("./models/Coupon");
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+
 const emailTransporter = nodemailer.createTransport({
-  host: "192.178.211.108",
+  host: "smtp.gmail.com",
   port: 587,
   secure: false,
   requireTLS: true,
   family: 4,
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD
