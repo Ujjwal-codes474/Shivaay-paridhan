@@ -7,6 +7,9 @@ const multer = require("multer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+
 const path = require("path");
 require('dotenv').config();
 const Product = require("./models/Product");
@@ -18,8 +21,7 @@ const Coupon = require("./models/Coupon");
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
-const dns = require("dns");
-dns.setDefaultResultOrder("ipv4first");
+
 
 const emailTransporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
