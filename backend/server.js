@@ -21,7 +21,7 @@ const Coupon = require("./models/Coupon");
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const emailTransporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "192.178.211.108",
   port: 587,
   secure: false,
   requireTLS: true,
