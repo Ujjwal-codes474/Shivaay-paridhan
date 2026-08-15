@@ -35,7 +35,6 @@ smtpTest.on("error", (err) => {
   console.error(err.code, err.message);
 });
 
-const express = require("express");
 
 const path = require("path");
 require('dotenv').config();
