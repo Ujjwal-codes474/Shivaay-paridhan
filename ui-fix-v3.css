@@ -1,0 +1,221 @@
+/* =========================================================
+   Shivaay Paridhan — UI Stability + Persistent Side Panels v3
+   Fixes stacking/overlap and keeps desktop side panels visible.
+   ========================================================= */
+
+html { overflow-x: hidden; }
+body { overflow-x: hidden; }
+
+/* ---------------- SHOP ---------------- */
+.shop-page-section { position: relative; }
+
+.shop-layout {
+  display: grid !important;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr) !important;
+  align-items: start !important;
+  gap: 30px !important;
+  min-width: 0 !important;
+}
+
+.shop-layout > aside,
+.filter-panel {
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Persistent desktop filter panel */
+@media (min-width: 901px) {
+  .filter-panel {
+    position: sticky !important;
+    top: 88px !important;
+    align-self: start !important;
+    height: calc(100vh - 108px) !important;
+    max-height: calc(100vh - 108px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    scrollbar-width: thin;
+    z-index: 20 !important;
+  }
+
+  .shop-layout > div:last-child {
+    min-width: 0 !important;
+  }
+}
+
+/* Prevent controls from colliding when space gets tight */
+.shop-top {
+  min-width: 0 !important;
+  align-items: center !important;
+}
+.shop-top > * { min-width: 0 !important; }
+.shop-sort { max-width: 220px; }
+.active-filters { min-height: 0; }
+
+.collections-nav,
+.subcategory-nav {
+  position: relative !important;
+  z-index: 5 !important;
+  overflow: hidden !important;
+}
+.collections-nav-inner,
+.subcategory-nav-inner {
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: thin;
+}
+
+/* ---------------- ADMIN ---------------- */
+.admin-layout {
+  display: grid !important;
+  grid-template-columns: 250px minmax(0, 1fr) !important;
+  align-items: stretch !important;
+  min-width: 0 !important;
+  position: relative !important;
+}
+
+@media (min-width: 901px) {
+  .admin-sidebar {
+    position: sticky !important;
+    top: 70px !important;
+    align-self: start !important;
+    height: calc(100vh - 70px) !important;
+    max-height: calc(100vh - 70px) !important;
+    overflow-y: auto !important;
+    z-index: 100 !important;
+    box-sizing: border-box !important;
+    scrollbar-width: thin;
+  }
+
+  .admin-content {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .sidebar-nav { min-width: 0 !important; }
+  .sidebar-link { min-width: 0 !important; box-sizing: border-box !important; }
+}
+
+/* Keep admin cards/grids inside the content column */
+.dashboard-stats,
+.admin-grid,
+.admin-content .grid,
+.recent-orders,
+.admin-table-wrap,
+.table-container,
+.product-table-container,
+.orders-table-container {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Tables scroll instead of breaking/overlapping the dashboard */
+.admin-content table {
+  width: 100%;
+  max-width: 100%;
+}
+.admin-content .table-container,
+.admin-content .admin-table-wrap,
+.admin-content .product-table-container,
+.admin-content .orders-table-container {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-content th,
+.admin-content td {
+  white-space: nowrap;
+}
+
+/* Long headings/buttons should wrap instead of escaping cards */
+.admin-content h1,
+.admin-content h2,
+.admin-content h3,
+.admin-content p,
+.admin-content button,
+.admin-content label {
+  overflow-wrap: anywhere;
+}
+
+/* Do not let form controls exceed their cards */
+.admin-content input,
+.admin-content select,
+.admin-content textarea,
+.admin-content button,
+.filter-panel input,
+.filter-panel select,
+.filter-panel button {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------------- TABLET / MOBILE ---------------- */
+@media (max-width: 900px) {
+  .shop-layout {
+    display: block !important;
+  }
+
+  .filter-panel {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: min(82vh, 720px) !important;
+    overflow-y: auto !important;
+    z-index: 1200 !important;
+  }
+
+  .filter-overlay {
+    z-index: 1190 !important;
+  }
+
+  .admin-layout {
+    display: block !important;
+  }
+
+  .admin-sidebar {
+    position: sticky !important;
+    top: 66px !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    z-index: 90 !important;
+  }
+
+  .sidebar-nav {
+    display: flex !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 6px !important;
+    padding: 10px 12px !important;
+    scrollbar-width: thin;
+  }
+
+  .sidebar-link {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+
+  .admin-content {
+    padding: 22px 14px 84px !important;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .shop-layout { gap: 0 !important; }
+  .shop-top { align-items: stretch !important; }
+  .shop-sort { width: 100% !important; max-width: none !important; }
+  .shop-top { flex-direction: column !important; }
+
+  .admin-sidebar { top: 64px !important; }
+  .admin-content { padding-left: 10px !important; padding-right: 10px !important; }
+  .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}

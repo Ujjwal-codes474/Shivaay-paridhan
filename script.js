@@ -64,14 +64,12 @@ function renderFloatingWhatsAppButton() {
 
 // ── Anti-flicker: single fetch gate ──────────────────────────
 let _fetchPromise = null;   // reuse inflight promise
-let _isFetching = false;
 let _fetched = false;
 let allProducts = [];
 let appliedCoupon = null;
 
 // Legacy aliases (keep for compat with existing call-sites)
 let isFetched = false;
-let _isFetchingProducts = false;
 let _isRenderingProducts = false;
 let _productsLoaded = false;
 let _addToCartListenersBound = false;
@@ -1551,7 +1549,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Global event listeners - bound once
   attachAddToCartListeners();
-  attachHomeSliderControls();
+  attachHorizontalSliderControls();
 });
 
 // Initialize default products if localStorage is empty
@@ -2009,72 +2007,6 @@ function displayCart() {
         <a href="checkout.html" class="btn btn-primary checkout-btn">Proceed to Checkout</a>
       </div>
     `;
-  }
-}
-
-function setupCartActions() {
-  // Remove item from cart
-  document.addEventListener('click', (event) => {
-    if (event.target.classList.contains('cart-item-remove')) {
-      const index = parseInt(event.target.dataset.index);
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.splice(index, 1);
-      localStorage.setItem('cart', JSON.stringify(cart));
-      displayCart();
-    }
-  });
-
-  // Decrease quantity
-  document.addEventListener('click', (event) => {
-    if (event.target.classList.contains('qty-decrease')) {
-      const index = parseInt(event.target.dataset.index);
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      if (cart[index].quantity > 1) {
-        cart[index].quantity -= 1;
-        localStorage.setItem('cart', JSON.stringify(cart));
-        displayCart();
-      }
-    }
-  });
-
-  // Increase quantity
-  document.addEventListener('click', (event) => {
-    if (event.target.classList.contains('qty-increase')) {
-      const index = parseInt(event.target.dataset.index);
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart[index].quantity += 1;
-      localStorage.setItem('cart', JSON.stringify(cart));
-      displayCart();
-    }
-  });
-
-  // Clear cart button
-  const clearCartButton = document.getElementById('clear-cart');
-  if (clearCartButton) {
-    clearCartButton.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear your cart?')) {
-        localStorage.removeItem('cart');
-        displayCart();
-      }
-    });
-  }
-
-  // Checkout button
-  const checkoutButton = document.getElementById('checkout');
-  if (checkoutButton) {
-    checkoutButton.addEventListener('click', () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      if (cart.length === 0) {
-        alert('Your cart is empty!');
-        return;
-      }
-      window.location.href = 'checkout.html';
-    });
-  }
-
-  const whatsappCartButton = document.getElementById('whatsapp-cart-order');
-  if (whatsappCartButton) {
-    whatsappCartButton.addEventListener('click', handleCartWhatsAppOrder);
   }
 }
 
@@ -2572,7 +2504,7 @@ async function handleForgotPassword() {
     const maskedEl = document.getElementById('masked-email');
     if (maskedEl) maskedEl.textContent = data.email || identifier;
 
-    showAuthAlert('success', 'OTP sent! Check your email/console.');
+    showAuthAlert('success', 'OTP sent! Please check your email.');
     showForgotStep(2);
     startResendTimer();
     // Focus first OTP input
@@ -2696,7 +2628,7 @@ async function handleResendOtp() {
       return;
     }
 
-    showAuthAlert('success', 'New OTP sent! Check your email/console.');
+    showAuthAlert('success', 'New OTP sent! Please check your email.');
     startResendTimer();
     // Clear existing OTP inputs
     document.querySelectorAll('.otp-digit').forEach(d => { d.value = ''; d.classList.remove('filled'); });
@@ -3696,7 +3628,7 @@ function renderSliderCard(product, showDiscount = false) {
     </div>`;
 }
 
-function attachHomeSliderControls() {
+function attachHorizontalSliderControls() {
   // Prevent multiple bindings - only bind once
   if (_sliderControlsBound) return;
   _sliderControlsBound = true;
@@ -5102,10 +5034,6 @@ function displayOrderSuccess() {
 /**
  * Open product detail page
  */
-function openProductDetail(productId) {
-  window.location.href = `product.html?id=${productId}`;
-}
-
 /**
  * Load and display product detail on product.html
  */
