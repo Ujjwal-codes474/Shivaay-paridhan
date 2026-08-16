@@ -241,3 +241,80 @@ section{scroll-margin-top:100px}
   .footer-grid{grid-template-columns:1fr!important}
   .footer-brand-col{grid-column:auto!important}
 }
+
+
+/* =========================================================
+   SHIVAAY PARIDHAN — NAV SEARCH POLISH
+   ========================================================= */
+.nav-center{
+  flex: 1 1 520px !important;
+  width: min(520px, 100%) !important;
+  max-width: 520px !important;
+  min-width: 280px !important;
+}
+
+.search-input-wrap{
+  position: relative !important;
+  width: 100% !important;
+  height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 auto !important;
+  background: #fff !important;
+  border: 1px solid #e3d9d0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 18px rgba(36,28,30,.045) !important;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease !important;
+  overflow: hidden !important;
+}
+
+.search-input-wrap:focus-within{
+  border-color: rgba(100,29,43,.42) !important;
+  box-shadow: 0 0 0 4px rgba(100,29,43,.065), 0 8px 22px rgba(36,28,30,.06) !important;
+}
+
+.search-icon-inline{
+  position: absolute !important;
+  left: 17px !important;
+  top: 50% !important;
+  width: 19px !important;
+  height: 19px !important;
+  transform: translateY(-50%) !important;
+  color: #51474a !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.nav-search-input{
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 52px !important;
+  padding: 0 18px 0 50px !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  color: var(--sp-ink) !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+.nav-search-input::placeholder{
+  color: #91898a !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 900px){
+  .nav-center{
+    min-width: 0 !important;
+    width: auto !important;
+  }
+  .search-input-wrap{
+    height: 48px !important;
+    border-radius: 14px !important;
+  }
+  .nav-search-input{
+    min-height: 48px !important;
+  }
+}

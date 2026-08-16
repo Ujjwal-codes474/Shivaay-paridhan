@@ -219,3 +219,489 @@ body { overflow-x: hidden; }
   .admin-content { padding-left: 10px !important; padding-right: 10px !important; }
   .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
+
+/* =========================================================
+   SHIVAAY PARIDHAN — SEARCH + PRICE RANGE POLISH
+   ========================================================= */
+
+.search-container,
+.search-box,
+.nav-search,
+.search-wrapper {
+  position: relative !important;
+  width: min(500px, 100%) !important;
+  max-width: 500px !important;
+  min-width: 0 !important;
+  margin-inline: auto !important;
+}
+
+.search-container input,
+.search-box input,
+.nav-search input,
+.search-wrapper input,
+#searchInput,
+#search-input {
+  width: 100% !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  box-sizing: border-box !important;
+  padding: 0 48px 0 18px !important;
+  border: 1px solid #e2d8cf !important;
+  border-radius: 14px !important;
+  background: #fffdf9 !important;
+  color: #241c1e !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  outline: none !important;
+  box-shadow: 0 3px 12px rgba(36, 28, 30, 0.035) !important;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease !important;
+}
+
+.search-container input::placeholder,
+.search-box input::placeholder,
+.nav-search input::placeholder,
+.search-wrapper input::placeholder,
+#searchInput::placeholder,
+#search-input::placeholder {
+  color: #8a8180 !important;
+  opacity: 1 !important;
+}
+
+.search-container input:focus,
+.search-box input:focus,
+.nav-search input:focus,
+.search-wrapper input:focus,
+#searchInput:focus,
+#search-input:focus {
+  border-color: #b99a4d !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(185, 154, 77, 0.10), 0 5px 18px rgba(36, 28, 30, 0.05) !important;
+}
+
+.search-container .search-icon,
+.search-box .search-icon,
+.nav-search .search-icon,
+.search-wrapper .search-icon {
+  position: absolute !important;
+  top: 50% !important;
+  right: 16px !important;
+  left: auto !important;
+  width: 18px !important;
+  height: 18px !important;
+  transform: translateY(-50%) !important;
+  color: #3a3233 !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.search-container .search-icon svg,
+.search-box .search-icon svg,
+.nav-search .search-icon svg,
+.search-wrapper .search-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.search-container > .search-icon,
+.search-box > .search-icon,
+.nav-search > .search-icon,
+.search-wrapper > .search-icon {
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.filter-panel .price-range,
+.filter-panel .price-inputs,
+.price-range-inputs {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.filter-panel .price-range input,
+.filter-panel .price-inputs input,
+.price-range-inputs input {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 44px !important;
+  padding: 0 12px !important;
+  box-sizing: border-box !important;
+  border: 1px solid #e1d7ce !important;
+  border-radius: 11px !important;
+  background: #fffdf9 !important;
+  color: #241c1e !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  outline: none !important;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease !important;
+}
+
+.filter-panel .price-range input::placeholder,
+.filter-panel .price-inputs input::placeholder,
+.price-range-inputs input::placeholder {
+  color: #918786 !important;
+}
+
+.filter-panel .price-range input:focus,
+.filter-panel .price-inputs input:focus,
+.price-range-inputs input:focus {
+  border-color: #b99a4d !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(185, 154, 77, 0.09) !important;
+}
+
+.filter-panel .price-range,
+.filter-panel .price-inputs,
+.price-range-inputs {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+@media (max-width: 900px) {
+  .search-container,
+  .search-box,
+  .nav-search,
+  .search-wrapper {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .filter-panel .price-range,
+  .filter-panel .price-inputs,
+  .price-range-inputs {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* =========================================================
+   SHOP — FINAL SEARCH + PRICE RANGE POLISH
+   Targets the actual shop.html markup.
+   ========================================================= */
+
+/* Header search */
+.nav-center{
+  flex: 1 1 520px !important;
+  width: min(520px, 100%) !important;
+  max-width: 520px !important;
+  min-width: 280px !important;
+}
+
+.search-input-wrap{
+  position: relative !important;
+  width: 100% !important;
+  height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  border: 1px solid #e3d9d0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 18px rgba(36,28,30,.045) !important;
+  overflow: hidden !important;
+}
+
+.search-input-wrap:focus-within{
+  border-color: rgba(100,29,43,.42) !important;
+  box-shadow: 0 0 0 4px rgba(100,29,43,.065), 0 8px 22px rgba(36,28,30,.06) !important;
+}
+
+.search-input-wrap .search-icon-inline{
+  position: absolute !important;
+  left: 17px !important;
+  top: 50% !important;
+  width: 19px !important;
+  height: 19px !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  color: #51474a !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+.search-input-wrap .nav-search-input{
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 52px !important;
+  padding: 0 18px 0 50px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #241c1e !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+}
+
+.search-input-wrap .nav-search-input::placeholder{
+  color: #91898a !important;
+  opacity: 1 !important;
+}
+
+/* Price range */
+.filter-panel .price-inputs{
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.filter-panel .price-field{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.filter-panel .price-field-label{
+  display: block !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  font-weight: 600 !important;
+  letter-spacing: .05em !important;
+  color: #827779 !important;
+  text-transform: uppercase !important;
+}
+
+.filter-panel .price-input-wrap{
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  box-sizing: border-box !important;
+  border: 1px solid #ded4cb !important;
+  border-radius: 12px !important;
+  background: #fffdf9 !important;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease !important;
+}
+
+.filter-panel .price-input-wrap:focus-within{
+  border-color: #b99a4d !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(185,154,77,.10) !important;
+}
+
+.filter-panel .price-currency{
+  flex: 0 0 auto !important;
+  padding-left: 12px !important;
+  padding-right: 3px !important;
+  color: #6e5d61 !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.filter-panel .price-input{
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 44px !important;
+  padding: 0 10px 0 2px !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #241c1e !important;
+  font-family: Inter, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+.filter-panel .price-input:focus{
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.filter-panel .price-input::placeholder{
+  color: #9a9090 !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 900px){
+  .nav-center{
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+  .search-input-wrap{
+    height: 48px !important;
+  }
+  .search-input-wrap .nav-search-input{
+    min-height: 48px !important;
+  }
+}
+
+@media (max-width: 560px){
+  .filter-panel .price-inputs{
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* =========================================================
+   SHIVAAY PARIDHAN — FINAL UI OVERRIDES
+   Fixes search icon/text collision and guarantees full-width
+   price fields inside the desktop filter panel.
+   ========================================================= */
+
+/* Header search: icon must never overlap the placeholder. */
+.navbar .nav-center {
+  flex: 1 1 520px !important;
+  width: min(520px, calc(100% - 40px)) !important;
+  max-width: 520px !important;
+  min-width: 280px !important;
+}
+
+.navbar .search-input-wrap {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+}
+
+.navbar .search-input-wrap > .search-icon-inline {
+  position: absolute !important;
+  left: 17px !important;
+  right: auto !important;
+  top: 50% !important;
+  width: 19px !important;
+  height: 19px !important;
+  margin: 0 !important;
+  transform: translateY(-50%) !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+.navbar .search-input-wrap > #search-input.nav-search-input {
+  display: block !important;
+  width: 100% !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  margin: 0 !important;
+  padding: 0 18px 0 54px !important;
+  box-sizing: border-box !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  text-indent: 0 !important;
+  line-height: 52px !important;
+}
+
+/* Price range: two genuinely equal, usable fields. */
+.filter-panel .filter-group {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.filter-panel .price-range {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.filter-panel .price-range > .price-inputs {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+
+.filter-panel .price-range > .price-inputs > .price-field {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+
+.filter-panel .price-range .price-input-wrap {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 46px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.filter-panel .price-range .price-input {
+  flex: 1 1 auto !important;
+  width: 1px !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 44px !important;
+  padding: 0 10px 0 2px !important;
+  box-sizing: border-box !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  line-height: 44px !important;
+}
+
+.filter-panel .price-range .price-currency {
+  flex: 0 0 auto !important;
+  width: 20px !important;
+  padding: 0 0 0 11px !important;
+  box-sizing: content-box !important;
+}
+
+@media (max-width: 900px) {
+  .navbar .nav-center {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  .navbar .search-input-wrap,
+  .navbar .search-input-wrap > #search-input.nav-search-input {
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+
+  .navbar .search-input-wrap > #search-input.nav-search-input {
+    line-height: 48px !important;
+  }
+}
