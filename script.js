@@ -1405,14 +1405,13 @@ function renderBrandStorySection() {
 }
 
 function getCanonicalCategoryNavigation() {
-  const navItems = homepageConfig && Array.isArray(homepageConfig.categoryNavigation)
-    ? homepageConfig.categoryNavigation
-    : getDefaultHomepageConfig().categoryNavigation;
-
-  return navItems.map(item => ({
-    ...item,
-    href: item.href ? item.href.replace(/products\.html/g, 'shop.html') : item.href
-  }));
+  // Main site navigation — keep this separate from Shop occasion filters.
+  return [
+    { label: 'Home', href: '/' },
+    { label: 'Shop', href: '/shop' },
+    { label: 'About Us', href: '/about' },
+    { label: 'Contact Us', href: '/contact' }
+  ];
 }
 
 function buildNavLinks(items, linkClass = 'nav-menu-link', includeClose = false) {
@@ -1435,11 +1434,8 @@ function renderPageNavigation() {
   const mobileNav = document.getElementById('nav-links');
   if (mobileNav && isProductsPage) {
     const extras = `
-      <a href="products.html" class="nav-link" onclick="closeMenu()">Shop All</a>
-      <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
-      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
       <hr class="nav-divider">
-      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+      <a href="/login" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
       <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display:none;">Logout</a>
     `;
     mobileNav.innerHTML = buildNavLinks(navItems, 'nav-link', true) + extras;
@@ -1557,186 +1553,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize default products if localStorage is empty
 function initializeDefaultProducts() {
-  const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
-  if (existingProducts.length === 0) {
-    const defaultProducts = [
-      // Silk Sarees
-      {
-        id: 1,
-        name: "Luxury Silk Saree",
-        price: 2500,
-        category: "clothing",
-        type: "silk",
-        image: "images/saree1.jpg",
-        discount: 20,
-        description: "Handwoven silk saree with gold zari work, perfect for weddings and special occasions."
-      },
-      {
-        id: 2,
-        name: "Banarasi Silk Saree",
-        price: 3500,
-        category: "clothing",
-        type: "banarasi",
-        image: "images/saree1.jpg",
-        discount: 15,
-        description: "Authentic Banarasi silk with intricate brocade work."
-      },
-      // Cotton Sarees
-      {
-        id: 3,
-        name: "Pure Cotton Saree",
-        price: 950,
-        category: "clothing",
-        type: "cotton",
-        image: "images/kurti1.jpg",
-        discount: 10,
-        description: "Lightweight pure cotton saree for daily wear."
-      },
-      {
-        id: 4,
-        name: "Handloom Cotton",
-        price: 1200,
-        category: "clothing",
-        type: "handloom",
-        image: "images/kurti1.jpg",
-        discount: 12,
-        description: "Traditional handloom cotton saree with natural dyes."
-      },
-      // Ajrakh
-      {
-        id: 5,
-        name: "Ajrakh Print Saree",
-        price: 1800,
-        category: "clothing",
-        type: "ajrakh",
-        image: "images/lehenga1.jpg",
-        discount: 18,
-        description: "Hand block printed Ajrakh saree with natural colors."
-      },
-      // Lehengas
-      {
-        id: 6,
-        name: "Traditional Lehenga",
-        price: 4500,
-        category: "clothing",
-        type: "silk",
-        image: "images/lehenga1.jpg",
-        discount: 25,
-        description: "Embroidered lehenga with intricate mirror work and premium fabric."
-      },
-      {
-        id: 7,
-        name: "Banarasi Lehenga",
-        price: 5500,
-        category: "clothing",
-        type: "banarasi",
-        image: "images/lehenga1.jpg",
-        discount: 20,
-        description: "Heavy Banarasi brocade lehenga for bridal wear."
-      },
-      // Jewellery - Necklace Sets
-      {
-        id: 8,
-        name: "Gold Plated Necklace Set",
-        price: 2200,
-        category: "jewellery",
-        type: "necklace",
-        image: "images/necklace1.jpg",
-        discount: 15,
-        description: "Gold plated necklace with matching earrings."
-      },
-      {
-        id: 9,
-        name: "Kundan Necklace Set",
-        price: 4500,
-        category: "jewellery",
-        type: "necklace",
-        image: "images/necklace1.jpg",
-        discount: 20,
-        description: "Traditional Kundan work necklace set for special occasions."
-      },
-      // Earrings
-      {
-        id: 10,
-        name: "Jhumka Earrings",
-        price: 850,
-        category: "jewellery",
-        type: "earrings",
-        image: "images/earrings1.jpg",
-        discount: 10,
-        description: "Traditional golden jhumka earrings with pearl drops."
-      },
-      {
-        id: 11,
-        name: "Diamond Look Earrings",
-        price: 1200,
-        category: "jewellery",
-        type: "earrings",
-        image: "images/earrings1.jpg",
-        discount: 15,
-        description: "American diamond studded earrings with modern design."
-      },
-      // Anklets
-      {
-        id: 12,
-        name: "Silver Anklets",
-        price: 650,
-        category: "jewellery",
-        type: "anklets",
-        image: "images/anklets1.jpg",
-        discount: 12,
-        description: "Sterling silver anklets with traditional bell design."
-      },
-      // More Clothing - Variety
-      {
-        id: 13,
-        name: "Designer Cotton Kurti",
-        price: 750,
-        category: "clothing",
-        type: "cotton",
-        image: "images/kurti1.jpg",
-        discount: 18,
-        description: "Cotton kurti with hand block printing and modern design."
-      },
-      {
-        id: 14,
-        name: "Ajrakh Dupatta",
-        price: 950,
-        category: "clothing",
-        type: "ajrakh",
-        image: "images/saree1.jpg",
-        discount: 15,
-        description: "Hand block printed Ajrakh dupatta in natural colors."
-      },
-      {
-        id: 15,
-        name: "Silk Dupatta",
-        price: 1200,
-        category: "clothing",
-        type: "silk",
-        image: "images/saree1.jpg",
-        discount: 10,
-        description: "Pure silk dupatta with zari border."
-      },
-      {
-        id: 16,
-        name: "Banarasi Dupatta",
-        price: 1800,
-        category: "clothing",
-        type: "banarasi",
-        image: "images/saree1.jpg",
-        discount: 20,
-        description: "Heavy Banarasi brocade dupatta for festive wear."
-      }
-    ];
-    localStorage.setItem('products', JSON.stringify(defaultProducts));
-  }
+  // Intentionally disabled.
+  // Product inventory is managed by the backend API and admin panel.
+  // Keeping demo products here caused stale 16/18-product inventories on the shop.
 }
 
 // Main initialization function
 async function initializeApp() {
-  // Initialize data
-  initializeDefaultProducts();
+  // Product data comes only from the backend API. No demo/local products are seeded.
   
   // Handle URL parameters
   handleUrlParams();
@@ -2848,7 +2672,7 @@ function loadSectionData(section) {
 // ============ ADMIN - DASHBOARD STATS ============
 async function updateDashboardStats() {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
 
 const res = await fetch(`${API_BASE_URL}/api/dashboard-stats`, {
   headers: {
@@ -2904,7 +2728,7 @@ async function loadUsers() {
   </div>`;
 
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
 
 const res = await fetch(`${API_BASE_URL}/api/users`, {
   headers: {
@@ -3013,7 +2837,10 @@ async function loadOrders() {
   container.innerHTML = '<div style="padding:40px;text-align:center;color:#999;">Loading orders...</div>';
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/orders`);
+    const token = localStorage.getItem('authToken');
+    const res = await fetch(`${API_BASE_URL}/api/orders`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
     if (!res.ok) throw new Error();
     const orders = await res.json();
 
@@ -3471,16 +3298,14 @@ async function fetchProductsFromBackend() {
         offerEndDate:   p.offerEndDate   || null
       }));
 
-      const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-      const localOnlyProducts = storedProducts.filter(lp => {
-        const localId = String(lp._id || lp.id || '');
-        return localId && !remoteProducts.some(rp => String(rp._id || rp.id || '') === localId);
-      });
-      allProducts = [...remoteProducts, ...localOnlyProducts];
-      localStorage.setItem('products', JSON.stringify(allProducts));
+      // Backend is the single source of truth.
+      // Never merge old localStorage/demo products into the live inventory.
+      allProducts = remoteProducts;
+      localStorage.setItem('products', JSON.stringify(remoteProducts));
     } catch (err) {
-      console.error('Fetch failed, using localStorage cache:', err);
-      allProducts = JSON.parse(localStorage.getItem('products')) || [];
+      console.error('Fetch failed:', err);
+      // Do not fall back to stale/demo local products.
+      allProducts = [];
     } finally {
       _fetched = true;
       isFetched = true;
@@ -4510,52 +4335,11 @@ let currentShopSubcategory = 'all';
 let shopDisplayedProducts = [];
 
 const subcategoryMap = {
-  wedding: [
-    { value: 'all', label: 'All Wedding' },
-    { value: 'party', label: 'Party Wear Sarees' },
-    { value: 'bridal', label: 'Bridal Sarees' }
-  ],
-  cotton: [
-    { value: 'all', label: 'All Cotton' },
-    { value: 'maheswari_cotton', label: 'Maheswari Cotton' },
-    { value: 'chanderi_cotton', label: 'Chanderi Cotton' },
-    { value: 'mul_cotton', label: 'Mul Cotton' },
-    { value: 'linen_cotton', label: 'Linen Cotton' }
-  ],
-  silk: [
-    { value: 'all', label: 'All Silk' },
-    { value: 'kanjivaram_silk', label: 'Kanjivaram' },
-    { value: 'banarasi_silk', label: 'Banarasi' },
-    { value: 'tussar_silk', label: 'Tussar' },
-    { value: 'soft_silk', label: 'Soft Silk' },
-    { value: 'mysore_silk', label: 'Mysore' },
-    { value: 'maheswari_silk', label: 'Maheswari' },
-    { value: 'patola_silk', label: 'Patola' },
-    { value: 'gajji_silk', label: 'Gajji' },
-    { value: 'dola_silk', label: 'Dola' },
-    { value: 'pashmina_silk', label: 'Pashmina' }
-  ],
-  handloom: [
-    { value: 'all', label: 'All Handloom' },
-    { value: 'khadi', label: 'Khadi' },
-    { value: 'jamdani', label: 'Jamdani' },
-    { value: 'ikat', label: 'Ikat' },
-    { value: 'linen', label: 'Linen' }
-  ],
-  kota: [
-    { value: 'all', label: 'All Kota' },
-    { value: 'kota_silk', label: 'Kota Silk' },
-    { value: 'kota_cotton', label: 'Kota Cotton' },
-    { value: 'kota_doria', label: 'Kota Doria' }
-  ],
-  jewellery: [
-    { value: 'all', label: 'All Jewellery' },
-    { value: 'earrings', label: 'Earrings' },
-    { value: 'necklaces', label: 'Necklaces' },
-    { value: 'bangles', label: 'Bangles' },
-    { value: 'rings', label: 'Rings' },
-    { value: 'handmade_jewellery', label: 'Handmade' }
-  ]
+  festive: [],
+  wedding: [],
+  daily_wear: [],
+  party_wear: [],
+  formal: []
 };
 
 function renderSubcategoryNav() {
@@ -4569,6 +4353,11 @@ function renderSubcategoryNav() {
   }
 
   const subcats = subcategoryMap[currentShopCollection] || [];
+  if (subcats.length === 0) {
+    nav.classList.remove('show');
+    inner.innerHTML = '';
+    return;
+  }
   nav.classList.add('show');
   inner.innerHTML = subcats.map(sub => 
     `<button class="subcategory-btn ${sub.value === currentShopSubcategory ? 'active' : ''}" data-subcategory="${sub.value}" onclick="filterBySubcategory(event, '${sub.value}')">${sub.label}</button>`
@@ -4579,7 +4368,7 @@ function getShopQueryState() {
   const params = new URLSearchParams(window.location.search);
   const rawCategory = params.get('category')?.toString().trim().toLowerCase();
   const rawSubcategory = params.get('type')?.toString().trim().toLowerCase();
-  const validCollections = ['all', 'wedding', 'cotton', 'silk', 'handloom', 'kota', 'jewellery'];
+  const validCollections = ['all', 'festive', 'wedding', 'daily_wear', 'party_wear', 'formal'];
 
   const category = validCollections.includes(rawCategory) ? rawCategory : 'all';
   const subcategories = subcategoryMap[category] || [];
@@ -4699,23 +4488,31 @@ function renderShopProducts() {
   
   if (currentShopCollection !== 'all') {
     filtered = filtered.filter(p => {
-      const type = (p.type || '').toString().toLowerCase();
-      const category = (p.category || '').toString().toLowerCase();
-      const collectionMap = {
-        wedding: ['party', 'bridal', 'wedding'],
-        cotton: ['cotton', 'maheswari_cotton', 'chanderi_cotton', 'mul_cotton', 'linen_cotton'],
-        silk: ['silk', 'kanjivaram_silk', 'banarasi_silk', 'tussar_silk', 'soft_silk', 'mysore_silk', 'maheswari_silk', 'patola_silk', 'gajji_silk', 'dola_silk', 'pashmina_silk'],
-        handloom: ['handloom', 'khadi', 'jamdani', 'ikat', 'linen'],
-        kota: ['kota', 'kota_silk', 'kota_cotton', 'kota_doria'],
-        jewellery: ['jewellery', 'earrings', 'necklaces', 'bangles', 'rings', 'handmade_jewellery']
+      const occasion = String(
+        p.occasion || p.occasions || p.occasionType || p.occasionCategory || ''
+      ).toLowerCase().replace(/[-\s]+/g, '_');
+
+      const haystack = [
+        p.name, p.description, p.type, p.category, p.material
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      // Prefer an explicit backend occasion field. For older products without
+      // that field, use conservative keyword matching so the UI still works.
+      const keywordMap = {
+        festive: ['festive', 'festival', 'celebration', 'celebrations'],
+        wedding: ['wedding', 'bridal', 'bride', 'shaadi', 'vivah'],
+        daily_wear: ['daily', 'everyday', 'casual', 'cotton'],
+        party_wear: ['party', 'evening', 'function'],
+        formal: ['formal', 'office', 'professional', 'workwear']
       };
-      const validTypes = collectionMap[currentShopCollection] || [];
-      return validTypes.includes(type) || validTypes.includes(category);
+
+      if (occasion) return occasion === currentShopCollection;
+      return (keywordMap[currentShopCollection] || []).some(k => haystack.includes(k));
     });
 
     if (currentShopSubcategory !== 'all') {
       filtered = filtered.filter(p => {
-        const type = (p.type || '').toString().toLowerCase();
+        const type = String(p.type || '').toLowerCase();
         return type === currentShopSubcategory;
       });
     }
