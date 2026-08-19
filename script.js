@@ -3755,7 +3755,6 @@ async function addProduct(event) {
   const submitBtn = document.getElementById('submit-product-btn');
   const successMsg = document.getElementById('form-success');
 
-  // Show loading state
   if (submitBtn) {
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
@@ -3763,18 +3762,21 @@ async function addProduct(event) {
   if (successMsg) successMsg.classList.remove('show');
 
   const formData = new FormData(form);
-
-  // Build final FormData with correct field names for backend
   const finalFormData = new FormData();
+
   finalFormData.append('name', formData.get('product-name') || '');
   finalFormData.append('price', formData.get('product-price') || '0');
   finalFormData.append('originalPrice', formData.get('product-old-price') || formData.get('product-price') || '0');
+
   const rawCategoryValue = formData.get('product-category') || 'silk';
   const rawSubcategoryValue = formData.get('product-subcategory') || '';
-  const normalizedCategory = ['jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase()) ? 'jewellery' : 'clothing';
+  const normalizedCategory = ['jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase())
+    ? 'jewellery'
+    : 'clothing';
   const normalizedType = rawSubcategoryValue
     ? rawSubcategoryValue.toString().trim().toLowerCase()
-    : (['silk','cotton','kota','banarasi','handloom','wedding','festive','earrings','necklaces','bangles','rings','handmade_jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase())
+    : (['silk','cotton','kota','banarasi','handloom','wedding','festive','earrings','necklaces','bangles','rings','handmade_jewellery']
+        .includes(rawCategoryValue.toString().trim().toLowerCase())
       ? rawCategoryValue.toString().trim().toLowerCase()
       : (rawCategoryValue.toString().trim().toLowerCase() === 'jewellery' ? 'jewellery' : 'silk'));
 
@@ -3789,13 +3791,11 @@ async function addProduct(event) {
   finalFormData.append('productCare', formData.get('product-care') || '');
   finalFormData.append('moreInfo', formData.get('product-moreinfo') || '');
   finalFormData.append('type', normalizedType);
-  // Offer countdown timer fields
-  finalFormData.append('offerLabel',     formData.get('product-offer-label') || '');
-  finalFormData.append('offerDiscount',  formData.get('product-offer-discount') || '0');
+  finalFormData.append('offerLabel', formData.get('product-offer-label') || '');
+  finalFormData.append('offerDiscount', formData.get('product-offer-discount') || '0');
   finalFormData.append('offerStartDate', formData.get('product-offer-start') || '');
-  finalFormData.append('offerEndDate',   formData.get('product-offer-end')   || '');
+  finalFormData.append('offerEndDate', formData.get('product-offer-end') || '');
 
-  // Append images from the file input
   const imageInput = document.getElementById('product-images');
   if (imageInput && imageInput.files) {
     for (let i = 0; i < imageInput.files.length; i++) {
@@ -3805,97 +3805,59 @@ async function addProduct(event) {
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/products`, {
-      method: "POST",
+      method: 'POST',
       body: finalFormData
     });
 
-    if (response.ok) {
-      // Show success message
-      if (successMsg) {
-        successMsg.textContent = '✅ Product added successfully!';
-        successMsg.classList.add('show');
-        setTimeout(() => successMsg.classList.remove('show'), 4000);
-      }
-      form.reset();
-      clearImagePreviews();
-      
-      // CRITICAL: Clear the fetch cache so shop page gets fresh products
+    let data = null;
+    const responseText = await response.text();
+    try {
+      data = responseText ? JSON.parse(responseText) : null;
+    } catch {
+      data = null;
+    }
+
+    if (!response.ok) {
+      throw new Error(data?.message || responseText || `Server returned HTTP ${response.status}`);
+    }
+
+    // Backend has confirmed creation. Never show the offline fallback after this point.
+    if (successMsg) {
+      successMsg.textContent = '✅ Product added successfully!';
+      successMsg.classList.add('show');
+      setTimeout(() => successMsg.classList.remove('show'), 4000);
+    }
+
+    form.reset();
+    clearImagePreviews();
+
+    // Refresh UI separately. If refresh fails, the product is still successfully created.
+    try {
       _fetched = false;
       _fetchPromise = null;
       isFetched = false;
       allProducts = [];
-      
-      // Refresh admin products list
+
       await loadAdminProducts();
-      updateDashboardStats();
-      
-      // Force reload shop page products if product container exists
+      await updateDashboardStats();
+
       if (document.getElementById('product-container')) {
         await loadAllProducts(true);
       }
-    } else {
-      const err = await response.json();
-      throw new Error(err.message || 'Server returned an error');
+    } catch (refreshError) {
+      console.warn('Product added successfully, but UI refresh failed:', refreshError);
     }
-  } catch (error) {
-    console.error("Add product failed or backend unavailable:", error);
-    
-    // Fallback: Save to localStorage locally
-    const rawCategoryValue = formData.get('product-category') || 'silk';
-    const rawSubcategoryValue = formData.get('product-subcategory') || '';
-    const normalizedCategory = ['jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase()) ? 'jewellery' : 'clothing';
-    const normalizedType = rawSubcategoryValue
-      ? rawSubcategoryValue.toString().trim().toLowerCase()
-      : (['silk','cotton','kota','banarasi','handloom','wedding','festive','earrings','necklaces','bangles','rings','handmade_jewellery'].includes(rawCategoryValue.toString().trim().toLowerCase())
-        ? rawCategoryValue.toString().trim().toLowerCase()
-        : (rawCategoryValue.toString().trim().toLowerCase() === 'jewellery' ? 'jewellery' : 'silk'));
 
-    const productData = {
-      name: formData.get('product-name'),
-      price: parseFloat(formData.get('product-price')),
-      originalPrice: parseFloat(formData.get('product-old-price') || formData.get('product-price')),
-      category: normalizedCategory,
-      material: formData.get('product-material'),
-      colors: formData.get('product-colors') ? formData.get('product-colors').split(',').map(c => c.trim()) : [],
-      quantity: parseInt(formData.get('product-quantity') || 1),
-      stock: parseInt(formData.get('product-quantity') || 1),
-      discount: parseInt(formData.get('product-discount') || 0),
-      description: formData.get('product-description'),
-      specifications: formData.get('product-specifications'),
-      productCare: formData.get('product-care'),
-      moreInfo: formData.get('product-moreinfo') || '',
-      type: normalizedType,
-      offerLabel: formData.get('product-offer-label') || '',
-      offerDiscount: parseFloat(formData.get('product-offer-discount') || 0),
-      offerStartDate: formData.get('product-offer-start') || null,
-      offerEndDate: formData.get('product-offer-end') || null,
-      image: 'images/placeholder.jpg',
-      images: ['images/placeholder.jpg']
-    };
-    
-    // Use Object URLs for local images if available
-    if (imageInput && imageInput.files && imageInput.files.length > 0) {
-      try {
-        const fileUrls = Array.from(imageInput.files).map(file => URL.createObjectURL(file));
-        productData.images = fileUrls;
-        productData.image = fileUrls[0];
-      } catch (e) {
-        console.error('Could not create object URL for local fallback', e);
-      }
-    }
-    
-    saveProductToLocalStorage(productData);
+  } catch (error) {
+    console.error('Add product failed:', error);
+
+    // Do NOT save to localStorage as a fake/offline product. The backend is the source of truth.
     if (successMsg) {
-      successMsg.textContent = '✅ Product saved locally (backend offline)';
+      successMsg.textContent = `❌ ${error.message || 'Failed to add product'}`;
       successMsg.classList.add('show');
-      setTimeout(() => successMsg.classList.remove('show'), 4000);
+      setTimeout(() => successMsg.classList.remove('show'), 5000);
     }
-    form.reset();
-    clearImagePreviews();
-    loadAdminProducts();
-    updateDashboardStats();
   } finally {
-    // Remove loading state
     if (submitBtn) {
       submitBtn.classList.remove('loading');
       submitBtn.disabled = false;
