@@ -1082,8 +1082,21 @@ function hideSearchDropdown() {
 
 function goToProduct(productId) {
   hideSearchDropdown();
-  // Add to cart and go to cart, or go to product detail
-  window.location.href = 'products.html';
+
+  const product = allProducts.find(
+    p => String(p.id || p._id) === String(productId)
+  );
+
+  if (!product) return;
+
+  const slug = String(product.name || 'product')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+
+  window.location.href = `/product/${slug}`;
 }
 
 function searchAllResults(searchTerm) {
@@ -3875,10 +3888,30 @@ function renderProductCard(product) {
 
 
 function openProductDetail(productId, event) {
-  if (event && (event.target.closest('button') || event.target.closest('.product-actions'))) {
+  if (
+    event &&
+    (
+      event.target.closest('button') ||
+      event.target.closest('.product-actions')
+    )
+  ) {
     return;
   }
-  window.location.href = `product.html?id=${productId}`;
+
+  const product = allProducts.find(
+    p => String(p.id || p._id) === String(productId)
+  );
+
+  if (!product) return;
+
+  const slug = String(product.name || 'product')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+
+  window.location.href = `/product/${slug}`;
 }
 
 async function deleteProduct(id) {
@@ -5038,47 +5071,86 @@ function displayOrderSuccess() {
  * Load and display product detail on product.html
  */
 async function loadProductDetail() {
-  const params = new URLSearchParams(window.location.search);
-  const productId = params.get('id');
-  
-  if (!productId) {
+  const pathParts = window.location.pathname
+    .split('/')
+    .filter(Boolean);
+
+  const slug = pathParts[pathParts.length - 1];
+
+  if (!slug || slug === 'product.html') {
     const grid = document.querySelector('.product-detail-grid');
-    if (grid) grid.innerHTML = '<div style="text-align:center;padding:60px;"><h2>Product not found</h2><a href="products.html">Back to Shop</a></div>';
+
+    if (grid) {
+      grid.innerHTML = `
+        <div style="text-align:center;padding:60px;">
+          <h2>Product not found</h2>
+          <a href="/shop">Back to Shop</a>
+        </div>
+      `;
+    }
+
     return;
   }
-  
-  // Show loading state
+
   const mainImg = document.getElementById('main-img');
-  if (mainImg) mainImg.style.opacity = '0.5';
-  
-  // Fetch products if not already fetched
+
+  if (mainImg) {
+    mainImg.style.opacity = '0.5';
+  }
+
+  // Fetch products
   if (!isFetched) {
     await fetchProductsFromBackend();
   }
-  
+
   // Fetch global policies
   const policies = await fetchGlobalPolicies();
-  
-  // Find product by ID
-  const product = allProducts.find(p => String(p.id) === String(productId));
-  
+
+  // Same slug generation used by product cards
+  const createProductSlug = (name) => {
+    return String(name || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  };
+
+  // Find product using slug
+  const product = allProducts.find(
+    p => createProductSlug(p.name) === slug
+  );
+
   if (!product) {
     const grid = document.querySelector('.product-detail-grid');
-    if (grid) grid.innerHTML = '<div style="text-align:center;padding:60px;"><h2>Product not found</h2><a href="products.html">Back to Shop</a></div>';
+
+    if (grid) {
+      grid.innerHTML = `
+        <div style="text-align:center;padding:60px;">
+          <h2>Product not found</h2>
+          <a href="/shop">Back to Shop</a>
+        </div>
+      `;
+    }
+
     return;
   }
-  
-  // Store current product for cart/review functions
+
+  // Store current product
   window.currentProduct = product;
   window.globalPolicies = policies;
-  
-  // Update page content
+
+  // Update product page
   updateProductDetailPage(product);
-  
-  // Load reviews
+
+  // Load reviews using actual database ID
+  const productId = product.id || product._id;
+
   loadProductReviews(productId);
-  
-  if (mainImg) mainImg.style.opacity = '1';
+
+  if (mainImg) {
+    mainImg.style.opacity = '1';
+  }
 }
 
 /**
