@@ -3723,26 +3723,57 @@ function openProductDetail(productId, event) {
 
 async function deleteProduct(id) {
   if (!confirm('Are you sure you want to delete this product?')) return;
-  
+
+  const token =
+    localStorage.getItem('authToken') ||
+    localStorage.getItem('token');
+
+  if (!token) {
+    alert('Authentication required. Please login as admin again.');
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
-    if (response.ok) {
-      alert('✓ Product deleted successfully');
-      allProducts = allProducts.filter(p => String(p.id) !== String(id));
-      localStorage.setItem('products', JSON.stringify(allProducts));
-      
-      if (document.querySelector('.admin-layout')) {
-        loadAdminProducts();
-        updateDashboardStats();
-      } else {
-        loadAllProducts(true);
-      }
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to delete product');
     }
+
+    alert('✓ Product deleted successfully');
+
+    // Remove from current frontend state
+    allProducts = allProducts.filter(
+      p => String(p.id || p._id) !== String(id)
+    );
+
+    // Keep local cache synchronized
+    localStorage.setItem('products', JSON.stringify(allProducts));
+
+    // Refresh admin/shop UI
+    if (document.querySelector('.admin-layout')) {
+      await loadAdminProducts();
+      await updateDashboardStats();
+    }
+
+    if (document.querySelector('.collections-nav')) {
+      await loadShopProducts();
+    }
+
+    if (document.getElementById('product-container')) {
+      await loadAllProducts(true);
+    }
+
   } catch (err) {
     console.error('Delete failed:', err);
+    alert(`❌ ${err.message || 'Failed to delete product'}`);
   }
 }
 
