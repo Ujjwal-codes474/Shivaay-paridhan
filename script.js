@@ -3804,10 +3804,21 @@ async function addProduct(event) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/products`, {
-      method: 'POST',
-      body: finalFormData
-    });
+   const token =
+  localStorage.getItem('authToken') ||
+  localStorage.getItem('token');
+
+if (!token) {
+  throw new Error('Authentication required. Please login as admin again.');
+}
+
+const response = await fetch(`${API_BASE_URL}/api/products`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`
+  },
+  body: finalFormData
+});
 
     let data = null;
     const responseText = await response.text();
