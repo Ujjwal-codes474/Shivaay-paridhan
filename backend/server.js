@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const multer = require("multer");
+const { v2: cloudinary } = require("cloudinary");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
@@ -47,7 +48,11 @@ const Coupon = require("./models/Coupon");
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
-
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const emailTransporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -148,16 +153,8 @@ app.use(express.static(path.join(__dirname, "..")));
 app.use("/uploads", express.static(uploadsDir));
 
 // ============ LOCAL MULTER DISK STORAGE ============
-const localDiskStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
-  }
-});
+const memoryStorage = multer.memoryStorage();
+
 
 const fileFilter = (req, file, cb) => {
   const allowedMimes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
@@ -167,17 +164,35 @@ const fileFilter = (req, file, cb) => {
     cb(new Error("Only image files (jpg, png, gif, webp) are allowed"), false);
   }
 };
+function uploadToCloudinary(file) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "shivaay-paridhan/products",
+        resource_type: "image"
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    uploadStream.end(file.buffer);
+  });
+}
 
 // Upload middleware for product images (up to 5 files, 10MB each)
 const upload = multer({
-  storage: localDiskStorage,
+  storage: memoryStorage,
   fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
-
 // Upload middleware for review images (single file)
 const reviewUpload = multer({
-  storage: localDiskStorage,
+  storage: memoryStorage,
   fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
@@ -377,8 +392,12 @@ app.post(
 
     let images = [];
     if (req.files && req.files.length > 0) {
-      images = req.files.map(file => `/uploads/${file.filename}`);
-    } else if (req.body.images) {
+  const uploadedImages = await Promise.all(
+    req.files.map(file => uploadToCloudinary(file))
+  );
+
+  images = uploadedImages.map(result => result.secure_url);
+}else if (req.body.images) {
       images = Array.isArray(req.body.images) ? req.body.images : req.body.images.split(',').map(s => s.trim());
     }
 
@@ -434,12 +453,14 @@ app.put(
 
     // Handle new images if uploaded — delete old local images first
     let images = product.images;
-    if (req.files && req.files.length > 0) {
-      // Delete old local images
-      product.images.forEach(img => deleteLocalImage(img));
-      // Save new file paths
-      images = req.files.map(file => `/uploads/${file.filename}`);
-    }
+  if (req.files && req.files.length > 0) {
+  // Upload new images to Cloudinary
+  const uploadedImages = await Promise.all(
+    req.files.map(file => uploadToCloudinary(file))
+  );
+
+  images = uploadedImages.map(result => result.secure_url);
+}
 
     const stockVal = parseInt(stock || quantity || product.stock);
 
