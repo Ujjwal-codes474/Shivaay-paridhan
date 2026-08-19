@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/">
 <title>Crimson Zari Saree | Shivaay Paridhan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="main.css">
-<link rel="stylesheet" href="offer-timer.css?v=3">
-<link rel="stylesheet" href="premium-redesign.css?v=4">
-  <link rel="stylesheet" href="ui-redesign.css?v=2">
+<link rel="stylesheet" href="/main.css">
+<link rel="stylesheet" href="/offer-timer.css?v=5">
+<link rel="stylesheet" href="/premium-redesign.css?v=5">
+  <link rel="stylesheet" href="/ui-redesign.css?v=5">
 <style>
-.product-hero { position: relative; display: flex; align-items: center; min-height: 420px; background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,242,238,0.96)), url('images/saree1.png') center/cover no-repeat; overflow: hidden; }
+.product-hero { position: relative; display: flex; align-items: center; min-height: 420px; background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,242,238,0.96)), url('/images/saree1.png') center/cover no-repeat; overflow: hidden; }
 .product-hero::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, rgba(201,168,76,0.16), transparent 35%); pointer-events:none; }
 .product-hero .hero-panel { position: relative; z-index: 1; padding: 80px 0; }
 .product-hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; font-weight: 700; }
@@ -151,6 +152,28 @@
   .product-hero-sub { font-size: 0.95rem; }
   .product-sticky-cta { flex-direction: column; align-items: stretch; }
 }
+
+/* Product page routing / responsive safety */
+.product-detail-grid.is-loading { opacity: .65; pointer-events: none; }
+.product-not-found { grid-column: 1 / -1; min-height: 360px; display: grid; place-items: center; text-align: center; padding: 70px 24px; }
+.product-not-found-icon { font-size: 3rem; margin-bottom: 12px; }
+.product-not-found h2 { margin: 0 0 10px; font-family: var(--font-heading); font-size: 2rem; }
+.product-not-found p { margin: 0 0 22px; color: var(--text-muted); }
+.product-not-found .btn-primary { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+@media (max-width: 1024px) {
+  .product-detail-grid { gap: 34px; }
+  .product-info { gap: 16px; }
+}
+@media (max-width: 720px) {
+  .product-detail-section { padding: 42px 0 80px; }
+  .product-gallery { width: 100%; }
+  .main-image-wrap { aspect-ratio: 1 / 1.18; border-radius: 16px; }
+  .product-title { font-size: 2.2rem; }
+  .action-btns { gap: 10px; }
+  .product-features { padding: 20px 18px; }
+  .related-grid { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -159,8 +182,8 @@
     <div class="nav-container">
 
       <div class="nav-left">
-        <a href="index.html" class="nav-logo">
-          <img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
+        <a href="/" class="nav-logo">
+          <img loading="lazy" src="/images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img">
           <div class="brand-copy">
             <span class="logo-text-primary">Shivaay</span>
             <span class="logo-text-secondary">Paridhan</span>
@@ -179,14 +202,14 @@
       </div>
 
       <div class="nav-right">
-        <a href="profile.html" class="nav-icon-btn" aria-label="Profile">
+        <a href="/profile.html" class="nav-icon-btn" aria-label="Profile">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </a>
 
-        <a href="cart.html" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
+        <a href="/cart" class="nav-icon-btn cart-btn" aria-label="Shopping Cart">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="9" cy="21" r="1"></circle>
             <circle cx="20" cy="21" r="1"></circle>
@@ -206,12 +229,12 @@
     </div>
 
     <nav class="nav-links" id="nav-links">
-      <a href="index.html" class="nav-link" onclick="closeMenu()">Home</a>
-      <a href="about.html" class="nav-link" onclick="closeMenu()">About Us</a>
-      <a href="contact.html" class="nav-link" onclick="closeMenu()">Contact</a>
-      <a href="shop.html" class="nav-link" onclick="closeMenu()">Shop</a>
-      <a href="cart.html" class="nav-link" onclick="closeMenu()">Cart</a>
-      <a href="login.html" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
+      <a href="/" class="nav-link" onclick="closeMenu()">Home</a>
+      <a href="/about" class="nav-link" onclick="closeMenu()">About Us</a>
+      <a href="/contact" class="nav-link" onclick="closeMenu()">Contact</a>
+      <a href="/shop" class="nav-link" onclick="closeMenu()">Shop</a>
+      <a href="/cart" class="nav-link" onclick="closeMenu()">Cart</a>
+      <a href="/login" class="nav-link nav-login-btn" onclick="closeMenu()">Login</a>
       <a href="#" class="nav-link logout-btn" onclick="logout(); closeMenu()" style="display: none;">Logout</a>
     </nav>
   </header>
@@ -221,7 +244,7 @@
     <span class="product-hero-eyebrow">Luxury Drapes</span>
     <h1 class="product-hero-title">Crimson Zari Saree</h1>
     <p class="product-hero-sub">A handwoven masterpiece from Varanasi, crafted with rich zari details and premium silk for unforgettable celebrations.</p>
-    <div class="breadcrumb"><a href="index.html">Home</a><span>›</span><a href="products.html">Shop</a><span>›</span><span>Crimson Zari Saree</span></div>
+    <div class="breadcrumb"><a href="/">Home</a><span>›</span><a href="/products">Shop</a><span>›</span><span>Crimson Zari Saree</span></div>
   </div>
 </div>
 
@@ -230,12 +253,12 @@
   <div class="container">
     <div class="product-detail-grid">
       <div class="product-gallery">
-        <div class="main-image-wrap" id="main-img-wrap"><img loading="lazy" src="images/saree1.png" alt="Crimson Zari Saree" id="main-img"></div>
+        <div class="main-image-wrap" id="main-img-wrap"><img loading="lazy" src="/images/saree1.png" alt="Crimson Zari Saree" id="main-img"></div>
         <div class="thumb-row">
-          <div class="thumb active" onclick="setImg('images/saree1.png',this)"><img loading="lazy" src="images/saree1.png" alt="View 1"></div>
-          <div class="thumb" onclick="setImg('images/saree2.png',this)"><img loading="lazy" src="images/saree2.png" alt="View 2"></div>
-          <div class="thumb" onclick="setImg('images/saree3.png',this)"><img loading="lazy" src="images/saree3.png" alt="View 3"></div>
-          <div class="thumb" onclick="setImg('images/saree4.png',this)"><img loading="lazy" src="images/saree4.png" alt="View 4"></div>
+          <div class="thumb active" onclick="setImg('/images/saree1.png',this)"><img loading="lazy" src="/images/saree1.png" alt="View 1"></div>
+          <div class="thumb" onclick="setImg('/images/saree2.png',this)"><img loading="lazy" src="/images/saree2.png" alt="View 2"></div>
+          <div class="thumb" onclick="setImg('/images/saree3.png',this)"><img loading="lazy" src="/images/saree3.png" alt="View 3"></div>
+          <div class="thumb" onclick="setImg('/images/saree4.png',this)"><img loading="lazy" src="/images/saree4.png" alt="View 4"></div>
         </div>
       </div>
       <div class="product-info">
@@ -432,9 +455,9 @@
 
 <footer class="site-footer">
   <div class="footer-top"><div class="container"><div class="footer-grid">
-    <div class="footer-brand-col"><a href="index.html" class="footer-logo"><img loading="lazy" src="images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating the art of Indian weaving with premium handcrafted sarees.</p></div>
-    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="index.html">Home</a></li><li><a href="products.html">Shop All</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="products.html">Banarasi Silk</a></li><li><a href="products.html">Kanjivaram</a></li><li><a href="products.html">Bridal</a></li></ul></div>
+    <div class="footer-brand-col"><a href="/" class="footer-logo"><img loading="lazy" src="/images/shivaay.jpeg" alt="Shivaay Paridhan" class="logo-img"> Shivaay Paridhan</a><p class="footer-tagline">Elegance in Every Drape</p><p class="footer-desc">Celebrating the art of Indian weaving with premium handcrafted sarees.</p></div>
+    <div><h4 class="footer-col-title">Quick Links</h4><ul class="footer-links-list"><li><a href="/">Home</a></li><li><a href="/products">Shop All</a></li><li><a href="/about">About Us</a></li><li><a href="/contact">Contact</a></li></ul></div>
+    <div><h4 class="footer-col-title">Collections</h4><ul class="footer-links-list"><li><a href="/products">Banarasi Silk</a></li><li><a href="/products">Kanjivaram</a></li><li><a href="/products">Bridal</a></li></ul></div>
     <div><h4 class="footer-col-title">Contact</h4><ul class="footer-contact-list"><li><span>📞</span><a href="tel:+91 84484 60446">+91 84484 60446</a></li><li><span>✉️</span><a href="mailto:info@shivaayparidhaan.com">info@shivaayparidhaan.com</a></li></ul></div>
   </div></div></div>
   <div class="footer-bottom"><div class="container"><p>© 2026 Shivaay Paridhan. All rights reserved.</p></div></div>
@@ -442,8 +465,8 @@
 
 <script>
 window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50));
-function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');document.getElementById('hamburger').classList.toggle('active');}
-function closeMenu(){document.getElementById('nav-links').classList.remove('open');document.getElementById('hamburger').classList.remove('active');}
+function toggleMenu(){const nav=document.getElementById('nav-links'); if(nav) nav.classList.toggle('open');}
+function closeMenu(){const nav=document.getElementById('nav-links'); if(nav) nav.classList.remove('open');}
 function setImg(src,el){document.getElementById('main-img').src=src;document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
 function selectColor(el,name){document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.getElementById('color-name').textContent=name;}
 function selectSize(el){document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
@@ -467,6 +490,6 @@ window.addEventListener('scroll',()=>{
   else {sticky.style.opacity='0';sticky.style.pointerEvents='none';}
 });
 </script>
-<script src="script.js?v=4"></script>
+<script src="/script.js?v=5"></script>
 </body>
 </html>
