@@ -2,43 +2,17 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
 const multer = require("multer");
 const { v2: cloudinary } = require("cloudinary");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-const dns = require("dns");
-dns.setDefaultResultOrder("ipv4first");
-
-const net = require("net");
-
-const smtpTest = net.createConnection({
-  host: "192.178.211.108",
-  port: 587,
-  family: 4
-});
-
-smtpTest.setTimeout(15000);
-
-smtpTest.on("connect", () => {
-  console.log("===== SMTP TCP TEST: CONNECTED =====");
-  smtpTest.end();
-});
-
-smtpTest.on("timeout", () => {
-  console.error("===== SMTP TCP TEST: TIMEOUT =====");
-  smtpTest.destroy();
-});
-
-smtpTest.on("error", (err) => {
-  console.error("===== SMTP TCP TEST: ERROR =====");
-  console.error(err.code, err.message);
-});
-
-
 const path = require("path");
-require('dotenv').config();
+
+require("dotenv").config();
+
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 const Product = require("./models/Product");
 const Review = require("./models/Review");
 const Policy = require("./models/Policy");
@@ -54,26 +28,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const emailTransporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4,
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_APP_PASSWORD
-  }
-});
-emailTransporter.verify((error, success) => {
-  if (error) {
-    console.error("SMTP connection error:", error);
-  } else {
-    console.log("SMTP server is ready to send emails");
-  }
-});
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
 const JWT_SECRET = process.env.JWT_SECRET || "";
@@ -1107,21 +1061,57 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     await user.save();
 
     // Send OTP by email
-    await emailTransporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      to: user.email,
-      subject: "Shivaay Paridhan - Password Reset OTP",
-      text: `Your password reset OTP is ${otp}. It will expire in 5 minutes. If you did not request this, please ignore this email.`,
-      html: `
-        <div style="font-family: Arial, sans-serif;">
-          <h2>Shivaay Paridhan</h2>
-          <p>Your password reset OTP is:</p>
-          <h1>${otp}</h1>
-          <p>This OTP will expire in <strong>5 minutes</strong>.</p>
-          <p>If you did not request a password reset, please ignore this email.</p>
-        </div>
-      `
-    });
+const { data: emailData, error: emailError } = await resend.emails.send({
+  from: process.env.EMAIL_FROM || "Shivaay Paridhan <onboarding@resend.dev>",
+  to: [user.email],
+  subject: "Shivaay Paridhan - Password Reset OTP",
+  text: `Your password reset OTP is ${otp}. It will expire in 5 minutes. If you did not request this, please ignore this email.`,
+  html: `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:30px;color:#222;">
+      <h2 style="margin-bottom:20px;">Shivaay Paridhan</h2>
+
+      <p>Your password reset OTP is:</p>
+
+      <div style="
+        margin:25px 0;
+        padding:20px;
+        background:#f7f2ed;
+        border-radius:12px;
+        text-align:center;
+        font-size:36px;
+        font-weight:700;
+        letter-spacing:8px;
+      ">
+        ${otp}
+      </div>
+
+      <p>
+        This OTP will expire in
+        <strong>5 minutes</strong>.
+      </p>
+
+      <p style="color:#666;">
+        If you did not request a password reset, please ignore this email.
+      </p>
+
+      <hr style="margin:30px 0;border:none;border-top:1px solid #eee;">
+
+      <p style="font-size:13px;color:#888;">
+        © 2026 Shivaay Paridhan
+      </p>
+    </div>
+  `
+});
+
+if (emailError) {
+  console.error("Resend email error:", emailError);
+
+  return res.status(500).json({
+    message: "Unable to send OTP. Please try again."
+  });
+}
+
+console.log("OTP email sent successfully:", emailData?.id);
 
     res.json({
       message: "OTP sent successfully",
