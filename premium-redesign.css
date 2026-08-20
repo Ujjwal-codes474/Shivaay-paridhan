@@ -2133,9 +2133,12 @@ input:focus, select:focus, textarea:focus {
     font-size: 1.1rem !important;
     letter-spacing: 0.08em !important;
   }
-  .logo-text-secondary {
-    display: none !important; /* Hide secondary line on small screens for elegant clean fit */
-  }
+.logo-text-secondary {
+    display: block !important;
+    font-size: 0.55rem !important;
+    letter-spacing: 0.3em !important;
+    margin-top: 1px !important;
+}
   .nav-right {
     gap: 8px !important;
   }
