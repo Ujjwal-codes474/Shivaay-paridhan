@@ -163,6 +163,19 @@ export default function ProductCard({
 
 
   /* =======================================================
+     PRODUCT DETAIL URL
+     
+     IMPORTANT:
+     Always use the backend product ID.
+     This keeps product detail links reliable
+     even when a product has no valid slug.
+  ======================================================= */
+
+  const productUrl =
+    `/product/${product.id}`;
+
+
+  /* =======================================================
      ADD TO CART
   ======================================================= */
 
@@ -172,12 +185,15 @@ export default function ProductCard({
       if (
         outOfStock
       ) {
+
         return;
+
       }
 
       addToCart(
         product as any
       );
+
     };
 
 
@@ -191,6 +207,7 @@ export default function ProductCard({
       toggleWishlist(
         product.id
       );
+
     };
 
 
@@ -199,6 +216,7 @@ export default function ProductCard({
   ======================================================= */
 
   return (
+
     <article
       className="product-card"
     >
@@ -214,8 +232,12 @@ export default function ProductCard({
         {/* IMAGE */}
 
         <Link
-          href={`/product/${product.slug}`}
-          aria-label={`View ${product.name}`}
+          href={
+            productUrl
+          }
+          aria-label={
+            `View ${product.name}`
+          }
         >
 
           <img
@@ -240,27 +262,33 @@ export default function ProductCard({
         >
 
           {product.featured && (
+
             <span>
               Best Seller
             </span>
+
           )}
 
 
           {discount > 0 && (
+
             <span
               className="sale-badge"
             >
               {discount}% Off
             </span>
+
           )}
 
 
           {outOfStock && (
+
             <span
               className="sale-badge"
             >
               Out of Stock
             </span>
+
           )}
 
         </div>
@@ -277,11 +305,13 @@ export default function ProductCard({
               ? 'Remove from wishlist'
               : 'Add to wishlist'
           }
-          className={`wishlist-btn ${
-            liked
-              ? 'is-liked'
-              : ''
-          }`}
+          className={
+            `wishlist-btn ${
+              liked
+                ? 'is-liked'
+                : ''
+            }`
+          }
           onClick={
             handleWishlist
           }
@@ -304,6 +334,7 @@ export default function ProductCard({
         ================================================= */}
 
         {!outOfStock && (
+
           <button
             type="button"
             className="quick-add"
@@ -319,6 +350,7 @@ export default function ProductCard({
             Quick Add
 
           </button>
+
         )}
 
       </div>
@@ -339,13 +371,16 @@ export default function ProductCard({
         >
 
           <span>
+
             {product.fabric ||
               product.category ||
               'Shivaay Paridhan'}
+
           </span>
 
 
           {rating > 0 && (
+
             <span
               style={{
                 display:
@@ -369,6 +404,7 @@ export default function ProductCard({
               )}
 
             </span>
+
           )}
 
         </div>
@@ -377,7 +413,9 @@ export default function ProductCard({
         {/* NAME */}
 
         <Link
-          href={`/product/${product.slug}`}
+          href={
+            productUrl
+          }
         >
 
           <h3>
@@ -394,27 +432,33 @@ export default function ProductCard({
         >
 
           <strong>
+
             ₹
             {Math.round(
               price
             ).toLocaleString(
               'en-IN'
             )}
+
           </strong>
 
 
           {oldPrice &&
             oldPrice >
               price && (
-              <del>
-                ₹
-                {Math.round(
-                  oldPrice
-                ).toLocaleString(
-                  'en-IN'
-                )}
-              </del>
-            )}
+
+            <del>
+
+              ₹
+              {Math.round(
+                oldPrice
+              ).toLocaleString(
+                'en-IN'
+              )}
+
+            </del>
+
+          )}
 
         </div>
 
@@ -467,5 +511,7 @@ export default function ProductCard({
       </div>
 
     </article>
+
   );
+
 }

@@ -172,7 +172,6 @@ function resolveImageUrl(
     return '/hero-slider.png';
   }
 
-
   if (
     image.startsWith('http://') ||
     image.startsWith('https://')
@@ -180,13 +179,11 @@ function resolveImageUrl(
     return image;
   }
 
-
   if (
     image.startsWith('/uploads/')
   ) {
     return `${API_URL}${image}`;
   }
-
 
   if (
     image.startsWith('/')
@@ -194,13 +191,12 @@ function resolveImageUrl(
     return image;
   }
 
-
   return `${API_URL}/${image}`;
 }
 
 
 /* =========================================================
-   SLUG CREATOR
+   CREATE SLUG
 ========================================================= */
 
 function createSlug(
@@ -223,6 +219,47 @@ function createSlug(
 
 
 /* =========================================================
+   OCCASION
+========================================================= */
+
+function getOccasion(
+  product: BackendProduct
+): string {
+
+  if (
+    product.occasion &&
+    String(
+      product.occasion
+    ).trim()
+  ) {
+    return String(
+      product.occasion
+    ).trim();
+  }
+
+  if (
+    product.moreInfo
+  ) {
+
+    const match =
+      String(
+        product.moreInfo
+      ).match(
+        /occasion\s*:\s*([^\n\r]+)/i
+      );
+
+    if (
+      match?.[1]
+    ) {
+      return match[1].trim();
+    }
+  }
+
+  return '';
+}
+
+
+/* =========================================================
    NORMALIZE PRODUCT
 ========================================================= */
 
@@ -238,11 +275,9 @@ function normalizeProduct(
           (
             image
           ): image is string =>
-            typeof image ===
-            'string'
+            typeof image === 'string'
         )
       : [];
-
 
   const originalPrice =
     Math.round(
@@ -253,20 +288,19 @@ function normalizeProduct(
       )
     );
 
-
   const salePrice =
     Math.round(
       Number(
-        product.price ?? 0
+        product.price ??
+        0
       )
     );
 
-
   const rating =
     Number(
-      product.rating ?? 0
+      product.rating ??
+      0
     );
-
 
   const color =
     product.color ||
@@ -275,44 +309,31 @@ function normalizeProduct(
         product.colors
       ) &&
       product.colors.length > 0
-        ? product.colors[0]
+        ? String(
+            product.colors[0]
+          )
         : ''
     );
 
-
-  const slug =
-    product.slug ||
-    product._id ||
-    createSlug(
-      product.name || ''
+  const occasion =
+    getOccasion(
+      product
     );
 
-
-  let occasion =
-    product.occasion ||
-    '';
-
-
-  if (
-    !occasion &&
-    product.moreInfo
-  ) {
-
-    const match =
-      product.moreInfo.match(
-        /occasion\s*:\s*([^\n]+)/i
-      );
-
-
-    if (match?.[1]) {
-
-      occasion =
-        match[1].trim();
-
-    }
-
-  }
-
+  /*
+    Keep the real backend slug when available.
+    Otherwise generate one from the name.
+    ID remains the primary stable identifier.
+  */
+  const slug =
+    product.slug ||
+    createSlug(
+      product.name ||
+      ''
+    ) ||
+    String(
+      product._id
+    );
 
   return {
 
@@ -433,7 +454,7 @@ export default function ProductPage({
 
 
   /* =======================================================
-     PRODUCT STATE
+     PRODUCT
   ======================================================= */
 
   const [product, setProduct] =
@@ -514,22 +535,48 @@ export default function ProductPage({
 
         try {
 
-          setLoading(true);
-          setError('');
+          setLoading(
+            true
+          );
+
+          setError(
+            ''
+          );
+
+          setProduct(
+            null
+          );
+
+
+          const requestedValue =
+            String(
+              slug || ''
+            ).trim();
+
+
+          if (
+            !requestedValue
+          ) {
+
+            throw new Error(
+              'Product identifier is missing.'
+            );
+
+          }
 
 
           const objectIdPattern =
             /^[a-f\d]{24}$/i;
 
 
-          /* =============================================
+          /* ===============================================
              STEP 1
-             TRY DIRECT ID ENDPOINT
-          ============================================= */
+             DIRECT ID LOOKUP
+          =============================================== */
 
           if (
             objectIdPattern.test(
-              slug
+              requestedValue
             )
           ) {
 
@@ -537,7 +584,9 @@ export default function ProductPage({
 
               const response =
                 await fetch(
-                  `${API_URL}/api/products/${slug}`,
+                  `${API_URL}/api/products/${encodeURIComponent(
+                    requestedValue
+                  )}`,
                   {
                     method:
                       'GET',
@@ -561,15 +610,35 @@ export default function ProductPage({
                   await response.json();
 
 
-                if (!cancelled) {
+                const backendProduct =
+                  data?.product ||
+                  data;
+
+
+                if (
+                  !backendProduct?._id
+                ) {
+
+                  throw new Error(
+                    'Invalid product response from backend.'
+                  );
+
+                }
+
+
+                if (
+                  !cancelled
+                ) {
 
                   setProduct(
                     normalizeProduct(
-                      data
+                      backendProduct
                     )
                   );
 
-                  setError('');
+                  setError(
+                    ''
+                  );
 
                 }
 
@@ -580,16 +649,8 @@ export default function ProductPage({
 
 
               /*
-                IMPORTANT:
-                Do NOT throw on 404 here.
-
-                Some production backend
-                configurations may not expose
-                /api/products/:id even though
-                /api/products works.
-
-                In that case we continue to
-                the all-products fallback.
+                404 is intentionally ignored here.
+                We continue with the full product list.
               */
 
               if (
@@ -611,7 +672,7 @@ export default function ProductPage({
                     message;
 
                 } catch {
-                  // Ignore invalid JSON.
+                  // Ignore malformed error response.
                 }
 
 
@@ -626,27 +687,29 @@ export default function ProductPage({
             ) {
 
               /*
-                Only continue to fallback
-                for a 404 / route mismatch.
+                Only suppress a normal "not found"
+                direct-route failure.
 
-                Other errors such as network
-                failures should still surface.
+                Network/server failures should
+                still be visible in console.
               */
 
-              const message =
+              const directMessage =
                 directError instanceof Error
                   ? directError.message
-                  : 'Unable to load product.';
+                  : String(
+                      directError
+                    );
 
 
               if (
                 !/404|not found/i.test(
-                  message
+                  directMessage
                 )
               ) {
 
                 console.warn(
-                  'Direct product lookup failed; trying product list fallback:',
+                  'Direct product lookup failed. Trying product list fallback.',
                   directError
                 );
 
@@ -657,10 +720,10 @@ export default function ProductPage({
           }
 
 
-          /* =============================================
+          /* ===============================================
              STEP 2
              LOAD ALL PRODUCTS
-          ============================================= */
+          =============================================== */
 
           const response =
             await fetch(
@@ -684,15 +747,45 @@ export default function ProductPage({
             !response.ok
           ) {
 
+            let message =
+              `Failed to load products (${response.status})`;
+
+
+            try {
+
+              const data =
+                await response.json();
+
+              message =
+                data?.message ||
+                message;
+
+            } catch {
+              // Ignore malformed error response.
+            }
+
+
             throw new Error(
-              `Failed to load products (${response.status})`
+              message
             );
 
           }
 
 
-          const products =
+          const data =
             await response.json();
+
+
+          const products =
+            Array.isArray(
+              data
+            )
+              ? data
+              : Array.isArray(
+                  data?.products
+                )
+                ? data.products
+                : null;
 
 
           if (
@@ -708,59 +801,56 @@ export default function ProductPage({
           }
 
 
-          /* =============================================
+          /* ===============================================
              STEP 3
              MATCH ID / SLUG / NAME
-          ============================================= */
+          =============================================== */
+
+          const normalizedRequested =
+            requestedValue
+              .toLowerCase();
+
 
           const matched =
             products.find(
               (
-                item:
-                  BackendProduct
+                item: BackendProduct
               ) => {
-
-                const backendSlug =
-                  item.slug ||
-                  item._id ||
-                  createSlug(
-                    item.name || ''
-                  );
-
 
                 const itemId =
                   String(
-                    item._id || ''
-                  );
+                    item?._id ||
+                    ''
+                  ).trim();
 
 
-                const normalizedBackendSlug =
+                const itemSlug =
                   String(
-                    backendSlug
-                  );
+                    item?.slug ||
+                    ''
+                  )
+                    .trim()
+                    .toLowerCase();
 
 
-                const normalizedName =
+                const generatedSlug =
                   createSlug(
-                    item.name || ''
-                  );
+                    item?.name ||
+                    ''
+                  )
+                    .trim()
+                    .toLowerCase();
 
 
                 return (
-
                   itemId ===
-                    String(slug)
+                    requestedValue ||
 
-                  ||
+                  itemSlug ===
+                    normalizedRequested ||
 
-                  normalizedBackendSlug ===
-                    String(slug)
-
-                  ||
-
-                  normalizedName ===
-                    String(slug)
-
+                  generatedSlug ===
+                    normalizedRequested
                 );
 
               }
@@ -778,7 +868,9 @@ export default function ProductPage({
           }
 
 
-          if (!cancelled) {
+          if (
+            !cancelled
+          ) {
 
             setProduct(
               normalizeProduct(
@@ -786,7 +878,9 @@ export default function ProductPage({
               )
             );
 
-            setError('');
+            setError(
+              ''
+            );
 
           }
 
@@ -800,7 +894,9 @@ export default function ProductPage({
           );
 
 
-          if (!cancelled) {
+          if (
+            !cancelled
+          ) {
 
             setError(
               err instanceof Error
@@ -812,7 +908,9 @@ export default function ProductPage({
 
         } finally {
 
-          if (!cancelled) {
+          if (
+            !cancelled
+          ) {
 
             setLoading(
               false
@@ -844,7 +942,8 @@ export default function ProductPage({
 
   const outOfStock =
     !product ||
-    product.stock <= 0;
+    product.stock <=
+      0;
 
 
   const maxQuantity =
@@ -908,14 +1007,15 @@ export default function ProductPage({
             product.price
           ) /
           product.oldPrice
-        ) * 100
+        ) *
+          100
       );
 
     }, [product]);
 
 
   /* =======================================================
-     WHATSAPP URL
+     WHATSAPP
   ======================================================= */
 
   const whatsappMessage =
@@ -926,7 +1026,9 @@ export default function ProductPage({
           `I want to order: ${product.name}`,
           `Product ID: ${product.id}`,
           `Quantity: ${qty}`,
-          `Price: ₹${product.price.toLocaleString('en-IN')}`,
+          `Price: ₹${product.price.toLocaleString(
+            'en-IN'
+          )}`,
           '',
           'Please confirm availability.',
         ].join('\n')
@@ -951,7 +1053,8 @@ export default function ProductPage({
 
       if (
         !product ||
-        product.stock <= 0
+        product.stock <=
+          0
       ) {
 
         return;
@@ -975,7 +1078,7 @@ export default function ProductPage({
 
 
   /* =======================================================
-     LOADING SCREEN
+     LOADING
   ======================================================= */
 
   if (
@@ -1057,10 +1160,8 @@ export default function ProductPage({
 
 
             <p className="muted mt-2">
-
               {error ||
                 'This product is no longer available.'}
-
             </p>
 
 
@@ -1141,12 +1242,12 @@ export default function ProductPage({
           </div>
 
 
-          {/* PRODUCT INFO */}
+          {/* PRODUCT INFORMATION */}
 
           <div>
 
 
-            {/* CATEGORY */}
+            {/* CATEGORY / FABRIC */}
 
             <div className="eyebrow">
 
@@ -1210,14 +1311,12 @@ export default function ProductPage({
               {product.oldPrice && (
 
                 <span className="old-price">
-
                   ₹
                   {Math.round(
                     product.oldPrice
                   ).toLocaleString(
                     'en-IN'
                   )}
-
                 </span>
 
               )}
@@ -1226,9 +1325,7 @@ export default function ProductPage({
               {discount > 0 && (
 
                 <span className="discount-percent">
-
                   {discount}% OFF
-
                 </span>
 
               )}
@@ -1328,7 +1425,8 @@ export default function ProductPage({
 
             ) : (
 
-              product.stock <= 5 && (
+              product.stock <=
+                5 && (
 
                 <div
                   className="mt-5"
@@ -1351,7 +1449,7 @@ export default function ProductPage({
             )}
 
 
-            {/* QUANTITY + BAG */}
+            {/* QUANTITY */}
 
             <div
               className="mt-6 flex items-center gap-3"
@@ -1415,6 +1513,8 @@ export default function ProductPage({
               </div>
 
 
+              {/* ADD TO BAG */}
+
               <button
                 type="button"
                 className="btn btn-primary flex-1"
@@ -1447,6 +1547,8 @@ export default function ProductPage({
 
               </button>
 
+
+              {/* WISHLIST */}
 
               <button
                 type="button"
@@ -1552,11 +1654,9 @@ export default function ProductPage({
                 </span>
 
                 <b>
-
                   {outOfStock
                     ? 'Sold out'
                     : `${product.stock} available`}
-
                 </b>
 
               </div>
@@ -1589,7 +1689,6 @@ export default function ProductPage({
         <div
           className="product-extra-details"
         >
-
 
           {product.specifications && (
 
@@ -1677,6 +1776,8 @@ export default function ProductPage({
 
           )}
 
+
+          {/* DELIVERY + QUALITY */}
 
           <div
             className="grid gap-3 sm:grid-cols-2"
