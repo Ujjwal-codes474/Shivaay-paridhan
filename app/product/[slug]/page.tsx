@@ -33,6 +33,15 @@ const API_URL =
 
 
 /* =========================================================
+   WHATSAPP
+========================================================= */
+
+const WHATSAPP_NUMBER =
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.trim() ||
+  '';
+
+
+/* =========================================================
    PARAMS
 ========================================================= */
 
@@ -155,10 +164,14 @@ type DisplayProduct = {
    IMAGE URL
 ========================================================= */
 
-function resolveImageUrl(image?: string): string {
+function resolveImageUrl(
+  image?: string
+): string {
+
   if (!image) {
     return '/hero-slider.png';
   }
+
 
   if (
     image.startsWith('http://') ||
@@ -167,13 +180,20 @@ function resolveImageUrl(image?: string): string {
     return image;
   }
 
-  if (image.startsWith('/uploads/')) {
+
+  if (
+    image.startsWith('/uploads/')
+  ) {
     return `${API_URL}${image}`;
   }
 
-  if (image.startsWith('/')) {
+
+  if (
+    image.startsWith('/')
+  ) {
     return image;
   }
+
 
   return `${API_URL}/${image}`;
 }
@@ -183,12 +203,22 @@ function resolveImageUrl(image?: string): string {
    SLUG CREATOR
 ========================================================= */
 
-function createSlug(name: string): string {
-  return String(name || '')
+function createSlug(
+  name: string
+): string {
+
+  return String(
+    name || ''
+  )
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(
+      /[^a-z0-9]+/g,
+      '-'
+    )
+    .replace(
+      /^-+|-+$/g,
+      '');
 }
 
 
@@ -200,39 +230,50 @@ function normalizeProduct(
   product: BackendProduct
 ): DisplayProduct {
 
-  const images = Array.isArray(product.images)
-    ? product.images.filter(
-        (image): image is string =>
-          typeof image === 'string'
+  const images =
+    Array.isArray(
+      product.images
+    )
+      ? product.images.filter(
+          (
+            image
+          ): image is string =>
+            typeof image ===
+            'string'
+        )
+      : [];
+
+
+  const originalPrice =
+    Math.round(
+      Number(
+        product.originalPrice ??
+        product.price ??
+        0
       )
-    : [];
+    );
 
 
-  const originalPrice = Math.round(
+  const salePrice =
+    Math.round(
+      Number(
+        product.price ?? 0
+      )
+    );
+
+
+  const rating =
     Number(
-      product.originalPrice ??
-      product.price ??
-      0
-    )
-  );
-
-
-  const salePrice = Math.round(
-    Number(
-      product.price ?? 0
-    )
-  );
-
-
-  const rating = Number(
-    product.rating ?? 0
-  );
+      product.rating ?? 0
+    );
 
 
   const color =
     product.color ||
     (
-      Array.isArray(product.colors) &&
+      Array.isArray(
+        product.colors
+      ) &&
       product.colors.length > 0
         ? product.colors[0]
         : ''
@@ -247,14 +288,9 @@ function normalizeProduct(
     );
 
 
-  /*
-    Older products may have occasion stored
-    inside moreInfo as:
-    "Occasion: Wedding"
-  */
-
   let occasion =
-    product.occasion || '';
+    product.occasion ||
+    '';
 
 
   if (
@@ -269,8 +305,10 @@ function normalizeProduct(
 
 
     if (match?.[1]) {
+
       occasion =
         match[1].trim();
+
     }
 
   }
@@ -376,6 +414,7 @@ function normalizeProduct(
     offerEndDate:
       product.offerEndDate ??
       null,
+
   };
 }
 
@@ -433,7 +472,8 @@ export default function ProductPage({
 
   const addToCart =
     useCart(
-      (state) => state.add
+      (state) =>
+        state.add
     );
 
 
@@ -454,7 +494,8 @@ export default function ProductPage({
 
   const toggleWishlist =
     useWishlist(
-      (state) => state.toggle
+      (state) =>
+        state.toggle
     );
 
 
@@ -464,34 +505,169 @@ export default function ProductPage({
 
   useEffect(() => {
 
-    let cancelled = false;
+    let cancelled =
+      false;
 
 
-    const loadProduct = async () => {
+    const loadProduct =
+      async () => {
 
-      try {
+        try {
 
-        setLoading(true);
-        setError('');
-
-
-        /*
-          First try MongoDB ObjectId directly.
-        */
-
-        const objectIdPattern =
-          /^[a-f\d]{24}$/i;
+          setLoading(true);
+          setError('');
 
 
-        if (
-          objectIdPattern.test(slug)
-        ) {
+          const objectIdPattern =
+            /^[a-f\d]{24}$/i;
+
+
+          /* =============================================
+             STEP 1
+             TRY DIRECT ID ENDPOINT
+          ============================================= */
+
+          if (
+            objectIdPattern.test(
+              slug
+            )
+          ) {
+
+            try {
+
+              const response =
+                await fetch(
+                  `${API_URL}/api/products/${slug}`,
+                  {
+                    method:
+                      'GET',
+
+                    headers: {
+                      Accept:
+                        'application/json',
+                    },
+
+                    cache:
+                      'no-store',
+                  }
+                );
+
+
+              if (
+                response.ok
+              ) {
+
+                const data =
+                  await response.json();
+
+
+                if (!cancelled) {
+
+                  setProduct(
+                    normalizeProduct(
+                      data
+                    )
+                  );
+
+                  setError('');
+
+                }
+
+
+                return;
+
+              }
+
+
+              /*
+                IMPORTANT:
+                Do NOT throw on 404 here.
+
+                Some production backend
+                configurations may not expose
+                /api/products/:id even though
+                /api/products works.
+
+                In that case we continue to
+                the all-products fallback.
+              */
+
+              if (
+                response.status !==
+                404
+              ) {
+
+                let message =
+                  `Failed to load product (${response.status})`;
+
+
+                try {
+
+                  const data =
+                    await response.json();
+
+                  message =
+                    data?.message ||
+                    message;
+
+                } catch {
+                  // Ignore invalid JSON.
+                }
+
+
+                throw new Error(
+                  message
+                );
+
+              }
+
+            } catch (
+              directError
+            ) {
+
+              /*
+                Only continue to fallback
+                for a 404 / route mismatch.
+
+                Other errors such as network
+                failures should still surface.
+              */
+
+              const message =
+                directError instanceof Error
+                  ? directError.message
+                  : 'Unable to load product.';
+
+
+              if (
+                !/404|not found/i.test(
+                  message
+                )
+              ) {
+
+                console.warn(
+                  'Direct product lookup failed; trying product list fallback:',
+                  directError
+                );
+
+              }
+
+            }
+
+          }
+
+
+          /* =============================================
+             STEP 2
+             LOAD ALL PRODUCTS
+          ============================================= */
 
           const response =
             await fetch(
-              `${API_URL}/api/products/${slug}`,
+              `${API_URL}/api/products`,
               {
-                method: 'GET',
+                method:
+                  'GET',
 
                 headers: {
                   Accept:
@@ -504,28 +680,95 @@ export default function ProductPage({
             );
 
 
-          if (response.ok) {
+          if (
+            !response.ok
+          ) {
 
-            const data =
-              await response.json();
+            throw new Error(
+              `Failed to load products (${response.status})`
+            );
 
-
-            if (!cancelled) {
-
-              setProduct(
-                normalizeProduct(
-                  data
-                )
-              );
-
-            }
-
-            return;
           }
 
 
+          const products =
+            await response.json();
+
+
           if (
-            response.status === 404
+            !Array.isArray(
+              products
+            )
+          ) {
+
+            throw new Error(
+              'Invalid products response from backend.'
+            );
+
+          }
+
+
+          /* =============================================
+             STEP 3
+             MATCH ID / SLUG / NAME
+          ============================================= */
+
+          const matched =
+            products.find(
+              (
+                item:
+                  BackendProduct
+              ) => {
+
+                const backendSlug =
+                  item.slug ||
+                  item._id ||
+                  createSlug(
+                    item.name || ''
+                  );
+
+
+                const itemId =
+                  String(
+                    item._id || ''
+                  );
+
+
+                const normalizedBackendSlug =
+                  String(
+                    backendSlug
+                  );
+
+
+                const normalizedName =
+                  createSlug(
+                    item.name || ''
+                  );
+
+
+                return (
+
+                  itemId ===
+                    String(slug)
+
+                  ||
+
+                  normalizedBackendSlug ===
+                    String(slug)
+
+                  ||
+
+                  normalizedName ===
+                    String(slug)
+
+                );
+
+              }
+            );
+
+
+          if (
+            !matched
           ) {
 
             throw new Error(
@@ -534,141 +777,62 @@ export default function ProductPage({
 
           }
 
-        }
 
+          if (!cancelled) {
 
-        /*
-          Fallback:
-          Load all products and match
-          slug / _id / product name.
-        */
+            setProduct(
+              normalizeProduct(
+                matched
+              )
+            );
 
-        const response =
-          await fetch(
-            `${API_URL}/api/products`,
-            {
-              method: 'GET',
+            setError('');
 
-              headers: {
-                Accept:
-                  'application/json',
-              },
+          }
 
-              cache:
-                'no-store',
-            }
-          );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            `Failed to load products (${response.status})`
-          );
-
-        }
-
-
-        const products =
-          await response.json();
-
-
-        if (
-          !Array.isArray(
-            products
-          )
+        } catch (
+          err
         ) {
 
-          throw new Error(
-            'Invalid products response from backend.'
-          );
-
-        }
-
-
-        const matched =
-          products.find(
-            (
-              item: BackendProduct
-            ) => {
-
-              const backendSlug =
-                item.slug ||
-                item._id ||
-                createSlug(
-                  item.name || ''
-                );
-
-
-              return (
-                String(
-                  backendSlug
-                ) === String(slug) ||
-
-                createSlug(
-                  item.name || ''
-                ) === String(slug)
-              );
-
-            }
+          console.error(
+            'Product detail loading error:',
+            err
           );
 
 
-        if (!matched) {
+          if (!cancelled) {
 
-          throw new Error(
-            'Product not found.'
-          );
+            setError(
+              err instanceof Error
+                ? err.message
+                : 'Unable to load product.'
+            );
 
-        }
+          }
 
+        } finally {
 
-        if (!cancelled) {
+          if (!cancelled) {
 
-          setProduct(
-            normalizeProduct(
-              matched
-            )
-          );
+            setLoading(
+              false
+            );
 
-        }
-
-      } catch (err) {
-
-        console.error(
-          'Product detail loading error:',
-          err
-        );
-
-
-        if (!cancelled) {
-
-          setError(
-            err instanceof Error
-              ? err.message
-              : 'Unable to load product.'
-          );
+          }
 
         }
 
-      } finally {
-
-        if (!cancelled) {
-
-          setLoading(false);
-
-        }
-
-      }
-
-    };
+      };
 
 
     loadProduct();
 
 
     return () => {
-      cancelled = true;
+
+      cancelled =
+        true;
+
     };
 
   }, [slug]);
@@ -751,13 +915,29 @@ export default function ProductPage({
 
 
   /* =======================================================
-     WHATSAPP
+     WHATSAPP URL
   ======================================================= */
 
-  const whatsappUrl =
+  const whatsappMessage =
     product
-      ? `https://wa.me/918448460446?text=${encodeURIComponent(
-          `Hi Shivaay Paridhan, I want to order ${product.name}. Product ID: ${product.id}. Quantity: ${qty}.`
+      ? [
+          'Hi Shivaay Paridhan,',
+          '',
+          `I want to order: ${product.name}`,
+          `Product ID: ${product.id}`,
+          `Quantity: ${qty}`,
+          `Price: ₹${product.price.toLocaleString('en-IN')}`,
+          '',
+          'Please confirm availability.',
+        ].join('\n')
+      : '';
+
+
+  const whatsappUrl =
+    product &&
+    WHATSAPP_NUMBER
+      ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+          whatsappMessage
         )}`
       : '#';
 
@@ -798,7 +978,9 @@ export default function ProductPage({
      LOADING SCREEN
   ======================================================= */
 
-  if (loading) {
+  if (
+    loading
+  ) {
 
     return (
 
@@ -809,9 +991,11 @@ export default function ProductPage({
           <div
             className="card"
             style={{
-              padding: 48,
+              padding:
+                48,
 
-              minHeight: 240,
+              minHeight:
+                240,
 
               display:
                 'grid',
@@ -865,14 +1049,18 @@ export default function ProductPage({
             }}
           >
 
-            <h1 className="serif text-3xl">
+            <h1
+              className="serif text-3xl"
+            >
               Product not found
             </h1>
 
 
             <p className="muted mt-2">
+
               {error ||
                 'This product is no longer available.'}
+
             </p>
 
 
@@ -896,10 +1084,6 @@ export default function ProductPage({
 
   /* =======================================================
      MAIN IMAGE
-     
-     IMPORTANT:
-     Keep existing .detail-main CSS.
-     Image ratio remains 4:5.
   ======================================================= */
 
   const mainImage =
@@ -945,9 +1129,7 @@ export default function ProductPage({
         <div className="detail">
 
 
-          {/* =================================================
-              LEFT IMAGE
-          ================================================= */}
+          {/* IMAGE */}
 
           <div className="detail-main">
 
@@ -959,16 +1141,12 @@ export default function ProductPage({
           </div>
 
 
-          {/* =================================================
-              RIGHT PRODUCT INFORMATION
-          ================================================= */}
+          {/* PRODUCT INFO */}
 
           <div>
 
 
-            {/* ===============================================
-                OCCASION / CATEGORY / FABRIC
-            =============================================== */}
+            {/* CATEGORY */}
 
             <div className="eyebrow">
 
@@ -985,18 +1163,14 @@ export default function ProductPage({
             </div>
 
 
-            {/* ===============================================
-                PRODUCT NAME
-            =============================================== */}
+            {/* NAME */}
 
             <h1>
               {product.name}
             </h1>
 
 
-            {/* ===============================================
-                RATING
-            =============================================== */}
+            {/* RATING */}
 
             {product.rating > 0 && (
 
@@ -1019,9 +1193,7 @@ export default function ProductPage({
             )}
 
 
-            {/* ===============================================
-                PRICE
-            =============================================== */}
+            {/* PRICE */}
 
             <div className="detail-price">
 
@@ -1038,12 +1210,14 @@ export default function ProductPage({
               {product.oldPrice && (
 
                 <span className="old-price">
+
                   ₹
                   {Math.round(
                     product.oldPrice
                   ).toLocaleString(
                     'en-IN'
                   )}
+
                 </span>
 
               )}
@@ -1052,7 +1226,9 @@ export default function ProductPage({
               {discount > 0 && (
 
                 <span className="discount-percent">
+
                   {discount}% OFF
+
                 </span>
 
               )}
@@ -1060,9 +1236,7 @@ export default function ProductPage({
             </div>
 
 
-            {/* ===============================================
-                DESCRIPTION
-            =============================================== */}
+            {/* DESCRIPTION */}
 
             <p
               className="muted mt-5 text-[16px] leading-7"
@@ -1074,9 +1248,7 @@ export default function ProductPage({
             </p>
 
 
-            {/* ===============================================
-                OFFER
-            =============================================== */}
+            {/* OFFER */}
 
             {product.offerLabel && (
 
@@ -1100,7 +1272,8 @@ export default function ProductPage({
 
 
                 {product.offerDiscount &&
-                  product.offerDiscount > 0 && (
+                  product.offerDiscount >
+                    0 && (
 
                     <span
                       className="muted"
@@ -1124,9 +1297,7 @@ export default function ProductPage({
             )}
 
 
-            {/* ===============================================
-                STOCK MESSAGE
-            =============================================== */}
+            {/* STOCK */}
 
             {outOfStock ? (
 
@@ -1180,9 +1351,7 @@ export default function ProductPage({
             )}
 
 
-            {/* ===============================================
-                QUANTITY + BAG
-            =============================================== */}
+            {/* QUANTITY + BAG */}
 
             <div
               className="mt-6 flex items-center gap-3"
@@ -1206,9 +1375,11 @@ export default function ProductPage({
                     qty <= 1
                   }
                 >
+
                   <Minus
                     size={16}
                   />
+
                 </button>
 
 
@@ -1230,12 +1401,15 @@ export default function ProductPage({
                   }
                   disabled={
                     outOfStock ||
-                    qty >= maxQuantity
+                    qty >=
+                      maxQuantity
                   }
                 >
+
                   <Plus
                     size={16}
                   />
+
                 </button>
 
               </div>
@@ -1308,25 +1482,38 @@ export default function ProductPage({
             </div>
 
 
-            {/* ===============================================
-                WHATSAPP
-            =============================================== */}
+            {/* WHATSAPP */}
 
             <a
               className="btn btn-dark mt-3 w-full"
               href={
-                whatsappUrl
+                WHATSAPP_NUMBER
+                  ? whatsappUrl
+                  : '#'
               }
               target="_blank"
               rel="noreferrer"
+              onClick={(event) => {
+
+                if (
+                  !WHATSAPP_NUMBER
+                ) {
+
+                  event.preventDefault();
+
+                  console.error(
+                    'NEXT_PUBLIC_WHATSAPP_NUMBER is not configured.'
+                  );
+
+                }
+
+              }}
             >
               Order on WhatsApp
             </a>
 
 
-            {/* ===============================================
-                BASIC SPECS
-            =============================================== */}
+            {/* BASIC SPECS */}
 
             <div className="specs">
 
@@ -1337,7 +1524,8 @@ export default function ProductPage({
                 </span>
 
                 <b>
-                  {product.fabric || '—'}
+                  {product.fabric ||
+                    '—'}
                 </b>
 
               </div>
@@ -1350,7 +1538,8 @@ export default function ProductPage({
                 </span>
 
                 <b>
-                  {product.color || '—'}
+                  {product.color ||
+                    '—'}
                 </b>
 
               </div>
@@ -1363,9 +1552,11 @@ export default function ProductPage({
                 </span>
 
                 <b>
+
                   {outOfStock
                     ? 'Sold out'
                     : `${product.stock} available`}
+
                 </b>
 
               </div>
@@ -1378,7 +1569,8 @@ export default function ProductPage({
                 </span>
 
                 <b>
-                  {product.category || '—'}
+                  {product.category ||
+                    '—'}
                 </b>
 
               </div>
@@ -1392,9 +1584,6 @@ export default function ProductPage({
 
         {/* =================================================
             EXTRA DETAILS
-
-            Outside .detail to prevent blank space
-            underneath product image.
         ================================================= */}
 
         <div
@@ -1402,15 +1591,13 @@ export default function ProductPage({
         >
 
 
-          {/* ===============================================
-              SPECIFICATIONS
-          =============================================== */}
-
           {product.specifications && (
 
             <div className="card p-5">
 
-              <h2 className="serif text-xl text-[#132b49]">
+              <h2
+                className="serif text-xl text-[#132b49]"
+              >
                 Specifications
               </h2>
 
@@ -1433,15 +1620,13 @@ export default function ProductPage({
           )}
 
 
-          {/* ===============================================
-              PRODUCT CARE
-          =============================================== */}
-
           {product.productCare && (
 
             <div className="card p-5">
 
-              <h2 className="serif text-xl text-[#132b49]">
+              <h2
+                className="serif text-xl text-[#132b49]"
+              >
                 Product Care
               </h2>
 
@@ -1464,15 +1649,13 @@ export default function ProductPage({
           )}
 
 
-          {/* ===============================================
-              MORE INFORMATION
-          =============================================== */}
-
           {product.moreInfo && (
 
             <div className="card p-5">
 
-              <h2 className="serif text-xl text-[#132b49]">
+              <h2
+                className="serif text-xl text-[#132b49]"
+              >
                 More Information
               </h2>
 
@@ -1495,15 +1678,13 @@ export default function ProductPage({
           )}
 
 
-          {/* ===============================================
-              DELIVERY + QUALITY
-          =============================================== */}
-
           <div
             className="grid gap-3 sm:grid-cols-2"
           >
 
-            <div className="card flex gap-3 p-4">
+            <div
+              className="card flex gap-3 p-4"
+            >
 
               <Truck
                 size={22}
@@ -1525,7 +1706,9 @@ export default function ProductPage({
             </div>
 
 
-            <div className="card flex gap-3 p-4">
+            <div
+              className="card flex gap-3 p-4"
+            >
 
               <ShieldCheck
                 size={22}
@@ -1555,4 +1738,5 @@ export default function ProductPage({
     </main>
 
   );
+
 }
