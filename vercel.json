@@ -56,10 +56,6 @@
       "destination": "/shop.html"
     },
     {
-      "source": "/product/:slug",
-      "destination": "/product.html"
-    },
-    {
       "source": "/about",
       "destination": "/about.html"
     },
