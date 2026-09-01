@@ -458,6 +458,10 @@ export default function ProductPage({
     >(null);
 
 
+  const [selectedImage, setSelectedImage] =
+    useState('');
+
+
   /* =======================================================
      LOADING
   ======================================================= */
@@ -1146,10 +1150,17 @@ export default function ProductPage({
      MAIN IMAGE
   ======================================================= */
 
+  const productImages =
+    product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : ['/hero-slider.png'];
+
+
   const mainImage =
-    product.images[0] ||
-    product.image ||
-    '/hero-slider.png';
+    selectedImage ||
+    productImages[0];
 
 
   /* =======================================================
@@ -1191,12 +1202,51 @@ export default function ProductPage({
 
           {/* IMAGE */}
 
-          <div className="detail-main">
+          <div className="detail-image-gallery">
 
-            <img
-              src={mainImage}
-              alt={product.name}
-            />
+            <div className="detail-main">
+
+              <img
+                src={mainImage}
+                alt={product.name}
+              />
+
+            </div>
+
+
+            {productImages.length > 1 && (
+
+              <div className="detail-image-thumbnails">
+
+                {productImages.map(
+                  (image, index) => (
+
+                    <button
+                      key={`${image}-${index}`}
+                      type="button"
+                      className={`detail-image-thumbnail ${
+                        mainImage === image
+                          ? 'active'
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setSelectedImage(image)
+                      }
+                    >
+
+                      <img
+                        src={image}
+                        alt={`${product.name} ${index + 1}`}
+                      />
+
+                    </button>
+
+                  )
+                )}
+
+              </div>
+
+            )}
 
           </div>
 
