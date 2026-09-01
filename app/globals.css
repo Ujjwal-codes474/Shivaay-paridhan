@@ -9068,3 +9068,26 @@ textarea,
   }
 
 }
+.admin-product-image-wrapper {
+  position: relative;
+  width: fit-content;
+}
+
+.admin-image-count {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+

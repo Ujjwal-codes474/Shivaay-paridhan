@@ -1227,31 +1227,41 @@ export default function ProductsPage() {
                           className="admin-product-info"
                         >
 
-                          {product.images.length > 0 ? (
+                          <div className="admin-product-image-wrapper">
 
-                            <img
-                              src={
-                                product.images[0]
-                              }
-                              alt={
-                                product.name
-                              }
-                              className="admin-product-thumb"
-                            />
+                            {product.images.length > 0 ? (
 
-                          ) : (
+                              <img
+                                src={
+                                  product.images[0]
+                                }
+                                alt={
+                                  product.name
+                                }
+                                className="admin-product-thumb"
+                              />
 
-                            <div
-                              className="admin-product-placeholder"
-                            >
+                            ) : (
 
-                              <span>
-                                SP
+                              <div
+                                className="admin-product-placeholder"
+                              >
+
+                                <span>
+                                  SP
+                                </span>
+
+                              </div>
+
+                            )}
+
+                            {product.images.length > 1 && (
+                              <span className="admin-image-count">
+                                +{product.images.length - 1}
                               </span>
+                            )}
 
-                            </div>
-
-                          )}
+                          </div>
 
 
                           <div
