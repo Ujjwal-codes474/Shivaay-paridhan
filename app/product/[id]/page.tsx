@@ -1627,48 +1627,6 @@ export default function ProductPage({
 
             <div className="specs">
 
-              <div className="spec">
-
-                <span>
-                  Fabric
-                </span>
-
-                <b>
-                  {product.fabric ||
-                    '—'}
-                </b>
-
-              </div>
-
-
-              <div className="spec">
-
-                <span>
-                  Color
-                </span>
-
-                <b>
-                  {product.color ||
-                    '—'}
-                </b>
-
-              </div>
-
-
-              <div className="spec">
-
-                <span>
-                  Stock
-                </span>
-
-                <b>
-                  {outOfStock
-                    ? 'Sold out'
-                    : `${product.stock} available`}
-                </b>
-
-              </div>
-
 
               <div className="spec">
 
