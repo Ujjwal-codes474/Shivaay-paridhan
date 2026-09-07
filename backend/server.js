@@ -3212,6 +3212,7 @@ app.put(
 
 app.post(
   "/api/reviews",
+  authenticateToken,
   reviewUpload.single(
     "image"
   ),
@@ -3224,11 +3225,35 @@ app.post(
 
       const {
         productId,
-        userName,
         rating,
         comment,
       } =
         req.body;
+
+
+      const reviewUser =
+        await User.findById(
+          req.user.id
+        ).select(
+          "name email phone"
+        );
+
+
+      if (!reviewUser) {
+
+        return res.status(401).json({
+          message:
+            "User account not found.",
+        });
+
+      }
+
+
+      const userName =
+        reviewUser.name ||
+        reviewUser.email ||
+        reviewUser.phone ||
+        "Customer";
 
 
       let imagePath =

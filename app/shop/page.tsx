@@ -439,7 +439,7 @@ function ShopContent() {
     'All',
     'Wedding',
     'Festive',
-    'Daily Wear',
+    'Casual',
     'Party Wear',
     'Formal',
   ];

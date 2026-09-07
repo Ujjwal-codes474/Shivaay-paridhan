@@ -208,7 +208,7 @@ const heroSlides = [
       'Comfort-first sarees designed for beautiful everyday moments.',
 
     cta:
-      'Shop Daily Wear',
+      'Shop Casual',
 
     href:
       '/shop?occasion=Daily%20Wear',
@@ -275,13 +275,13 @@ const occasions = [
 
   {
     name:
-      'Daily Wear',
+      'Casual',
 
     image:
       '/shivaay/image-12.png',
 
     query:
-      'Daily Wear',
+      'Casual',
 
   },
 

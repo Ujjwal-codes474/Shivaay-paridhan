@@ -459,9 +459,7 @@ export default function Cart() {
         !currentUser
       ) {
 
-        setWhatsappError(
-          'Please login to place an order on WhatsApp.'
-        );
+        window.location.href = '/login';
 
         return;
       }

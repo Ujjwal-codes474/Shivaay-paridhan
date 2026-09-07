@@ -161,6 +161,21 @@ type DisplayProduct = {
 
 
 /* =========================================================
+   PRODUCT REVIEW
+========================================================= */
+
+type ProductReview = {
+  _id: string;
+  productId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  image?: string | null;
+  createdAt: string;
+};
+
+
+/* =========================================================
    IMAGE URL
 ========================================================= */
 
@@ -465,6 +480,34 @@ export default function ProductPage({
   /* =======================================================
      LOADING
   ======================================================= */
+
+  /* =======================================================
+     REVIEWS
+  ======================================================= */
+
+  const [reviews, setReviews] =
+    useState<ProductReview[]>([]);
+
+  const [reviewsLoading, setReviewsLoading] =
+    useState(true);
+
+  const [reviewRating, setReviewRating] =
+    useState(5);
+
+  const [reviewComment, setReviewComment] =
+    useState('');
+
+  const [reviewImage, setReviewImage] =
+    useState<File | null>(null);
+
+  const [reviewSubmitting, setReviewSubmitting] =
+    useState(false);
+
+  const [reviewError, setReviewError] =
+    useState('');
+
+  const [reviewSuccess, setReviewSuccess] =
+    useState('');
 
   const [loading, setLoading] =
     useState(true);
@@ -900,6 +943,211 @@ export default function ProductPage({
 
 
   /* =======================================================
+     LOAD PRODUCT REVIEWS
+  ======================================================= */
+
+  useEffect(() => {
+    if (!product?.id) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadReviews = async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/api/reviews/${encodeURIComponent(product.id)}`,
+          {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+            },
+            cache: 'no-store',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load reviews (${response.status})`
+          );
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) {
+          setReviews(
+            Array.isArray(data)
+              ? data
+              : []
+          );
+        }
+      } catch (reviewLoadError) {
+        console.warn(
+          'Failed to load product reviews.',
+          reviewLoadError
+        );
+
+        if (!cancelled) {
+          setReviews([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setReviewsLoading(false);
+        }
+      }
+    };
+
+    setReviewsLoading(true);
+
+    loadReviews();
+
+    const interval =
+      window.setInterval(
+        loadReviews,
+        10000
+      );
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [product?.id]);
+
+  /* =======================================================
+     SUBMIT REVIEW
+  ======================================================= */
+
+  const handleReviewSubmit = async () => {
+    setReviewError('');
+    setReviewSuccess('');
+
+    const token =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('authToken')
+        : null;
+
+    const currentUserRaw =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('currentUser')
+        : null;
+
+    if (!token || !currentUserRaw) {
+      window.location.href = '/login';
+      return;
+    }
+
+    if (!product?.id) {
+      setReviewError(
+        'Product information is missing.'
+      );
+      return;
+    }
+
+    if (!reviewComment.trim()) {
+      setReviewError(
+        'Please write a review.'
+      );
+      return;
+    }
+
+
+    try {
+      setReviewSubmitting(true);
+
+      const formData =
+        new FormData();
+
+      formData.append(
+        'productId',
+        product.id
+      );
+
+
+      formData.append(
+        'rating',
+        String(reviewRating)
+      );
+
+      formData.append(
+        'comment',
+        reviewComment.trim()
+      );
+
+      if (reviewImage) {
+        formData.append(
+          'image',
+          reviewImage
+        );
+      }
+
+      const response =
+        await fetch(
+          `${API_URL}/api/reviews`,
+          {
+            method: 'POST',
+
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+
+            body: formData,
+          }
+        );
+
+      if (response.status === 401) {
+        window.location.href =
+          '/login';
+        return;
+      }
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+          'Failed to submit review.'
+        );
+      }
+
+      const newReview =
+        data?.review ||
+        data;
+
+      if (newReview?._id) {
+        setReviews(
+          (currentReviews) => [
+            newReview,
+            ...currentReviews,
+          ]
+        );
+      }
+
+      setReviewComment('');
+      setReviewRating(5);
+      setReviewImage(null);
+
+      setReviewSuccess(
+        'Your review has been submitted successfully.'
+      );
+
+    } catch (submitError) {
+
+      setReviewError(
+        submitError instanceof Error
+          ? submitError.message
+          : 'Failed to submit review.'
+      );
+
+    } finally {
+
+      setReviewSubmitting(false);
+
+    }
+  };
+
+  /* =======================================================
      STOCK
   ======================================================= */
 
@@ -989,7 +1237,7 @@ export default function ProductPage({
           `I want to order: ${product.name}`,
           `Product ID: ${product.id}`,
           `Quantity: ${qty}`,
-          `Price: ₹${product.price.toLocaleString(
+          `Price: â‚¹${product.price.toLocaleString(
             'en-IN'
           )}`,
           '',
@@ -1167,6 +1415,20 @@ export default function ProductPage({
      RENDER
   ======================================================= */
 
+
+  /* =======================================================
+     REVIEW AVERAGE
+  ======================================================= */
+
+  const reviewAverage =
+    reviews.length > 0
+      ? reviews.reduce(
+          (sum, review) =>
+            sum + Number(review.rating || 0),
+          0
+        ) / reviews.length
+      : Number(product?.rating || 0);
+
   return (
 
     <main className="page">
@@ -1189,7 +1451,7 @@ export default function ProductPage({
               22,
           }}
         >
-          ← Back to Shop
+          â† Back to Shop
         </Link>
 
 
@@ -1265,7 +1527,7 @@ export default function ProductPage({
 
               {product.fabric && (
                 <>
-                  {' · '}
+                  {' Â· '}
                   {product.fabric}
                 </>
               )}
@@ -1296,7 +1558,7 @@ export default function ProductPage({
 
                 {product.rating}
 
-                {' · Product rating'}
+                {' Â· Product rating'}
 
               </div>
 
@@ -1308,7 +1570,7 @@ export default function ProductPage({
             <div className="detail-price">
 
               <span>
-                ₹
+                â‚¹
                 {Math.round(
                   product.price
                 ).toLocaleString(
@@ -1320,7 +1582,7 @@ export default function ProductPage({
               {product.oldPrice && (
 
                 <span className="old-price">
-                  ₹
+                  â‚¹
                   {Math.round(
                     product.oldPrice
                   ).toLocaleString(
@@ -1636,7 +1898,7 @@ export default function ProductPage({
 
                 <b>
                   {product.category ||
-                    '—'}
+                    'â€”'}
                 </b>
 
               </div>
@@ -1742,6 +2004,314 @@ export default function ProductPage({
 
           )}
 
+
+          {/* =================================================
+              CUSTOMER REVIEWS
+          ================================================= */}
+
+          <section className="card p-5">
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+              <div>
+
+                <h2 className="serif text-2xl text-[#132b49]">
+                  Customer Reviews
+                </h2>
+
+                <div className="mt-2 flex items-center gap-2">
+
+                  <div className="flex items-center gap-1">
+
+                    {[1, 2, 3, 4, 5].map(
+                      (star) => (
+                        <Star
+                          key={star}
+                          size={18}
+                          fill={
+                            star <=
+                            Math.round(reviewAverage)
+                              ? '#c7a35a'
+                              : 'none'
+                          }
+                          color="#c7a35a"
+                        />
+                      )
+                    )}
+
+                  </div>
+
+                  <span className="text-sm font-medium">
+                    {reviewAverage > 0
+                      ? reviewAverage.toFixed(1)
+                      : 'No rating'}
+                  </span>
+
+                  <span className="text-sm muted">
+                    · {reviews.length} review
+                    {reviews.length !== 1
+                      ? 's'
+                      : ''}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* WRITE REVIEW */}
+
+            <div className="mt-6 border-t border-black/10 pt-5">
+
+              <h3 className="serif text-xl text-[#132b49]">
+                Write a Review
+              </h3>
+
+
+              {/* RATING */}
+
+              <div className="mt-4">
+
+                <div className="mb-2 text-sm font-medium">
+                  Your Rating
+                </div>
+
+                <div className="flex items-center gap-1">
+
+                  {[1, 2, 3, 4, 5].map(
+                    (star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() =>
+                          setReviewRating(star)
+                        }
+                        className="rounded p-1 transition-transform hover:scale-110"
+                        aria-label={`Give ${star} star${star > 1 ? 's' : ''}`}
+                      >
+
+                        <Star
+                          size={24}
+                          fill={
+                            star <=
+                            reviewRating
+                              ? '#c7a35a'
+                              : 'none'
+                          }
+                          color="#c7a35a"
+                        />
+
+                      </button>
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
+
+              {/* COMMENT */}
+
+              <textarea
+                value={reviewComment}
+                onChange={(event) =>
+                  setReviewComment(
+                    event.target.value
+                  )
+                }
+                placeholder="Share your experience with this product..."
+                rows={4}
+                className="mt-4 w-full rounded-lg border border-black/15 bg-white p-3 text-sm outline-none transition focus:border-[#762438]"
+              />
+
+
+              {/* PHOTO */}
+
+              <div className="mt-4">
+
+                <label
+                  htmlFor="review-image"
+                  className="text-sm font-medium"
+                >
+                  Add Photo
+                  <span className="ml-1 muted">
+                    (optional)
+                  </span>
+                </label>
+
+                <input
+                  id="review-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) =>
+                    setReviewImage(
+                      event.target.files?.[0] ||
+                      null
+                    )
+                  }
+                  className="mt-2 block w-full text-sm"
+                />
+
+              </div>
+
+
+              {/* ERROR */}
+
+              {reviewError && (
+
+                <div className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                  {reviewError}
+                </div>
+
+              )}
+
+
+              {/* SUCCESS */}
+
+              {reviewSuccess && (
+
+                <div className="mt-3 rounded-lg bg-green-50 p-3 text-sm text-green-700">
+                  {reviewSuccess}
+                </div>
+
+              )}
+
+
+              {/* SUBMIT */}
+
+              <button
+                type="button"
+                onClick={
+                  handleReviewSubmit
+                }
+                disabled={
+                  reviewSubmitting
+                }
+                className="mt-4 rounded-lg bg-[#762438] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+
+                {reviewSubmitting
+                  ? 'Submitting...'
+                  : 'Submit Review'}
+
+              </button>
+
+            </div>
+
+
+            {/* REVIEW LIST */}
+
+            <div className="mt-7 border-t border-black/10 pt-5">
+
+              {reviewsLoading ? (
+
+                <div className="muted text-sm">
+                  Loading reviews...
+                </div>
+
+              ) : reviews.length === 0 ? (
+
+                <div className="muted text-sm">
+                  No reviews yet. Be the first to review this product.
+                </div>
+
+              ) : (
+
+                <div className="space-y-5">
+
+                  {reviews.map(
+                    (review) => (
+
+                      <article
+                        key={review._id}
+                        className="border-b border-black/10 pb-5 last:border-b-0 last:pb-0"
+                      >
+
+                        <div className="flex items-start justify-between gap-3">
+
+                          <div>
+
+                            <div className="font-medium">
+                              {review.userName}
+                            </div>
+
+                            <div className="mt-1 flex items-center gap-1">
+
+                              {[1, 2, 3, 4, 5].map(
+                                (star) => (
+                                  <Star
+                                    key={star}
+                                    size={15}
+                                    fill={
+                                      star <=
+                                      Number(
+                                        review.rating
+                                      )
+                                        ? '#c7a35a'
+                                        : 'none'
+                                    }
+                                    color="#c7a35a"
+                                  />
+                                )
+                              )}
+
+                            </div>
+
+                          </div>
+
+
+                          <time
+                            className="text-xs muted"
+                            dateTime={
+                              review.createdAt
+                            }
+                          >
+                            {new Date(
+                              review.createdAt
+                            ).toLocaleDateString(
+                              'en-IN',
+                              {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              }
+                            )}
+                          </time>
+
+                        </div>
+
+
+                        <p className="mt-3 whitespace-pre-line text-sm leading-6">
+                          {review.comment}
+                        </p>
+
+
+                        {review.image && (
+
+                          <img
+                            src={resolveImageUrl(
+                              review.image
+                            )}
+                            alt={`Review by ${review.userName}`}
+                            className="mt-3 h-24 w-24 rounded-lg object-cover"
+                          />
+
+                        )}
+
+                      </article>
+
+                    )
+                  )}
+
+                </div>
+
+              )}
+
+            </div>
+
+          </section>
 
           {/* DELIVERY + QUALITY */}
 
