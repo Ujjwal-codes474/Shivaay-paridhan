@@ -2751,6 +2751,9 @@ app.post(
                 true,
 
               session,
+
+              updatePipeline:
+                true,
             }
           );
 
