@@ -760,6 +760,10 @@ img {
 .product-card {
   overflow: hidden;
 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   background: #fff;
 
   border: 1px solid #ece3d6;
@@ -899,6 +903,10 @@ img {
 
 .product-copy {
   padding: 15px;
+
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .product-meta {
@@ -951,6 +959,8 @@ img {
 
 .add-btn {
   width: 100%;
+
+  margin-top: auto;
 
   display: flex;
   align-items: center;
