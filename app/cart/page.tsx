@@ -32,8 +32,10 @@ const API_URL =
 ========================================================= */
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.trim() ||
-  '';
+  (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '')
+    .replace(/\D/g, '')
+    .replace(/^0(?=\d{10}$)/, '')
+    .replace(/^(?!91)(\d{10})$/, '91$1');
 
 
 /* =========================================================
