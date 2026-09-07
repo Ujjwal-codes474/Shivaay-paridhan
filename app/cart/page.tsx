@@ -940,15 +940,16 @@ export default function Cart() {
 
         const message =
           [
-            '🛍️ *Shivaay Paridhan - New Order*',
+            '??? *SHIVAAY PARIDHAN*',
+            '*NEW ORDER*',
 
             '',
 
-            `Order ID: *#${orderId}*`,
+            `*Order ID:* #${orderId}`,
 
             '',
 
-            '*Customer Details*',
+            '*CUSTOMER DETAILS*',
 
             `Name: ${name}`,
 
@@ -960,25 +961,27 @@ export default function Cart() {
 
             '',
 
-            '*Delivery Address*',
+            '*DELIVERY ADDRESS*',
 
             addressLine,
 
             '',
 
-            '*Products*',
+            '*ORDER DETAILS*',
 
             productLines,
 
             '',
 
-            `Subtotal: ₹${serverSubtotal.toLocaleString(
+            '*ORDER SUMMARY*',
+
+            `Subtotal: ${serverSubtotal.toLocaleString(
               'en-IN'
             )}`,
 
             `Shipping: ${
               serverShipping
-                ? `₹${serverShipping.toLocaleString(
+                ? `${serverShipping.toLocaleString(
                     'en-IN'
                   )}`
                 : 'FREE'
@@ -986,13 +989,17 @@ export default function Cart() {
 
             couponLine,
 
-            `Total: *₹${serverTotal.toLocaleString(
+            `*Grand Total: ${serverTotal.toLocaleString(
               'en-IN'
             )}*`,
 
             '',
 
-            'Please confirm my order.',
+            '*Please confirm my order.*',
+
+            '',
+
+            'Thank you for shopping with *Shivaay Paridhan*. ??',
 
           ]
             .filter(Boolean)
