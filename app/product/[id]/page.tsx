@@ -1237,7 +1237,7 @@ export default function ProductPage({
           `I want to order: ${product.name}`,
           `Product ID: ${product.id}`,
           `Quantity: ${qty}`,
-          `Price: â‚¹${product.price.toLocaleString(
+          `Price: ₹${product.price.toLocaleString(
             'en-IN'
           )}`,
           '',
@@ -1451,7 +1451,7 @@ export default function ProductPage({
               22,
           }}
         >
-          â† Back to Shop
+          ← Back to Shop
         </Link>
 
 
@@ -1527,7 +1527,7 @@ export default function ProductPage({
 
               {product.fabric && (
                 <>
-                  {' Â· '}
+                  {' · '}
                   {product.fabric}
                 </>
               )}
@@ -1558,7 +1558,7 @@ export default function ProductPage({
 
                 {product.rating}
 
-                {' Â· Product rating'}
+                {' · Product rating'}
 
               </div>
 
@@ -1570,7 +1570,7 @@ export default function ProductPage({
             <div className="detail-price">
 
               <span>
-                â‚¹
+                ₹
                 {Math.round(
                   product.price
                 ).toLocaleString(
@@ -1582,7 +1582,7 @@ export default function ProductPage({
               {product.oldPrice && (
 
                 <span className="old-price">
-                  â‚¹
+                  ₹
                   {Math.round(
                     product.oldPrice
                   ).toLocaleString(

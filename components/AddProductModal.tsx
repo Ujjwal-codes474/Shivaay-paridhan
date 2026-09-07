@@ -1090,8 +1090,8 @@ export default function AddProductModal({
                     Party Wear
                   </option>
 
-                  <option value="Daily Wear">
-                    Daily Wear
+                  <option value="Casual">
+                    Casual
                   </option>
 
                   <option value="Formal">

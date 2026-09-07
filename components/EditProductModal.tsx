@@ -891,8 +891,8 @@ export default function EditProductModal({
                     Party Wear
                   </option>
 
-                  <option value="Daily Wear">
-                    Daily Wear
+                  <option value="Casual">
+                    Casual
                   </option>
 
                   <option value="Formal">
